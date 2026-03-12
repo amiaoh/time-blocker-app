@@ -73,39 +73,20 @@ export function TaskCard({
   return (
     <Box
       ref={setNodeRef}
-      style={style}
+      style={{ ...style, borderLeft: `3px solid ${task.color}` }}
       bg="gray.900"
       borderRadius="xl"
       p={4}
-      opacity={isDone ? 0.6 : 1}
+      opacity={isDone ? 0.5 : 1}
       transition="opacity 0.2s"
     >
-      <HStack align="flex-start" gap={3}>
+      <HStack align="center" gap={3}>
         {/* Drag handle */}
         {!isDone ? (
-          <Box pt={1}>
-            <DragHandle {...attributes} {...listeners} />
-          </Box>
+          <DragHandle {...attributes} {...listeners} />
         ) : (
           <Box w={4} flexShrink={0} />
         )}
-
-        {/* Colour icon square */}
-        <Box
-          w={10}
-          h={10}
-          borderRadius="lg"
-          bg={task.color}
-          flexShrink={0}
-          display="flex"
-          alignItems="center"
-          justifyContent="center"
-          fontSize="lg"
-          cursor={isDone ? 'default' : 'pointer'}
-          onClick={isDone ? undefined : () => onEdit(task)}
-        >
-          📋
-        </Box>
 
         {/* Title + actions */}
         <Box flex={1} minW={0}>

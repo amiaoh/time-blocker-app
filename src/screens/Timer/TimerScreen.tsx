@@ -1,8 +1,9 @@
 import { useCallback, useRef, useState } from 'react'
-import { Box, HStack, Heading, Spinner, Text } from '@chakra-ui/react'
+import { Box, HStack, Heading, Spinner, Stack, Text } from '@chakra-ui/react'
 import {
   DndContext,
   PointerSensor,
+  TouchSensor,
   closestCenter,
   useSensor,
   useSensors,
@@ -46,7 +47,10 @@ export function TimerScreen() {
   tasksRef.current = tasks
   const startRef = useRef<((task: Task) => void) | null>(null)
 
-  const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }))
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
+    useSensor(TouchSensor, { activationConstraint: { delay: 250, tolerance: 5 } }),
+  )
 
   const autoStartNext = useCallback((completedId: string) => {
     const next = tasksRef.current.find(
@@ -98,7 +102,12 @@ export function TimerScreen() {
   const { handleDragStart, handleDragEnd, handleDragCancel } = useDragOrder({
     tasks,
     onReorder: (reordered) => {
-      reordered.forEach((task) => updateTask.mutate({ id: task.id, position: task.position }))
+      reordered.forEach((task) => {
+        const orig = tasks.find((t) => t.id === task.id)
+        if (orig && orig.position !== task.position) {
+          updateTask.mutate({ id: task.id, position: task.position })
+        }
+      })
     },
   })
 
@@ -227,7 +236,38 @@ export function TimerScreen() {
           />
 
           {activeTask && (
-            <Box mt={4}>
+            <Stack align="center" gap={4} mt={4}>
+              <HStack gap={3}>
+                <Text
+                  as="button"
+                  fontSize="sm"
+                  color="gray.500"
+                  _hover={{ color: 'gray.300' }}
+                  cursor="pointer"
+                  bg="transparent"
+                  border="none"
+                  p={0}
+                  onClick={() => handleAdjustDuration(activeTask, -5)}
+                >
+                  −5m
+                </Text>
+                <Text fontSize="sm" color="gray.600">
+                  {activeTask.durationMin}m
+                </Text>
+                <Text
+                  as="button"
+                  fontSize="sm"
+                  color="gray.500"
+                  _hover={{ color: 'gray.300' }}
+                  cursor="pointer"
+                  bg="transparent"
+                  border="none"
+                  p={0}
+                  onClick={() => handleAdjustDuration(activeTask, 5)}
+                >
+                  +5m
+                </Text>
+              </HStack>
               <TimerControls
                 isRunning={timerState.isRunning}
                 isPaused={timerState.isPaused}
@@ -237,7 +277,7 @@ export function TimerScreen() {
                 onSkip={skip}
                 accentColor={activeTask.color}
               />
-            </Box>
+            </Stack>
           )}
         </Box>
 

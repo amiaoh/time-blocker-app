@@ -35,10 +35,10 @@ export function TaskForm({ isOpen, onClose, onSubmit, editingTask, isLoading }: 
   }
 
   return (
-    <Dialog.Root open={isOpen} onOpenChange={(e) => !e.open && handleClose()} placement="center">
+    <Dialog.Root open={isOpen} onOpenChange={(e) => !e.open && handleClose()} placement="top">
       <Dialog.Backdrop />
       <Dialog.Positioner>
-        <Dialog.Content bg="gray.900" borderColor="gray.700" borderWidth={1} maxW="400px">
+        <Dialog.Content bg="gray.900" borderColor="gray.700" borderWidth={1} maxW="400px" mt={4}>
           <Dialog.Header>
             <Dialog.Title color="white">{editingTask ? 'Edit task' : 'Add task'}</Dialog.Title>
           </Dialog.Header>
