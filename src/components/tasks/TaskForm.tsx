@@ -67,7 +67,7 @@ export function TaskForm({ isOpen, onClose, onSubmit, editingTask, isLoading }: 
                 <Field.Label color="gray.300">Duration (minutes)</Field.Label>
                 <Input
                   type="number"
-                  value={values.durationMin}
+                  value={values.durationMin || ''}
                   onChange={(e) => setField('durationMin', parseInt(e.target.value, 10) || 0)}
                   min={1}
                   max={480}
