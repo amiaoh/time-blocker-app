@@ -113,3 +113,53 @@ export function useDeleteTask(sessionId: string) {
     },
   })
 }
+
+export function useClearCompleted(sessionId: string) {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: async () => {
+      const { error } = await supabase
+        .from('tasks')
+        .delete()
+        .eq('session_id', sessionId)
+        .in('status', ['completed', 'skipped'])
+      if (error) throw error
+    },
+    onMutate: async () => {
+      await queryClient.cancelQueries({ queryKey: tasksQueryKey(sessionId) })
+      const previous = queryClient.getQueryData<Task[]>(tasksQueryKey(sessionId))
+      queryClient.setQueryData<Task[]>(tasksQueryKey(sessionId), (old) =>
+        (old ?? []).filter((t) => t.status === 'pending'),
+      )
+      return { previous }
+    },
+    onError: (_err, _vars, ctx) => {
+      if (ctx?.previous) queryClient.setQueryData(tasksQueryKey(sessionId), ctx.previous)
+    },
+  })
+}
+
+export function useClearAll(sessionId: string) {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: async () => {
+      const { error } = await supabase
+        .from('tasks')
+        .delete()
+        .eq('session_id', sessionId)
+        .gte('position', 0)
+      if (error) throw error
+    },
+    onMutate: async () => {
+      await queryClient.cancelQueries({ queryKey: tasksQueryKey(sessionId) })
+      const previous = queryClient.getQueryData<Task[]>(tasksQueryKey(sessionId))
+      queryClient.setQueryData<Task[]>(tasksQueryKey(sessionId), [])
+      return { previous }
+    },
+    onError: (_err, _vars, ctx) => {
+      if (ctx?.previous) queryClient.setQueryData(tasksQueryKey(sessionId), ctx.previous)
+    },
+  })
+}

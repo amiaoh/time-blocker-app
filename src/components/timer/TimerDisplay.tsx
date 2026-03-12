@@ -7,48 +7,130 @@ interface TimerDisplayProps {
   color: string
   isRunning: boolean
   isIdle: boolean
+  onToggle?: () => void // play/pause from centre button
 }
 
-const SIZE = 200
-const STROKE = 10
-const RADIUS = (SIZE - STROKE) / 2
-const CIRCUMFERENCE = 2 * Math.PI * RADIUS
+const SIZE = 260
+const CX = SIZE / 2
+const CY = SIZE / 2
+const OUTER_R = 110
+const INNER_MARKER_R = 95   // inner end of tick marks
+const LABEL_R = 80          // radius for number labels
 
-export function TimerDisplay({ remainingSeconds, durationMin, color, isRunning, isIdle }: TimerDisplayProps) {
+const CLOCK_MARKS = Array.from({ length: 12 }, (_, i) => i * 5) // 0,5,10,...55
+
+function polarToXY(angleDeg: number, r: number) {
+  const rad = ((angleDeg - 90) * Math.PI) / 180
+  return { x: CX + r * Math.cos(rad), y: CY + r * Math.sin(rad) }
+}
+
+function sectorPath(progress: number): string {
+  if (progress <= 0) return ''
+  if (progress >= 1) {
+    // Full circle as two half-arcs
+    return [
+      `M ${CX} ${CY}`,
+      `L ${CX} ${CY - OUTER_R}`,
+      `A ${OUTER_R} ${OUTER_R} 0 1 1 ${CX - 0.001} ${CY - OUTER_R}`,
+      `A ${OUTER_R} ${OUTER_R} 0 1 1 ${CX} ${CY - OUTER_R}`,
+      'Z',
+    ].join(' ')
+  }
+  const angleDeg = progress * 360
+  const end = polarToXY(angleDeg, OUTER_R)
+  const largeArc = angleDeg > 180 ? 1 : 0
+  return [
+    `M ${CX} ${CY}`,
+    `L ${CX} ${CY - OUTER_R}`,
+    `A ${OUTER_R} ${OUTER_R} 0 ${largeArc} 1 ${end.x} ${end.y}`,
+    'Z',
+  ].join(' ')
+}
+
+export function TimerDisplay({
+  remainingSeconds,
+  durationMin,
+  color,
+  isRunning,
+  isIdle,
+  onToggle,
+}: TimerDisplayProps) {
   const totalSeconds = durationMin * 60
-  const progress = isIdle || totalSeconds === 0 ? 0 : remainingSeconds / totalSeconds
-  const dashOffset = CIRCUMFERENCE * (1 - progress)
-  const ringColor = isIdle ? '#2D3748' : color
+  // Show elapsed proportion (sector grows as time passes)
+  const elapsed = isIdle || totalSeconds === 0 ? 0 : (totalSeconds - remainingSeconds) / totalSeconds
 
   return (
-    <Box display="flex" flexDirection="column" alignItems="center" gap={3}>
-      <svg width={SIZE} height={SIZE} style={{ transform: 'rotate(-90deg)' }}>
-        {/* Track */}
+    <Box display="flex" flexDirection="column" alignItems="center" gap={2}>
+      <svg width={SIZE} height={SIZE} style={{ userSelect: 'none' }}>
+        {/* Background circle */}
+        <circle cx={CX} cy={CY} r={OUTER_R} fill="#1A202C" />
+
+        {/* Elapsed sector */}
+        {!isIdle && elapsed > 0 && (
+          <path
+            d={sectorPath(elapsed)}
+            fill={color}
+            opacity={0.85}
+            style={{ transition: isRunning ? 'none' : undefined }}
+          />
+        )}
+
+        {/* Clock tick marks and labels */}
+        {CLOCK_MARKS.map((mark) => {
+          const angleDeg = (mark / 60) * 360
+          const outer = polarToXY(angleDeg, OUTER_R + 2)
+          const inner = polarToXY(angleDeg, INNER_MARKER_R + 4)
+          const label = polarToXY(angleDeg, LABEL_R + 16)
+          return (
+            <g key={mark}>
+              <line
+                x1={inner.x}
+                y1={inner.y}
+                x2={outer.x}
+                y2={outer.y}
+                stroke="#4A5568"
+                strokeWidth={mark === 0 ? 2 : 1}
+              />
+              <text
+                x={label.x}
+                y={label.y}
+                textAnchor="middle"
+                dominantBaseline="middle"
+                fontSize={10}
+                fill="#718096"
+                fontFamily="system-ui, sans-serif"
+              >
+                {mark}
+              </text>
+            </g>
+          )
+        })}
+
+        {/* Centre play/pause button */}
         <circle
-          cx={SIZE / 2}
-          cy={SIZE / 2}
-          r={RADIUS}
-          fill="none"
-          stroke="#1A202C"
-          strokeWidth={STROKE}
+          cx={CX}
+          cy={CY}
+          r={28}
+          fill={isIdle ? '#2D3748' : '#0F0F0F'}
+          style={{ cursor: onToggle ? 'pointer' : 'default' }}
+          onClick={onToggle}
         />
-        {/* Progress arc */}
-        <circle
-          cx={SIZE / 2}
-          cy={SIZE / 2}
-          r={RADIUS}
-          fill="none"
-          stroke={ringColor}
-          strokeWidth={STROKE}
-          strokeLinecap="round"
-          strokeDasharray={CIRCUMFERENCE}
-          strokeDashoffset={isIdle ? 0 : dashOffset}
-          style={{ transition: isRunning ? 'stroke-dashoffset 1s linear' : 'none' }}
-        />
+        <text
+          x={CX + (isRunning ? 0 : 2)}
+          y={CY}
+          textAnchor="middle"
+          dominantBaseline="middle"
+          fontSize={16}
+          fill={isIdle ? '#4A5568' : 'white'}
+          style={{ cursor: onToggle ? 'pointer' : 'default', pointerEvents: 'none' }}
+        >
+          {isRunning ? '⏸' : '▶'}
+        </text>
       </svg>
 
+      {/* Numerical time below the ring */}
       <Text
-        fontSize="4xl"
+        fontSize="3xl"
         fontWeight="bold"
         color={isIdle ? 'gray.600' : 'white'}
         fontVariantNumeric="tabular-nums"

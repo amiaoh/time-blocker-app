@@ -1,4 +1,4 @@
-import { Box, HStack, Switch, Text, Stack } from '@chakra-ui/react'
+import { Box, HStack, Stack, Text } from '@chakra-ui/react'
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import { TaskCard } from './TaskCard'
 import { EmptyState } from '@/components/shared/EmptyState'
@@ -9,14 +9,45 @@ interface TaskListProps {
   timerState: TimerState
   hideCompleted: boolean
   onToggleHideCompleted: () => void
+  onAddTask: () => void
+  onClearCompleted: () => void
+  onClearAll: () => void
   onStart: (task: Task) => void
   onPause: () => void
   onComplete: () => void
-  onSkip: () => void
   onEdit: (task: Task) => void
   onDelete: (task: Task) => void
   onReset: (task: Task) => void
   onAdjustDuration: (task: Task, deltaMin: number) => void
+}
+
+function TextBtn({
+  label,
+  icon,
+  onClick,
+}: {
+  label: string
+  icon: string
+  onClick: () => void
+}) {
+  return (
+    <Text
+      as="button"
+      fontSize="sm"
+      color="gray.500"
+      _hover={{ color: 'gray.200' }}
+      cursor="pointer"
+      bg="transparent"
+      border="none"
+      p={0}
+      display="flex"
+      alignItems="center"
+      gap={1}
+      onClick={onClick}
+    >
+      {icon} {label}
+    </Text>
+  )
 }
 
 export function TaskList({
@@ -24,10 +55,12 @@ export function TaskList({
   timerState,
   hideCompleted,
   onToggleHideCompleted,
+  onAddTask,
+  onClearCompleted,
+  onClearAll,
   onStart,
   onPause,
   onComplete,
-  onSkip,
   onEdit,
   onDelete,
   onReset,
@@ -35,37 +68,20 @@ export function TaskList({
 }: TaskListProps) {
   const pendingTasks = tasks.filter((t) => t.status === 'pending')
   const doneTasks = tasks.filter((t) => t.status === 'completed' || t.status === 'skipped')
-
-  const visibleTasks = [
-    ...pendingTasks,
-    ...(hideCompleted ? [] : doneTasks),
-  ]
-
+  const visibleTasks = [...pendingTasks, ...(hideCompleted ? [] : doneTasks)]
   const hasDone = doneTasks.length > 0
 
-  if (tasks.length === 0) return <EmptyState />
+  if (tasks.length === 0) {
+    return (
+      <Stack gap={3}>
+        <EmptyState />
+        <AddTaskCard onClick={onAddTask} />
+      </Stack>
+    )
+  }
 
   return (
     <Stack gap={3}>
-      {/* Hide completed toggle — only shown when there are done tasks */}
-      {hasDone && (
-        <HStack justify="flex-end" align="center" gap={2}>
-          <Text fontSize="xs" color="gray.500">
-            Hide completed
-          </Text>
-          <Switch.Root
-            size="sm"
-            checked={hideCompleted}
-            onCheckedChange={onToggleHideCompleted}
-          >
-            <Switch.HiddenInput />
-            <Switch.Control>
-              <Switch.Thumb />
-            </Switch.Control>
-          </Switch.Root>
-        </HStack>
-      )}
-
       <SortableContext items={pendingTasks.map((t) => t.id)} strategy={verticalListSortingStrategy}>
         {visibleTasks.map((task) => (
           <TaskCard
@@ -75,7 +91,6 @@ export function TaskList({
             onStart={onStart}
             onPause={onPause}
             onComplete={onComplete}
-            onSkip={onSkip}
             onEdit={onEdit}
             onDelete={onDelete}
             onReset={onReset}
@@ -84,13 +99,47 @@ export function TaskList({
         ))}
       </SortableContext>
 
-      {hideCompleted && hasDone && (
-        <Box textAlign="center">
-          <Text fontSize="xs" color="gray.600">
-            {doneTasks.length} completed task{doneTasks.length !== 1 ? 's' : ''} hidden
-          </Text>
-        </Box>
-      )}
+      {/* Add task placeholder card */}
+      <AddTaskCard onClick={onAddTask} />
+
+      {/* Bottom controls */}
+      <HStack justify="space-between" pt={1} flexWrap="wrap" gap={2}>
+        <TextBtn
+          icon="🕶"
+          label={hideCompleted ? 'Show completed' : 'Hide completed'}
+          onClick={onToggleHideCompleted}
+        />
+        <HStack gap={4}>
+          {hasDone && (
+            <TextBtn icon="🎉" label="Clear completed" onClick={onClearCompleted} />
+          )}
+          <TextBtn icon="🧹" label="Clear all" onClick={onClearAll} />
+        </HStack>
+      </HStack>
     </Stack>
+  )
+}
+
+function AddTaskCard({ onClick }: { onClick: () => void }) {
+  return (
+    <Box
+      as="button"
+      onClick={onClick}
+      w="100%"
+      borderRadius="xl"
+      borderWidth={2}
+      borderStyle="dashed"
+      borderColor="gray.700"
+      py={5}
+      textAlign="center"
+      cursor="pointer"
+      bg="transparent"
+      color="gray.600"
+      _hover={{ borderColor: 'gray.500', color: 'gray.400' }}
+      transition="border-color 0.15s, color 0.15s"
+    >
+      <Text fontSize="xl" lineHeight={1}>+</Text>
+      <Text fontSize="sm" mt={1}>Add task</Text>
+    </Box>
   )
 }

@@ -1,5 +1,5 @@
 import { useCallback, useRef, useState } from 'react'
-import { Box, Button, HStack, Heading, Spinner, Text } from '@chakra-ui/react'
+import { Box, HStack, Heading, Spinner, Text } from '@chakra-ui/react'
 import {
   DndContext,
   PointerSensor,
@@ -16,7 +16,7 @@ import { DaySummary } from '@/components/projection/DaySummary'
 import { useTimer } from '@/components/timer/useTimer'
 import { useDragOrder } from '@/components/ordering/useDragOrder'
 import { useProjection } from '@/components/projection/useProjection'
-import { useTasks, useAddTask, useUpdateTask, useDeleteTask } from '@/components/tasks/useTasks'
+import { useTasks, useAddTask, useUpdateTask, useDeleteTask, useClearCompleted, useClearAll } from '@/components/tasks/useTasks'
 import { useSessionId } from '@/hooks/useSessionId'
 import { toaster } from '@/lib/toaster'
 import type { Task, TaskFormValues } from '@/types'
@@ -33,6 +33,8 @@ export function TimerScreen() {
   const addTask = useAddTask(sessionId)
   const updateTask = useUpdateTask(sessionId)
   const deleteTask = useDeleteTask(sessionId)
+  const clearCompleted = useClearCompleted(sessionId)
+  const clearAll = useClearAll(sessionId)
 
   const [isFormOpen, setIsFormOpen] = useState(false)
   const [editingTask, setEditingTask] = useState<Task | undefined>(undefined)
@@ -162,6 +164,29 @@ export function TimerScreen() {
     )
   }
 
+  function handleClearCompleted() {
+    clearCompleted.mutate(undefined, {
+      onSuccess: () => toaster.create({ title: 'Completed tasks cleared 🎉', type: 'info', duration: 2000 }),
+      onError: (err) => toaster.create({ title: 'Failed to clear tasks', description: errorMessage(err), type: 'error' }),
+    })
+  }
+
+  function handleClearAll() {
+    clearAll.mutate(undefined, {
+      onSuccess: () => {
+        toaster.create({ title: 'All tasks cleared 🧹', type: 'info', duration: 2000 })
+      },
+      onError: (err) => toaster.create({ title: 'Failed to clear tasks', description: errorMessage(err), type: 'error' }),
+    })
+  }
+
+  function handleTimerToggle() {
+    if (!activeTask) return
+    if (timerState.isRunning) pause()
+    else if (timerState.isPaused) resume()
+    else start(activeTask)
+  }
+
   const today = new Date().toLocaleDateString('en-AU', { weekday: 'long', month: 'long', day: 'numeric' })
 
   return (
@@ -173,15 +198,6 @@ export function TimerScreen() {
             <Heading size="lg" color="white">Today</Heading>
             <Text color="gray.500" fontSize="sm">{today}</Text>
           </Box>
-          <Button
-            onClick={() => setIsFormOpen(true)}
-            bg="brand.600"
-            color="white"
-            _hover={{ bg: 'brand.500' }}
-            size="sm"
-          >
-            + Add task
-          </Button>
         </HStack>
 
         {/* Timer — always visible */}
@@ -207,6 +223,7 @@ export function TimerScreen() {
             color={activeTask?.color ?? '#4A5568'}
             isRunning={timerState.isRunning}
             isIdle={!activeTask}
+            onToggle={activeTask ? handleTimerToggle : undefined}
           />
 
           {activeTask && (
@@ -253,10 +270,12 @@ export function TimerScreen() {
                 timerState={timerState}
                 hideCompleted={hideCompleted}
                 onToggleHideCompleted={() => setHideCompleted((v) => !v)}
+                onAddTask={() => setIsFormOpen(true)}
+                onClearCompleted={handleClearCompleted}
+                onClearAll={handleClearAll}
                 onStart={start}
                 onPause={pause}
                 onComplete={complete}
-                onSkip={skip}
                 onEdit={(task) => setEditingTask(task)}
                 onDelete={(task) => setDeletingTask(task)}
                 onReset={handleReset}
