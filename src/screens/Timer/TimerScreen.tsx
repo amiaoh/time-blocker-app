@@ -1,4 +1,4 @@
-import { Box, HStack, Spinner, Stack, Text } from "@chakra-ui/react";
+import { Box, Spinner, Stack, Text } from "@chakra-ui/react";
 import { DndContext, closestCenter } from "@dnd-kit/core";
 
 import { AppHeader } from "@/components/layout/AppHeader";
@@ -6,6 +6,7 @@ import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
 import { SettingsDialog } from "@/components/shared/SettingsDialog";
 import { TaskForm } from "@/components/tasks/TaskForm";
 import { TaskList } from "@/components/tasks/TaskList";
+import { TimerAdjustControls } from "@/components/timer/TimerAdjustControls";
 import { TimerDisplay } from "@/components/timer/TimerDisplay";
 import { useState } from "react";
 import { useTimerScreen } from "./useTimerScreen";
@@ -88,36 +89,13 @@ export function TimerScreen() {
 
             {activeTask && (
               <Stack align="center" gap={4} mt={4}>
-                <HStack gap={3}>
-                  <Text
-                    as="button"
-                    fontSize="sm"
-                    color="gray.500"
-                    _hover={{ color: "gray.300" }}
-                    cursor="pointer"
-                    bg="transparent"
-                    border="none"
-                    p={0}
-                    onClick={() => handleAdjustDuration(activeTask, -5)}
-                    aria-label="Subtract 5 minutes"
-                  >
-                    −5m
-                  </Text>
-                  <Text
-                    as="button"
-                    fontSize="sm"
-                    color="gray.500"
-                    _hover={{ color: "gray.300" }}
-                    cursor="pointer"
-                    bg="transparent"
-                    border="none"
-                    p={0}
-                    onClick={() => handleAdjustDuration(activeTask, 5)}
-                    aria-label="Add 5 minutes"
-                  >
-                    +5m
-                  </Text>
-                </HStack>
+                <TimerAdjustControls
+                  isRunning={timerState.isRunning}
+                  showToggle={!settings.showPieTimer}
+                  onMinus={() => handleAdjustDuration(activeTask, -5)}
+                  onPlus={() => handleAdjustDuration(activeTask, 5)}
+                  onToggle={handleTimerToggle}
+                />
               </Stack>
             )}
           </Box>

@@ -1,7 +1,9 @@
-import { Box, HStack, Stack, Text } from '@chakra-ui/react'
+import { HStack, Stack } from '@chakra-ui/react'
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import { TaskCard } from './TaskCard'
+import { AddTaskCard } from './AddTaskCard'
 import { EmptyState } from '@/components/shared/EmptyState'
+import { TextBtn } from '@/components/shared/TextBtn'
 import type { Task, TimerState } from '@/types'
 
 interface TaskListProps {
@@ -21,35 +23,6 @@ interface TaskListProps {
   onChangeIcon: (task: Task, icon: string) => void
 }
 
-function TextBtn({
-  label,
-  icon,
-  onClick,
-}: {
-  label: string
-  icon: string
-  onClick: () => void
-}) {
-  return (
-    <Text
-      as="button"
-      fontSize="sm"
-      color="gray.500"
-      _hover={{ color: 'gray.200' }}
-      cursor="pointer"
-      bg="transparent"
-      border="none"
-      p={0}
-      display="flex"
-      alignItems="center"
-      gap={1}
-      onClick={onClick}
-      aria-label={label}
-    >
-      {icon} {label}
-    </Text>
-  )
-}
 
 export function TaskList({
   tasks,
@@ -121,27 +94,3 @@ export function TaskList({
   )
 }
 
-function AddTaskCard({ onClick }: { onClick: () => void }) {
-  return (
-    <Box
-      as="button"
-      onClick={onClick}
-      w="100%"
-      borderRadius="xl"
-      borderWidth={2}
-      borderStyle="dashed"
-      borderColor="gray.700"
-      py={5}
-      textAlign="center"
-      cursor="pointer"
-      bg="transparent"
-      color="gray.600"
-      _hover={{ borderColor: 'gray.500', color: 'gray.400' }}
-      transition="border-color 0.15s, color 0.15s"
-      aria-label="Add new task"
-    >
-      <Text fontSize="xl" lineHeight={1}>+</Text>
-      <Text fontSize="sm" mt={1}>Add task</Text>
-    </Box>
-  )
-}
