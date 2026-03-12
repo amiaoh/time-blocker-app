@@ -19,6 +19,7 @@ interface TaskListProps {
   onDelete: (task: Task) => void
   onReset: (task: Task) => void
   onAdjustDuration: (task: Task, deltaMin: number) => void
+  onChangeIcon: (task: Task, icon: string) => void
 }
 
 function TextBtn({
@@ -65,6 +66,7 @@ export function TaskList({
   onDelete,
   onReset,
   onAdjustDuration,
+  onChangeIcon,
 }: TaskListProps) {
   const pendingTasks = tasks.filter((t) => t.status === 'pending')
   const doneTasks = tasks.filter((t) => t.status === 'completed' || t.status === 'skipped')
@@ -95,6 +97,7 @@ export function TaskList({
             onDelete={onDelete}
             onReset={onReset}
             onAdjustDuration={onAdjustDuration}
+            onChangeIcon={onChangeIcon}
           />
         ))}
       </SortableContext>

@@ -27,6 +27,7 @@ export interface Task {
   title: string
   durationMin: number
   color: TaskColor
+  icon: string
   position: number
   status: TaskStatus
   taskDate: string
@@ -35,7 +36,7 @@ export interface Task {
 }
 
 export type TaskInsert = Omit<Task, 'id' | 'createdAt' | 'updatedAt'>
-export type TaskUpdate = Partial<Pick<Task, 'title' | 'durationMin' | 'color' | 'position' | 'status'>>
+export type TaskUpdate = Partial<Pick<Task, 'title' | 'durationMin' | 'color' | 'icon' | 'position' | 'status'>>
 
 export interface TaskFormValues {
   title: string
@@ -67,6 +68,7 @@ export interface TaskRow {
   title: string
   duration_min: number
   color: string
+  icon: string
   position: number
   status: TaskStatus
   task_date: string

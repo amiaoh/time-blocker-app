@@ -2,6 +2,7 @@ import { Box, HStack, Text } from '@chakra-ui/react'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { DragHandle } from '@/components/ordering/DragHandle'
+import { EmojiPickerPopover } from './EmojiPickerPopover'
 import { formatMinutes, formatSeconds } from '@/utils/formatTime'
 import type { Task, TimerState } from '@/types'
 
@@ -15,6 +16,7 @@ interface TaskCardProps {
   onDelete: (task: Task) => void
   onReset: (task: Task) => void
   onAdjustDuration: (task: Task, deltaMin: number) => void
+  onChangeIcon: (task: Task, icon: string) => void
 }
 
 function ActionBtn({
@@ -55,6 +57,7 @@ export function TaskCard({
   onDelete,
   onReset,
   onAdjustDuration,
+  onChangeIcon,
 }: TaskCardProps) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: task.id,
@@ -87,6 +90,13 @@ export function TaskCard({
         ) : (
           <Box w={4} flexShrink={0} />
         )}
+
+        {/* Emoji icon — clickable to change */}
+        <EmojiPickerPopover
+          currentIcon={task.icon}
+          onSelect={(icon) => onChangeIcon(task, icon)}
+          disabled={isDone}
+        />
 
         {/* Title + actions */}
         <Box flex={1} minW={0}>

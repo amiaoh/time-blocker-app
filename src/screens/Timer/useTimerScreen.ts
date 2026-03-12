@@ -164,6 +164,10 @@ export function useTimerScreen() {
     })
   }
 
+  function handleChangeIcon(task: Task, icon: string) {
+    updateTask.mutate({ id: task.id, icon })
+  }
+
   function handleClearAll() {
     clearAll.mutate(undefined, {
       onSuccess: () => toaster.create({ title: 'All tasks cleared 🧹', type: 'info', duration: 2000 }),
@@ -208,6 +212,7 @@ export function useTimerScreen() {
     handleDeleteConfirm,
     handleReset,
     handleAdjustDuration,
+    handleChangeIcon,
     handleClearCompleted,
     handleClearAll,
     // Drag

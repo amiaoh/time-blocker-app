@@ -15,7 +15,7 @@ export function TimerScreen() {
     setIsFormOpen, setEditingTask, setDeletingTask, setHideCompleted,
     timerState, start, pause, resume, complete, skip, handleTimerToggle,
     handleAddSubmit, handleEditSubmit, handleDeleteConfirm,
-    handleReset, handleAdjustDuration, handleClearCompleted, handleClearAll,
+    handleReset, handleAdjustDuration, handleChangeIcon, handleClearCompleted, handleClearAll,
     sensors, handleDragStart, handleDragEnd, handleDragCancel,
     isAddingTask, isUpdatingTask, isDeletingTask,
   } = useTimerScreen()
@@ -140,6 +140,7 @@ export function TimerScreen() {
                 onDelete={(task) => setDeletingTask(task)}
                 onReset={handleReset}
                 onAdjustDuration={handleAdjustDuration}
+                onChangeIcon={handleChangeIcon}
               />
             </DndContext>
           </>

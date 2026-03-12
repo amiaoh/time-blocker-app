@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '@/lib/supabase'
 import { rowToTask, taskToInsertRow } from '@/utils/mappers'
-import type { Task, TaskColor, TaskRow, TaskStatus } from '@/types'
+import type { Task, TaskColor, TaskRow, TaskStatus, TaskUpdate } from '@/types'
 
 const TODAY = new Date().toISOString().split('T')[0]
 
@@ -30,12 +30,13 @@ export function useAddTask(sessionId: string) {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: async (values: { title: string; durationMin: number; color: TaskColor; position: number }) => {
+    mutationFn: async (values: { title: string; durationMin: number; color: TaskColor; position: number; icon?: string }) => {
       const row = taskToInsertRow({
         sessionId,
         title: values.title,
         durationMin: values.durationMin,
         color: values.color,
+        icon: values.icon ?? '📋',
         position: values.position,
         status: 'pending',
         taskDate: TODAY,
@@ -52,11 +53,12 @@ export function useUpdateTask(sessionId: string) {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: async ({ id, ...updates }: { id: string; title?: string; durationMin?: number; color?: TaskColor; position?: number; status?: TaskStatus }) => {
+    mutationFn: async ({ id, ...updates }: { id: string } & TaskUpdate) => {
       const dbUpdates: Record<string, unknown> = {}
       if (updates.title !== undefined) dbUpdates.title = updates.title
       if (updates.durationMin !== undefined) dbUpdates.duration_min = updates.durationMin
       if (updates.color !== undefined) dbUpdates.color = updates.color
+      if (updates.icon !== undefined) dbUpdates.icon = updates.icon
       if (updates.position !== undefined) dbUpdates.position = updates.position
       if (updates.status !== undefined) dbUpdates.status = updates.status
 

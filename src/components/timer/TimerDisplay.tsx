@@ -56,8 +56,8 @@ export function TimerDisplay({
   onToggle,
 }: TimerDisplayProps) {
   const totalSeconds = durationMin * 60
-  // Show elapsed proportion (sector grows as time passes)
-  const elapsed = isIdle || totalSeconds === 0 ? 0 : (totalSeconds - remainingSeconds) / totalSeconds
+  // Show remaining proportion (sector shrinks as time passes = countdown)
+  const progress = isIdle || totalSeconds === 0 ? 0 : remainingSeconds / totalSeconds
 
   return (
     <Box display="flex" flexDirection="column" alignItems="center" gap={2}>
@@ -65,10 +65,10 @@ export function TimerDisplay({
         {/* Background circle */}
         <circle cx={CX} cy={CY} r={OUTER_R} fill="#1A202C" />
 
-        {/* Elapsed sector */}
-        {!isIdle && elapsed > 0 && (
+        {/* Remaining sector (full at start, shrinks to 0) */}
+        {!isIdle && progress > 0 && (
           <path
-            d={sectorPath(elapsed)}
+            d={sectorPath(progress)}
             fill={color}
             opacity={0.85}
             style={{ transition: isRunning ? 'none' : undefined }}
@@ -116,13 +116,13 @@ export function TimerDisplay({
           onClick={onToggle}
         />
         <text
-          x={CX + (isRunning ? 0 : 2)}
-          y={CY}
+          x={CX}
+          y={CY + 1}
           textAnchor="middle"
-          dominantBaseline="middle"
-          fontSize={16}
+          dominantBaseline="central"
+          fontSize={15}
           fill={isIdle ? '#4A5568' : 'white'}
-          style={{ cursor: onToggle ? 'pointer' : 'default', pointerEvents: 'none' }}
+          style={{ cursor: onToggle ? 'pointer' : 'default', pointerEvents: 'none', userSelect: 'none' }}
         >
           {isRunning ? '⏸' : '▶'}
         </text>
