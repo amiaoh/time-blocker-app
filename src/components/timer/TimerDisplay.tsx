@@ -6,20 +6,22 @@ interface TimerDisplayProps {
   durationMin: number
   color: string
   isRunning: boolean
+  isIdle: boolean
 }
 
-const SIZE = 180
-const STROKE = 8
+const SIZE = 200
+const STROKE = 10
 const RADIUS = (SIZE - STROKE) / 2
 const CIRCUMFERENCE = 2 * Math.PI * RADIUS
 
-export function TimerDisplay({ remainingSeconds, durationMin, color, isRunning }: TimerDisplayProps) {
+export function TimerDisplay({ remainingSeconds, durationMin, color, isRunning, isIdle }: TimerDisplayProps) {
   const totalSeconds = durationMin * 60
-  const progress = totalSeconds > 0 ? remainingSeconds / totalSeconds : 0
+  const progress = isIdle || totalSeconds === 0 ? 0 : remainingSeconds / totalSeconds
   const dashOffset = CIRCUMFERENCE * (1 - progress)
+  const ringColor = isIdle ? '#2D3748' : color
 
   return (
-    <Box position="relative" w={`${SIZE}px`} h={`${SIZE}px`} mx="auto">
+    <Box display="flex" flexDirection="column" alignItems="center" gap={3}>
       <svg width={SIZE} height={SIZE} style={{ transform: 'rotate(-90deg)' }}>
         {/* Track */}
         <circle
@@ -27,7 +29,7 @@ export function TimerDisplay({ remainingSeconds, durationMin, color, isRunning }
           cy={SIZE / 2}
           r={RADIUS}
           fill="none"
-          stroke="#2D3748"
+          stroke="#1A202C"
           strokeWidth={STROKE}
         />
         {/* Progress arc */}
@@ -36,28 +38,25 @@ export function TimerDisplay({ remainingSeconds, durationMin, color, isRunning }
           cy={SIZE / 2}
           r={RADIUS}
           fill="none"
-          stroke={color}
+          stroke={ringColor}
           strokeWidth={STROKE}
           strokeLinecap="round"
           strokeDasharray={CIRCUMFERENCE}
-          strokeDashoffset={dashOffset}
+          strokeDashoffset={isIdle ? 0 : dashOffset}
           style={{ transition: isRunning ? 'stroke-dashoffset 1s linear' : 'none' }}
         />
       </svg>
 
-      {/* Countdown text centered in ring */}
-      <Box
-        position="absolute"
-        inset={0}
-        display="flex"
-        alignItems="center"
-        justifyContent="center"
-        flexDirection="column"
+      <Text
+        fontSize="4xl"
+        fontWeight="bold"
+        color={isIdle ? 'gray.600' : 'white'}
+        fontVariantNumeric="tabular-nums"
+        letterSpacing="wider"
+        mt={-2}
       >
-        <Text fontSize="3xl" fontWeight="bold" color="white" fontVariantNumeric="tabular-nums">
-          {formatSeconds(remainingSeconds)}
-        </Text>
-      </Box>
+        {isIdle ? '--:--' : formatSeconds(remainingSeconds)}
+      </Text>
     </Box>
   )
 }

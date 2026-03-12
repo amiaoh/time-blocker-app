@@ -14,13 +14,8 @@ interface TaskCardProps {
   onSkip: () => void
   onEdit: (task: Task) => void
   onDelete: (task: Task) => void
-}
-
-const STATUS_COLORS: Record<string, string> = {
-  pending: 'gray',
-  active: 'purple',
-  completed: 'green',
-  skipped: 'orange',
+  onReset: (task: Task) => void
+  onAdjustDuration: (task: Task, deltaMin: number) => void
 }
 
 export function TaskCard({
@@ -32,6 +27,8 @@ export function TaskCard({
   onSkip,
   onEdit,
   onDelete,
+  onReset,
+  onAdjustDuration,
 }: TaskCardProps) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: task.id,
@@ -73,7 +70,8 @@ export function TaskCard({
       />
 
       <HStack pl={3} justify="space-between" align="center" gap={3}>
-        <DragHandle {...attributes} {...listeners} />
+        {!isDone && <DragHandle {...attributes} {...listeners} />}
+        {isDone && <Box w={4} flexShrink={0} />}
 
         <Box flex={1} minW={0}>
           <Text
@@ -84,99 +82,160 @@ export function TaskCard({
           >
             {task.title}
           </Text>
-          <HStack gap={2} mt={1}>
-            <Text fontSize="sm" color="gray.400">
-              {formatMinutes(task.durationMin)}
-            </Text>
-            {task.status !== 'pending' && (
-              <Badge colorPalette={STATUS_COLORS[task.status]} size="sm">
-                {task.status}
-              </Badge>
+          <HStack gap={2} mt={1} align="center">
+            {/* Duration with +/- controls for pending tasks */}
+            {!isDone && (
+              <>
+                <IconButton
+                  aria-label="Subtract 5 minutes"
+                  size="xs"
+                  variant="ghost"
+                  color="gray.600"
+                  _hover={{ color: 'gray.300' }}
+                  minW={5}
+                  h={5}
+                  onClick={() => onAdjustDuration(task, -5)}
+                  disabled={task.durationMin <= 5}
+                >
+                  −
+                </IconButton>
+                <Text fontSize="sm" color="gray.400" minW={8} textAlign="center">
+                  {formatMinutes(task.durationMin)}
+                </Text>
+                <IconButton
+                  aria-label="Add 5 minutes"
+                  size="xs"
+                  variant="ghost"
+                  color="gray.600"
+                  _hover={{ color: 'gray.300' }}
+                  minW={5}
+                  h={5}
+                  onClick={() => onAdjustDuration(task, 5)}
+                  disabled={task.durationMin >= 475}
+                >
+                  +
+                </IconButton>
+              </>
+            )}
+            {isDone && (
+              <>
+                <Text fontSize="sm" color="gray.500">
+                  {formatMinutes(task.durationMin)}
+                </Text>
+                <Badge colorPalette={task.status === 'completed' ? 'green' : 'orange'} size="sm">
+                  {task.status}
+                </Badge>
+              </>
             )}
           </HStack>
         </Box>
 
         {/* Action buttons */}
-        {!isDone && (
-          <HStack gap={1}>
-            {!isActive && (
+        <HStack gap={1}>
+          {isDone ? (
+            <>
               <IconButton
-                aria-label="Start task"
+                aria-label="Reset task"
                 size="sm"
                 variant="ghost"
-                color="gray.400"
-                _hover={{ color: task.color }}
-                onClick={() => onStart(task)}
+                color="gray.500"
+                _hover={{ color: 'blue.400' }}
+                onClick={() => onReset(task)}
               >
-                ▶
+                ↩
               </IconButton>
-            )}
-            {isActive && timerState.isRunning && (
               <IconButton
-                aria-label="Pause timer"
+                aria-label="Delete task"
                 size="sm"
                 variant="ghost"
-                color={task.color}
-                onClick={onPause}
+                color="gray.500"
+                _hover={{ color: 'red.400' }}
+                onClick={() => onDelete(task)}
               >
-                ⏸
+                ✕
               </IconButton>
-            )}
-            {isActive && timerState.isPaused && (
-              <IconButton
-                aria-label="Resume timer"
-                size="sm"
-                variant="ghost"
-                color={task.color}
-                onClick={() => onStart(task)}
-              >
-                ▶
-              </IconButton>
-            )}
-            {isActive && (
-              <>
+            </>
+          ) : (
+            <>
+              {!isActive && (
                 <IconButton
-                  aria-label="Complete task"
+                  aria-label="Start task"
                   size="sm"
                   variant="ghost"
-                  color="green.400"
-                  onClick={onComplete}
+                  color="gray.400"
+                  _hover={{ color: task.color }}
+                  onClick={() => onStart(task)}
                 >
-                  ✓
+                  ▶
                 </IconButton>
+              )}
+              {isActive && timerState.isRunning && (
                 <IconButton
-                  aria-label="Skip task"
+                  aria-label="Pause timer"
                   size="sm"
                   variant="ghost"
-                  color="orange.400"
-                  onClick={onSkip}
+                  color={task.color}
+                  onClick={onPause}
                 >
-                  ⏭
+                  ⏸
                 </IconButton>
-              </>
-            )}
-            <IconButton
-              aria-label="Edit task"
-              size="sm"
-              variant="ghost"
-              color="gray.500"
-              _hover={{ color: 'white' }}
-              onClick={() => onEdit(task)}
-            >
-              ✎
-            </IconButton>
-            <IconButton
-              aria-label="Delete task"
-              size="sm"
-              variant="ghost"
-              color="gray.500"
-              _hover={{ color: 'red.400' }}
-              onClick={() => onDelete(task)}
-            >
-              ✕
-            </IconButton>
-          </HStack>
-        )}
+              )}
+              {isActive && timerState.isPaused && (
+                <IconButton
+                  aria-label="Resume timer"
+                  size="sm"
+                  variant="ghost"
+                  color={task.color}
+                  onClick={() => onStart(task)}
+                >
+                  ▶
+                </IconButton>
+              )}
+              {isActive && (
+                <>
+                  <IconButton
+                    aria-label="Complete task"
+                    size="sm"
+                    variant="ghost"
+                    color="green.400"
+                    onClick={onComplete}
+                  >
+                    ✓
+                  </IconButton>
+                  <IconButton
+                    aria-label="Skip task"
+                    size="sm"
+                    variant="ghost"
+                    color="orange.400"
+                    onClick={onSkip}
+                  >
+                    ⏭
+                  </IconButton>
+                </>
+              )}
+              <IconButton
+                aria-label="Edit task"
+                size="sm"
+                variant="ghost"
+                color="gray.500"
+                _hover={{ color: 'white' }}
+                onClick={() => onEdit(task)}
+              >
+                ✎
+              </IconButton>
+              <IconButton
+                aria-label="Delete task"
+                size="sm"
+                variant="ghost"
+                color="gray.500"
+                _hover={{ color: 'red.400' }}
+                onClick={() => onDelete(task)}
+              >
+                ✕
+              </IconButton>
+            </>
+          )}
+        </HStack>
       </HStack>
     </Box>
   )

@@ -83,7 +83,6 @@ export function useUpdateTask(sessionId: string) {
         queryClient.setQueryData(tasksQueryKey(sessionId), ctx.previous)
       }
     },
-    onSettled: () => queryClient.invalidateQueries({ queryKey: tasksQueryKey(sessionId) }),
   })
 }
 
@@ -112,6 +111,5 @@ export function useDeleteTask(sessionId: string) {
         queryClient.setQueryData(tasksQueryKey(sessionId), ctx.previous)
       }
     },
-    onSettled: () => queryClient.invalidateQueries({ queryKey: tasksQueryKey(sessionId) }),
   })
 }
