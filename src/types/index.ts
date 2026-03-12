@@ -30,13 +30,14 @@ export interface Task {
   icon: string
   position: number
   status: TaskStatus
+  spentSeconds?: number
   taskDate: string
   createdAt: string
   updatedAt: string
 }
 
 export type TaskInsert = Omit<Task, 'id' | 'createdAt' | 'updatedAt'>
-export type TaskUpdate = Partial<Pick<Task, 'title' | 'durationMin' | 'color' | 'icon' | 'position' | 'status'>>
+export type TaskUpdate = Partial<Pick<Task, 'title' | 'durationMin' | 'color' | 'icon' | 'position' | 'status' | 'spentSeconds'>>
 
 export interface TaskFormValues {
   title: string
@@ -52,6 +53,7 @@ export interface ValidationError {
 export interface TimerState {
   activeTaskId: string | null
   remainingSeconds: number
+  elapsedSeconds: number
   isRunning: boolean
   isPaused: boolean
 }
@@ -71,6 +73,7 @@ export interface TaskRow {
   icon: string
   position: number
   status: TaskStatus
+  spent_seconds?: number | null
   task_date: string
   created_at: string
   updated_at: string

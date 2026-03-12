@@ -1,10 +1,11 @@
-import { useCallback, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { PointerSensor, TouchSensor, useSensor, useSensors } from '@dnd-kit/core'
 import { useTimer } from '@/components/timer/useTimer'
 import { useDragOrder } from '@/components/ordering/useDragOrder'
 import { useProjection } from '@/components/projection/useProjection'
 import { useTasks, useAddTask, useUpdateTask, useDeleteTask, useClearCompleted, useClearAll } from '@/components/tasks/useTasks'
 import { useSessionId } from '@/hooks/useSessionId'
+import { useSettings } from '@/hooks/useSettings'
 import { toaster } from '@/lib/toaster'
 import type { Task, TaskFormValues } from '@/types'
 
@@ -15,6 +16,7 @@ function errorMessage(err: unknown): string {
 }
 
 export function useTimerScreen() {
+  const { settings, updateSettings } = useSettings()
   const sessionId = useSessionId()
   const { data: tasks = [], isLoading, error: loadError } = useTasks(sessionId)
   const addTask = useAddTask(sessionId)
@@ -30,8 +32,8 @@ export function useTimerScreen() {
 
   // Refs to break the timer ↔ task circular dependency without stale closures
   const tasksRef = useRef<Task[]>([])
-  tasksRef.current = tasks
   const startRef = useRef<((task: Task) => void) | null>(null)
+  useEffect(() => { tasksRef.current = tasks }, [tasks])
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
@@ -44,9 +46,9 @@ export function useTimerScreen() {
   }, [])
 
   const handleComplete = useCallback(
-    (taskId: string) => {
+    (taskId: string, elapsedSeconds: number) => {
       updateTask.mutate(
-        { id: taskId, status: 'completed' },
+        { id: taskId, status: 'completed', spentSeconds: elapsedSeconds },
         {
           onSuccess: () => {
             toaster.create({ title: 'Task completed! 🎉', type: 'success', duration: 2000 })
@@ -75,13 +77,20 @@ export function useTimerScreen() {
     [updateTask, autoStartNext],
   )
 
-  const { timerState, start, pause, resume, complete, skip } = useTimer({
+  const { timerState, taskElapsed, select, start, pause, resume, complete, skip, adjustRemaining } = useTimer({
     onComplete: handleComplete,
     onSkip: handleSkip,
   })
 
   // Must be set after useTimer so startRef always holds the latest start fn
-  startRef.current = start
+  useEffect(() => { startRef.current = start }, [start])
+
+  // Auto-select the first pending task when tasks load and nothing is active
+  useEffect(() => {
+    if (timerState.activeTaskId !== null) return
+    const firstPending = tasks.find((t) => t.status === 'pending')
+    if (firstPending) select(firstPending)
+  }, [tasks, timerState.activeTaskId, select])
 
   const { handleDragStart, handleDragEnd, handleDragCancel } = useDragOrder({
     tasks,
@@ -97,6 +106,24 @@ export function useTimerScreen() {
 
   const projection = useProjection(tasks, timerState)
   const activeTask = tasks.find((t) => t.id === timerState.activeTaskId)
+
+  const taskTimeRanges = useMemo(() => {
+    const pending = tasks
+      .filter((t) => t.status === 'pending')
+      .sort((a, b) => a.position - b.position)
+    const result = new Map<string, { start: Date; end: Date }>()
+    let cursor = new Date()
+    for (const task of pending) {
+      const durationMs = task.id === timerState.activeTaskId
+        ? timerState.remainingSeconds * 1000
+        : task.durationMin * 60 * 1000
+      const start = new Date(cursor)
+      const end = new Date(cursor.getTime() + durationMs)
+      result.set(task.id, { start, end })
+      cursor = end
+    }
+    return result
+  }, [tasks, timerState.activeTaskId, timerState.remainingSeconds])
 
   function handleAddSubmit(values: TaskFormValues) {
     const maxPosition = tasks.length > 0 ? Math.max(...tasks.map((t) => t.position)) : 0
@@ -148,13 +175,26 @@ export function useTimerScreen() {
   }
 
   function handleAdjustDuration(task: Task, deltaMin: number) {
-    const newDuration = Math.min(480, Math.max(5, task.durationMin + deltaMin))
+    const newDuration = Math.min(settings.maxTaskDurationMin, Math.max(5, task.durationMin + deltaMin))
+    const actualDelta = newDuration - task.durationMin
+
+    if (deltaMin > 0 && newDuration === settings.maxTaskDurationMin) {
+      toaster.create({ title: 'Maximum task time reached!', type: 'info', duration: 2000 })
+    } else if (deltaMin < 0 && newDuration === 5) {
+      toaster.create({ title: "Can't decrease the time!", type: 'info', duration: 2000 })
+    }
+
+    if (actualDelta === 0) return
+
     updateTask.mutate(
       { id: task.id, durationMin: newDuration },
       {
         onError: (err) => toaster.create({ title: 'Failed to update duration', description: errorMessage(err), type: 'error' }),
       },
     )
+    if (task.id === timerState.activeTaskId) {
+      adjustRemaining(actualDelta)
+    }
   }
 
   function handleClearCompleted() {
@@ -162,6 +202,16 @@ export function useTimerScreen() {
       onSuccess: () => toaster.create({ title: 'Completed tasks cleared 🎉', type: 'info', duration: 2000 }),
       onError: (err) => toaster.create({ title: 'Failed to clear tasks', description: errorMessage(err), type: 'error' }),
     })
+  }
+
+  function handleMoveToTop(task: Task) {
+    const pendingTasks = tasks.filter((t) => t.status === 'pending')
+    const minPosition = pendingTasks.length > 0 ? Math.min(...pendingTasks.map((t) => t.position)) : 1000
+    updateTask.mutate(
+      { id: task.id, position: minPosition - 1000 },
+      { onError: (err) => toaster.create({ title: 'Failed to move task', description: errorMessage(err), type: 'error' }) },
+    )
+    select(task)
   }
 
   function handleChangeIcon(task: Task, icon: string) {
@@ -183,6 +233,9 @@ export function useTimerScreen() {
   }
 
   return {
+    // Settings
+    settings,
+    updateSettings,
     // Data
     tasks,
     isLoading,
@@ -200,6 +253,8 @@ export function useTimerScreen() {
     setHideCompleted,
     // Timer
     timerState,
+    taskElapsed,
+    select,
     start,
     pause,
     resume,
@@ -212,9 +267,11 @@ export function useTimerScreen() {
     handleDeleteConfirm,
     handleReset,
     handleAdjustDuration,
+    handleMoveToTop,
     handleChangeIcon,
     handleClearCompleted,
     handleClearAll,
+    taskTimeRanges,
     // Drag
     sensors,
     handleDragStart,

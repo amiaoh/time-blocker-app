@@ -1,6 +1,6 @@
 import type { TaskFormValues, ValidationError } from '@/types'
 
-export function validateTaskForm(values: TaskFormValues): ValidationError[] {
+export function validateTaskForm(values: TaskFormValues, maxDurationMin = 120): ValidationError[] {
   const errors: ValidationError[] = []
 
   if (!values.title.trim()) {
@@ -11,8 +11,8 @@ export function validateTaskForm(values: TaskFormValues): ValidationError[] {
 
   if (!Number.isInteger(values.durationMin) || values.durationMin < 1) {
     errors.push({ field: 'durationMin', message: 'Duration must be at least 1 minute' })
-  } else if (values.durationMin > 480) {
-    errors.push({ field: 'durationMin', message: 'Duration cannot exceed 480 minutes (8 hours)' })
+  } else if (values.durationMin > maxDurationMin) {
+    errors.push({ field: 'durationMin', message: `Duration cannot exceed ${maxDurationMin} minutes` })
   }
 
   if (!values.color) {

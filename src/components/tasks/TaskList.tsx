@@ -7,18 +7,17 @@ import type { Task, TimerState } from '@/types'
 interface TaskListProps {
   tasks: Task[]
   timerState: TimerState
+  taskElapsed: Map<string, number>
+  taskTimeRanges: Map<string, { start: Date; end: Date }>
   hideCompleted: boolean
   onToggleHideCompleted: () => void
   onAddTask: () => void
   onClearCompleted: () => void
   onClearAll: () => void
-  onStart: (task: Task) => void
-  onPause: () => void
   onComplete: () => void
-  onEdit: (task: Task) => void
   onDelete: (task: Task) => void
   onReset: (task: Task) => void
-  onAdjustDuration: (task: Task, deltaMin: number) => void
+  onMoveToTop: (task: Task) => void
   onChangeIcon: (task: Task, icon: string) => void
 }
 
@@ -45,6 +44,7 @@ function TextBtn({
       alignItems="center"
       gap={1}
       onClick={onClick}
+      aria-label={label}
     >
       {icon} {label}
     </Text>
@@ -54,18 +54,17 @@ function TextBtn({
 export function TaskList({
   tasks,
   timerState,
+  taskElapsed,
+  taskTimeRanges,
   hideCompleted,
   onToggleHideCompleted,
   onAddTask,
   onClearCompleted,
   onClearAll,
-  onStart,
-  onPause,
   onComplete,
-  onEdit,
   onDelete,
   onReset,
-  onAdjustDuration,
+  onMoveToTop,
   onChangeIcon,
 }: TaskListProps) {
   const pendingTasks = tasks.filter((t) => t.status === 'pending')
@@ -83,20 +82,19 @@ export function TaskList({
   }
 
   return (
-    <Stack gap={3}>
+    <Stack gap={3} role="region" aria-label="Task list">
       <SortableContext items={pendingTasks.map((t) => t.id)} strategy={verticalListSortingStrategy}>
         {visibleTasks.map((task) => (
           <TaskCard
             key={task.id}
             task={task}
             timerState={timerState}
-            onStart={onStart}
-            onPause={onPause}
+            taskElapsed={taskElapsed}
+            timeRange={taskTimeRanges.get(task.id)}
             onComplete={onComplete}
-            onEdit={onEdit}
             onDelete={onDelete}
             onReset={onReset}
-            onAdjustDuration={onAdjustDuration}
+            onMoveToTop={onMoveToTop}
             onChangeIcon={onChangeIcon}
           />
         ))}
@@ -140,6 +138,7 @@ function AddTaskCard({ onClick }: { onClick: () => void }) {
       color="gray.600"
       _hover={{ borderColor: 'gray.500', color: 'gray.400' }}
       transition="border-color 0.15s, color 0.15s"
+      aria-label="Add new task"
     >
       <Text fontSize="xl" lineHeight={1}>+</Text>
       <Text fontSize="sm" mt={1}>Add task</Text>

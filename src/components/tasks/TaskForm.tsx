@@ -18,10 +18,11 @@ interface TaskFormProps {
   onSubmit: (values: TaskFormValues) => void
   editingTask?: Task
   isLoading?: boolean
+  maxDurationMin?: number
 }
 
-export function TaskForm({ isOpen, onClose, onSubmit, editingTask, isLoading }: TaskFormProps) {
-  const { values, setField, validate, reset, errorFor } = useTaskForm(editingTask)
+export function TaskForm({ isOpen, onClose, onSubmit, editingTask, isLoading, maxDurationMin = 120 }: TaskFormProps) {
+  const { values, setField, validate, reset, errorFor } = useTaskForm(editingTask, maxDurationMin)
 
   function handleSubmit() {
     if (!validate()) return
@@ -70,7 +71,7 @@ export function TaskForm({ isOpen, onClose, onSubmit, editingTask, isLoading }: 
                   value={values.durationMin || ''}
                   onChange={(e) => setField('durationMin', parseInt(e.target.value, 10) || 0)}
                   min={1}
-                  max={480}
+                  max={maxDurationMin}
                   bg="gray.800"
                   borderColor="gray.600"
                   color="white"

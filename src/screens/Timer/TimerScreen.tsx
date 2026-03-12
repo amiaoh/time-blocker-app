@@ -1,11 +1,13 @@
-import { Box, HStack, Heading, Spinner, Stack, Text } from '@chakra-ui/react'
+import { Box, HStack, Spinner, Stack, Text } from '@chakra-ui/react'
 import { DndContext, closestCenter } from '@dnd-kit/core'
-import { TaskList } from '@/components/tasks/TaskList'
-import { TaskForm } from '@/components/tasks/TaskForm'
+
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog'
-import { TimerDisplay } from '@/components/timer/TimerDisplay'
-import { TimerControls } from '@/components/timer/TimerControls'
 import { DaySummary } from '@/components/projection/DaySummary'
+import { SettingsDialog } from '@/components/shared/SettingsDialog'
+import { TaskForm } from '@/components/tasks/TaskForm'
+import { TaskList } from '@/components/tasks/TaskList'
+import { TimerDisplay } from '@/components/timer/TimerDisplay'
+import { useState } from 'react'
 import { useTimerScreen } from './useTimerScreen'
 
 export function TimerScreen() {
@@ -13,31 +15,50 @@ export function TimerScreen() {
     tasks, isLoading, loadError, activeTask, projection,
     isFormOpen, editingTask, deletingTask, hideCompleted,
     setIsFormOpen, setEditingTask, setDeletingTask, setHideCompleted,
-    timerState, start, pause, resume, complete, skip, handleTimerToggle,
+    timerState, taskElapsed, pause, resume, complete, handleTimerToggle,
     handleAddSubmit, handleEditSubmit, handleDeleteConfirm,
-    handleReset, handleAdjustDuration, handleChangeIcon, handleClearCompleted, handleClearAll,
+    handleReset, handleAdjustDuration, handleMoveToTop, handleChangeIcon,
+    handleClearCompleted, handleClearAll, taskTimeRanges,
     sensors, handleDragStart, handleDragEnd, handleDragCancel,
     isAddingTask, isUpdatingTask, isDeletingTask,
+    settings, updateSettings,
   } = useTimerScreen()
 
-  const today = new Date().toLocaleDateString('en-AU', { weekday: 'long', month: 'long', day: 'numeric' })
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false)
+
 
   return (
     <Box minH="100vh" bg="gray.950" pb={8}>
       <Box maxW="560px" mx="auto" px={4} pt={8}>
         {/* Header */}
-        <HStack justify="space-between" align="center" mb={8}>
-          <Box>
-            <Heading size="lg" color="white">Today</Heading>
-            <Text color="gray.500" fontSize="sm">{today}</Text>
-          </Box>
+        <HStack justify="space-between" align="center" mb={6}>
+          <Text
+            as="button"
+            fontSize="xl"
+            color="gray.600"
+            _hover={{ color: 'gray.400' }}
+            cursor="pointer"
+            bg="transparent"
+            border="none"
+            p={1}
+            onClick={() => setIsSettingsOpen(true)}
+            aria-label="Open settings"
+          >
+            ⚙️
+          </Text>
         </HStack>
 
-        {/* Timer — always visible */}
-        <Box mb={6} textAlign="center">
-          {activeTask && (
-            <Text color="gray.400" fontSize="sm" mb={1}>Now focusing on</Text>
-          )}
+        {/* Day summary — shown at top when tasks exist */}
+        {!isLoading && tasks.length > 0 && <DaySummary projection={projection} />}
+
+        {/* Timer */}
+        <Box mb={6} textAlign="center" role="region" aria-label="Timer">
+          <TimerDisplay
+            remainingSeconds={timerState.remainingSeconds}
+            isRunning={timerState.isRunning}
+            isIdle={!activeTask}
+            onToggle={activeTask ? handleTimerToggle : undefined}
+          />
           <Text
             color={activeTask ? 'white' : 'gray.600'}
             fontWeight={activeTask ? 'semibold' : 'normal'}
@@ -47,15 +68,6 @@ export function TimerScreen() {
           >
             {activeTask ? activeTask.title : 'No task running'}
           </Text>
-
-          <TimerDisplay
-            remainingSeconds={timerState.remainingSeconds}
-            durationMin={activeTask?.durationMin ?? 0}
-            color={activeTask?.color ?? '#4A5568'}
-            isRunning={timerState.isRunning}
-            isIdle={!activeTask}
-            onToggle={activeTask ? handleTimerToggle : undefined}
-          />
 
           {activeTask && (
             <Stack align="center" gap={4} mt={4}>
@@ -70,10 +82,10 @@ export function TimerScreen() {
                   border="none"
                   p={0}
                   onClick={() => handleAdjustDuration(activeTask, -5)}
+                  aria-label="Subtract 5 minutes"
                 >
                   −5m
                 </Text>
-                <Text fontSize="sm" color="gray.600">{activeTask.durationMin}m</Text>
                 <Text
                   as="button"
                   fontSize="sm"
@@ -84,19 +96,12 @@ export function TimerScreen() {
                   border="none"
                   p={0}
                   onClick={() => handleAdjustDuration(activeTask, 5)}
+                  aria-label="Add 5 minutes"
                 >
                   +5m
                 </Text>
               </HStack>
-              <TimerControls
-                isRunning={timerState.isRunning}
-                isPaused={timerState.isPaused}
-                onPause={pause}
-                onResume={resume}
-                onComplete={complete}
-                onSkip={skip}
-                accentColor={activeTask.color}
-              />
+             
             </Stack>
           )}
         </Box>
@@ -109,41 +114,36 @@ export function TimerScreen() {
           </Box>
         )}
 
-        {/* Day summary + task list */}
+        {/* Task list */}
         {isLoading ? (
           <Box textAlign="center" py={12}>
             <Spinner color="brand.400" />
           </Box>
         ) : (
-          <>
-            {tasks.length > 0 && <DaySummary projection={projection} />}
-
-            <DndContext
-              sensors={sensors}
-              collisionDetection={closestCenter}
-              onDragStart={handleDragStart}
-              onDragEnd={handleDragEnd}
-              onDragCancel={handleDragCancel}
-            >
-              <TaskList
-                tasks={tasks}
-                timerState={timerState}
-                hideCompleted={hideCompleted}
-                onToggleHideCompleted={() => setHideCompleted((v) => !v)}
-                onAddTask={() => setIsFormOpen(true)}
-                onClearCompleted={handleClearCompleted}
-                onClearAll={handleClearAll}
-                onStart={start}
-                onPause={pause}
-                onComplete={complete}
-                onEdit={(task) => setEditingTask(task)}
-                onDelete={(task) => setDeletingTask(task)}
-                onReset={handleReset}
-                onAdjustDuration={handleAdjustDuration}
-                onChangeIcon={handleChangeIcon}
-              />
-            </DndContext>
-          </>
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            onDragStart={handleDragStart}
+            onDragEnd={handleDragEnd}
+            onDragCancel={handleDragCancel}
+          >
+            <TaskList
+              tasks={tasks}
+              timerState={timerState}
+              taskElapsed={taskElapsed}
+              taskTimeRanges={taskTimeRanges}
+              hideCompleted={hideCompleted}
+              onToggleHideCompleted={() => setHideCompleted((v) => !v)}
+              onAddTask={() => setIsFormOpen(true)}
+              onClearCompleted={handleClearCompleted}
+              onClearAll={handleClearAll}
+              onComplete={complete}
+              onDelete={(task) => setDeletingTask(task)}
+              onReset={handleReset}
+              onMoveToTop={handleMoveToTop}
+              onChangeIcon={handleChangeIcon}
+            />
+          </DndContext>
         )}
       </Box>
 
@@ -152,6 +152,7 @@ export function TimerScreen() {
         onClose={() => setIsFormOpen(false)}
         onSubmit={handleAddSubmit}
         isLoading={isAddingTask}
+        maxDurationMin={settings.maxTaskDurationMin}
       />
 
       <TaskForm
@@ -160,6 +161,7 @@ export function TimerScreen() {
         onSubmit={handleEditSubmit}
         editingTask={editingTask}
         isLoading={isUpdatingTask}
+        maxDurationMin={settings.maxTaskDurationMin}
       />
 
       <ConfirmDialog
@@ -169,6 +171,13 @@ export function TimerScreen() {
         title="Delete task"
         message={`Delete "${deletingTask?.title}"? This cannot be undone.`}
         isLoading={isDeletingTask}
+      />
+
+      <SettingsDialog
+        isOpen={isSettingsOpen}
+        onClose={() => setIsSettingsOpen(false)}
+        settings={settings}
+        onSave={updateSettings}
       />
     </Box>
   )

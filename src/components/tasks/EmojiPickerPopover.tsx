@@ -5,11 +5,12 @@ import data from '@emoji-mart/data'
 
 interface EmojiPickerPopoverProps {
   currentIcon: string
+  color: string
   onSelect: (emoji: string) => void
   disabled?: boolean
 }
 
-export function EmojiPickerPopover({ currentIcon, onSelect, disabled }: EmojiPickerPopoverProps) {
+export function EmojiPickerPopover({ currentIcon, color, onSelect, disabled }: EmojiPickerPopoverProps) {
   const [open, setOpen] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
 
@@ -26,17 +27,21 @@ export function EmojiPickerPopover({ currentIcon, onSelect, disabled }: EmojiPic
 
   return (
     <Box ref={containerRef} position="relative" flexShrink={0}>
+      {/* Coloured icon square — matches original design, click to change emoji */}
       <Box
         as="button"
-        onClick={() => !disabled && setOpen((v) => !v)}
-        fontSize="xl"
-        lineHeight={1}
-        bg="transparent"
+        w={10}
+        h={10}
+        borderRadius="lg"
+        bg={color}
+        display="flex"
+        alignItems="center"
+        justifyContent="center"
+        fontSize="lg"
         border="none"
         cursor={disabled ? 'default' : 'pointer'}
-        p={1}
-        borderRadius="md"
-        _hover={disabled ? {} : { bg: 'whiteAlpha.100' }}
+        opacity={disabled ? 0.6 : 1}
+        onClick={() => !disabled && setOpen((v) => !v)}
         style={{ userSelect: 'none' }}
         aria-label="Change icon"
       >

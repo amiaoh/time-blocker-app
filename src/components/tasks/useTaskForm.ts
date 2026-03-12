@@ -12,7 +12,7 @@ function defaultValues(task?: Task): TaskFormValues {
   }
 }
 
-export function useTaskForm(task?: Task) {
+export function useTaskForm(task?: Task, maxDurationMin = 120) {
   const [values, setValues] = useState<TaskFormValues>(defaultValues(task))
   const [errors, setErrors] = useState<ValidationError[]>([])
 
@@ -22,7 +22,7 @@ export function useTaskForm(task?: Task) {
   }
 
   function validate(): boolean {
-    const errs = validateTaskForm(values)
+    const errs = validateTaskForm(values, maxDurationMin)
     setErrors(errs)
     return errs.length === 0
   }

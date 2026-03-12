@@ -1,7 +1,8 @@
-import { HStack, Text } from '@chakra-ui/react'
+import { Box, HStack, Text } from '@chakra-ui/react'
+
+import type { ProjectionResult } from '@/types'
 import { formatFinishTime } from '@/utils/calcFinishTime'
 import { formatMinutes } from '@/utils/formatTime'
-import type { ProjectionResult } from '@/types'
 
 interface DaySummaryProps {
   projection: ProjectionResult
@@ -15,20 +16,29 @@ export function DaySummary({ projection }: DaySummaryProps) {
   return (
     <HStack
       justify="center"
-      gap={3}
-      py={2}
-      px={4}
+      gap={0}
       bg="gray.900"
-      borderRadius="lg"
-      mb={4}
+      borderRadius="xl"
+      overflow="hidden"
+      mb={3}
+      role="region"
+      aria-label="Day summary"
     >
-      <Text color="gray.400" fontSize="sm">
-        {formatMinutes(totalRemainingMinutes)} remaining
-      </Text>
-      <Text color="gray.600" fontSize="sm">·</Text>
-      <Text color="gray.300" fontSize="sm">
-        Done by <Text as="span" color="white" fontWeight="semibold">{formatFinishTime(finishTime)}</Text>
-      </Text>
+      <Box flex={1} textAlign="center" py={3} px={4}>
+        <Text color="white" fontWeight="semibold" fontSize="sm">
+          {formatMinutes(totalRemainingMinutes)}
+        </Text>
+        <Text color="gray.500" fontSize="xs">List time</Text>
+      </Box>
+
+      <Box w="1px" bg="gray.700" alignSelf="stretch" />
+
+      <Box flex={1} textAlign="center" py={3} px={4}>
+        <Text color="white" fontWeight="semibold" fontSize="sm">
+          {formatFinishTime(finishTime)}
+        </Text>
+        <Text color="gray.500" fontSize="xs">End time</Text>
+      </Box>
     </HStack>
   )
 }

@@ -1,21 +1,21 @@
-import { Box, HStack, Text } from '@chakra-ui/react'
-import { useSortable } from '@dnd-kit/sortable'
+import { Box, HStack, Stack, Text } from '@chakra-ui/react'
+import type { Task, TimerState } from '@/types'
+import { formatSeconds, formatTimeShort } from '@/utils/formatTime'
+
 import { CSS } from '@dnd-kit/utilities'
 import { DragHandle } from '@/components/ordering/DragHandle'
 import { EmojiPickerPopover } from './EmojiPickerPopover'
-import { formatMinutes, formatSeconds } from '@/utils/formatTime'
-import type { Task, TimerState } from '@/types'
+import { useSortable } from '@dnd-kit/sortable'
 
 interface TaskCardProps {
   task: Task
   timerState: TimerState
-  onStart: (task: Task) => void
-  onPause: () => void
+  taskElapsed: Map<string, number>
+  timeRange?: { start: Date; end: Date }
   onComplete: () => void
-  onEdit: (task: Task) => void
   onDelete: (task: Task) => void
   onReset: (task: Task) => void
-  onAdjustDuration: (task: Task, deltaMin: number) => void
+  onMoveToTop: (task: Task) => void
   onChangeIcon: (task: Task, icon: string) => void
 }
 
@@ -24,11 +24,13 @@ function ActionBtn({
   onClick,
   color = 'gray.500',
   hoverColor = 'white',
+  ariaLabel,
 }: {
   label: string
   onClick: () => void
   color?: string
   hoverColor?: string
+  ariaLabel?: string
 }) {
   return (
     <Text
@@ -41,22 +43,24 @@ function ActionBtn({
       bg="transparent"
       border="none"
       p={0}
+      flexShrink={0}
+      aria-label={ariaLabel ?? label}
     >
       {label}
     </Text>
   )
 }
 
+
 export function TaskCard({
   task,
   timerState,
-  onStart,
-  onPause,
+  taskElapsed,
+  timeRange,
   onComplete,
-  onEdit,
   onDelete,
   onReset,
-  onAdjustDuration,
+  onMoveToTop,
   onChangeIcon,
 }: TaskCardProps) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
@@ -73,17 +77,28 @@ export function TaskCard({
     opacity: isDragging ? 0.4 : 1,
   }
 
+  // Time display: active shows remaining, inactive pending shows accumulated elapsed (or 00:00), done shows allocated
+  const timeLabel = isActive
+    ? formatSeconds(timerState.remainingSeconds)
+    : isDone
+      ? formatSeconds(task.durationMin * 60)
+      : formatSeconds(taskElapsed.get(task.id) ?? 0)
+
+  // Spent time for completed cards
+  const spentLabel = formatSeconds(task.spentSeconds ?? 0)
+
   return (
     <Box
       ref={setNodeRef}
-      style={{ ...style, borderLeft: `3px solid ${task.color}` }}
-      bg="gray.900"
+      style={style}
+      bg={isActive ? 'gray.800' : 'gray.900'}
       borderRadius="xl"
-      p={4}
-      opacity={isDone ? 0.5 : 1}
-      transition="opacity 0.2s"
+      role="listitem"
+      aria-label={`Task: ${task.title}, ${task.durationMin} minutes, ${task.status}`}
     >
-      <HStack align="center" gap={3}>
+
+
+      <HStack align="center" gap={3} p={4} pt={timeRange ? 1 : 4}>
         {/* Drag handle */}
         {!isDone ? (
           <DragHandle {...attributes} {...listeners} />
@@ -91,74 +106,54 @@ export function TaskCard({
           <Box w={4} flexShrink={0} />
         )}
 
-        {/* Emoji icon — clickable to change */}
-        <EmojiPickerPopover
-          currentIcon={task.icon}
-          onSelect={(icon) => onChangeIcon(task, icon)}
-          disabled={isDone}
-        />
-
         {/* Title + actions */}
-        <Box flex={1} minW={0}>
-          <Text
-            fontWeight="semibold"
-            color={isDone ? 'gray.500' : 'white'}
-            textDecoration={task.status === 'completed' ? 'line-through' : 'none'}
-            truncate
-            mb={1}
-          >
-            {task.title}
-          </Text>
-
-          <HStack gap={3} align="center" flexWrap="wrap">
-            {/* Duration with +/- for pending */}
-            {!isDone ? (
-              <HStack gap={1} align="center">
-                <Text
-                  as="button"
-                  fontSize="xs"
-                  color="gray.600"
-                  _hover={{ color: 'gray.300' }}
-                  cursor="pointer"
-                  onClick={() => onAdjustDuration(task, -5)}
-                  _disabled={{ opacity: 0.3, cursor: 'not-allowed' }}
-                  aria-disabled={task.durationMin <= 5}
-                  bg="transparent"
-                  border="none"
-                  p={0}
-                >
-                  −
-                </Text>
-                <Text fontSize="sm" color="gray.400" minW={8} textAlign="center">
-                  {formatMinutes(task.durationMin)}
-                </Text>
-                <Text
-                  as="button"
-                  fontSize="xs"
-                  color="gray.600"
-                  _hover={{ color: 'gray.300' }}
-                  cursor="pointer"
-                  onClick={() => onAdjustDuration(task, 5)}
-                  _disabled={{ opacity: 0.3, cursor: 'not-allowed' }}
-                  aria-disabled={task.durationMin >= 475}
-                  bg="transparent"
-                  border="none"
-                  p={0}
-                >
-                  +
+        <Stack flex={1} minW={0} gap={1}>
+          <HStack justifyContent={"space-between"} alignItems={"baseline"}>
+             <EmojiPickerPopover
+            currentIcon={task.icon}
+            color={task.color}
+            onSelect={(icon) => onChangeIcon(task, icon)}
+            disabled={isDone}
+          />
+            <Text
+              fontWeight="semibold"
+              color={isDone ? 'gray.500' : 'white'}
+              textDecoration={task.status === 'completed' ? 'line-through' : 'none'}
+              truncate
+            >
+              {task.title}
+            </Text>
+            {/* Time range pill */}
+            {timeRange && (
+              <HStack pt={2}>
+                <Text fontSize="xs" color="gray.300" fontVariantNumeric="tabular-nums" backgroundColor={"teal.700"} borderRadius={4} paddingX={2}>
+                  {formatTimeShort(timeRange.start)} → {formatTimeShort(timeRange.end)}
                 </Text>
               </HStack>
-            ) : (
-              <Text fontSize="sm" color="gray.500">
-                {formatMinutes(task.durationMin)}
-              </Text>
             )}
+          </HStack>
+          {/* Actions row — time first, then buttons */}
+          <HStack gap={2} align="center" overflow="hidden" justifyContent={"space-between"}>
+            <Text
+              fontSize="sm"
+              color={isDone ? 'gray.600' : 'gray.400'}
+              fontVariantNumeric="tabular-nums"
+              flexShrink={0}
+            >
+              {timeLabel}
+            </Text>
 
-            {/* Separator */}
-            <Box w="1px" h={3} bg="gray.700" />
-
-            {/* Context-sensitive action buttons */}
-            {isDone ? (
+            {task.status === 'completed' ? (
+              <>
+                <ActionBtn label="Delete" onClick={() => onDelete(task)} hoverColor="red.400" />
+                {/* Spacer to align Undo complete with Complete on other cards */}
+                <Box minW="1.75rem" flexShrink={0} />
+                <ActionBtn label="Undo complete" onClick={() => onReset(task)} hoverColor="blue.400" />
+                <Text fontSize="xs" color="gray.600" flexShrink={0} fontVariantNumeric="tabular-nums">
+                  {spentLabel}
+                </Text>
+              </>
+            ) : task.status === 'skipped' ? (
               <>
                 <ActionBtn label="Delete" onClick={() => onDelete(task)} hoverColor="red.400" />
                 <ActionBtn label="Reset" onClick={() => onReset(task)} hoverColor="blue.400" />
@@ -167,53 +162,22 @@ export function TaskCard({
               <>
                 <ActionBtn label="Delete" onClick={() => onDelete(task)} hoverColor="red.400" />
                 <ActionBtn label="Reset" onClick={() => onReset(task)} hoverColor="blue.400" />
-                <ActionBtn
-                  label="Complete"
-                  onClick={onComplete}
-                  color="green.500"
-                  hoverColor="green.300"
-                />
+                <ActionBtn label="Complete" onClick={onComplete} hoverColor="green.300" />
+                <Text fontSize="xs" color="gray.600" flexShrink={0} fontVariantNumeric="tabular-nums" backgroundColor={"gray.400"} borderRadius={4} paddingX={2}>
+                  {formatSeconds(timerState.elapsedSeconds)}
+                </Text>
               </>
             ) : (
               <>
                 <ActionBtn label="Delete" onClick={() => onDelete(task)} hoverColor="red.400" />
-                <ActionBtn label="Edit" onClick={() => onEdit(task)} hoverColor="white" />
+                <ActionBtn label="Top" onClick={() => onMoveToTop(task)} hoverColor="white" ariaLabel="Move to top of list" />
+                <ActionBtn label="Complete" onClick={onComplete} hoverColor="green.300" />
+
+
               </>
             )}
           </HStack>
-        </Box>
-
-        {/* Right side: timer badge (active) or pause/play (pending) */}
-        <Box flexShrink={0} display="flex" alignItems="center" pt={1}>
-          {isActive ? (
-            <Box
-              bg="gray.800"
-              borderRadius="md"
-              px={2}
-              py={1}
-              cursor="pointer"
-              onClick={timerState.isRunning ? onPause : () => onStart(task)}
-            >
-              <Text fontSize="xs" color="white" fontVariantNumeric="tabular-nums">
-                {formatSeconds(timerState.remainingSeconds)}
-              </Text>
-            </Box>
-          ) : !isDone ? (
-            <Box
-              as="button"
-              onClick={() => onStart(task)}
-              color="gray.500"
-              _hover={{ color: 'white' }}
-              cursor="pointer"
-              fontSize="lg"
-              bg="transparent"
-              border="none"
-              p={0}
-            >
-              ▶
-            </Box>
-          ) : null}
-        </Box>
+        </Stack>
       </HStack>
     </Box>
   )

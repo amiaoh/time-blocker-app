@@ -5,22 +5,26 @@ import type { Task, TimerState } from '@/types'
 const INITIAL_STATE: TimerState = {
   activeTaskId: null,
   remainingSeconds: 0,
+  elapsedSeconds: 0,
   isRunning: false,
   isPaused: false,
 }
 
 interface UseTimerReturn {
   timerState: TimerState
+  taskElapsed: Map<string, number>
+  select: (task: Task) => void
   start: (task: Task) => void
   pause: () => void
   resume: () => void
   complete: () => void
   skip: () => void
   reset: () => void
+  adjustRemaining: (deltaMin: number) => void
 }
 
 interface UseTimerCallbacks {
-  onComplete: (taskId: string) => void
+  onComplete: (taskId: string, elapsedSeconds: number) => void
   onSkip: (taskId: string) => void
 }
 
@@ -28,6 +32,14 @@ export function useTimer({ onComplete, onSkip }: UseTimerCallbacks): UseTimerRet
   const [timerState, setTimerState] = useState<TimerState>(INITIAL_STATE)
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const { play: playChime } = useChime()
+
+  // Always-current ref so callbacks don't go stale
+  const stateRef = useRef<TimerState>(INITIAL_STATE)
+  useEffect(() => { stateRef.current = timerState }, [timerState])
+
+  // Per-task accumulated elapsed seconds (persists when switching tasks)
+  const taskElapsedRef = useRef<Map<string, number>>(new Map())
+  const [taskElapsed, setTaskElapsed] = useState<Map<string, number>>(new Map())
 
   const clearTick = useCallback(() => {
     if (intervalRef.current !== null) {
@@ -37,70 +49,107 @@ export function useTimer({ onComplete, onSkip }: UseTimerCallbacks): UseTimerRet
   }, [])
 
   const tick = useCallback(() => {
-    setTimerState((prev: TimerState) => {
+    setTimerState((prev) => {
       if (prev.remainingSeconds <= 1) {
-        return { ...prev, remainingSeconds: 0, isRunning: false }
+        return { ...prev, remainingSeconds: 0, elapsedSeconds: prev.elapsedSeconds + 1, isRunning: false }
       }
-      return { ...prev, remainingSeconds: prev.remainingSeconds - 1 }
+      return { ...prev, remainingSeconds: prev.remainingSeconds - 1, elapsedSeconds: prev.elapsedSeconds + 1 }
     })
   }, [])
 
-  // Watch for timer reaching zero to fire chime
+  // Watch for timer reaching zero
   useEffect(() => {
-    setTimerState((prev: TimerState) => {
-      if (prev.remainingSeconds === 0 && !prev.isRunning && prev.activeTaskId !== null) {
-        clearTick()
-        playChime()
-      }
-      return prev
-    })
-  }, [timerState.remainingSeconds, timerState.isRunning, clearTick, playChime])
-
-  const start = useCallback(
-    (task: Task) => {
+    if (timerState.remainingSeconds === 0 && !timerState.isRunning && timerState.activeTaskId !== null) {
       clearTick()
-      setTimerState({
-        activeTaskId: task.id,
-        remainingSeconds: task.durationMin * 60,
-        isRunning: true,
-        isPaused: false,
-      })
-      intervalRef.current = setInterval(tick, 1000)
-    },
-    [clearTick, tick],
-  )
+      playChime()
+    }
+  }, [timerState.remainingSeconds, timerState.isRunning, timerState.activeTaskId, clearTick, playChime])
+
+  const saveCurrentElapsed = useCallback(() => {
+    const { activeTaskId, elapsedSeconds } = stateRef.current
+    if (activeTaskId) {
+      taskElapsedRef.current.set(activeTaskId, elapsedSeconds)
+      setTaskElapsed(new Map(taskElapsedRef.current))
+    }
+  }, [])
+
+  const select = useCallback((task: Task) => {
+    clearTick()
+    saveCurrentElapsed()
+    const prevElapsed = taskElapsedRef.current.get(task.id) ?? 0
+    setTimerState({
+      activeTaskId: task.id,
+      remainingSeconds: task.durationMin * 60,
+      elapsedSeconds: prevElapsed,
+      isRunning: false,
+      isPaused: false,
+    })
+  }, [clearTick, saveCurrentElapsed])
+
+  const start = useCallback((task: Task) => {
+    clearTick()
+    saveCurrentElapsed()
+    const prevElapsed = taskElapsedRef.current.get(task.id) ?? 0
+    setTimerState({
+      activeTaskId: task.id,
+      remainingSeconds: task.durationMin * 60,
+      elapsedSeconds: prevElapsed,
+      isRunning: true,
+      isPaused: false,
+    })
+    intervalRef.current = setInterval(tick, 1000)
+  }, [clearTick, saveCurrentElapsed, tick])
 
   const pause = useCallback(() => {
     clearTick()
-    setTimerState((prev: TimerState) => ({ ...prev, isRunning: false, isPaused: true }))
+    setTimerState((prev) => ({ ...prev, isRunning: false, isPaused: true }))
   }, [clearTick])
 
   const resume = useCallback(() => {
-    setTimerState((prev: TimerState) => ({ ...prev, isRunning: true, isPaused: false }))
+    setTimerState((prev) => ({ ...prev, isRunning: true, isPaused: false }))
     intervalRef.current = setInterval(tick, 1000)
   }, [tick])
 
   const complete = useCallback(() => {
     clearTick()
-    const id = timerState.activeTaskId
+    const { activeTaskId, elapsedSeconds } = stateRef.current
+    if (activeTaskId) {
+      taskElapsedRef.current.delete(activeTaskId)
+      setTaskElapsed(new Map(taskElapsedRef.current))
+    }
     setTimerState(INITIAL_STATE)
-    if (id) onComplete(id)
-  }, [clearTick, timerState.activeTaskId, onComplete])
+    if (activeTaskId) onComplete(activeTaskId, elapsedSeconds)
+  }, [clearTick, onComplete])
 
   const skip = useCallback(() => {
     clearTick()
-    const id = timerState.activeTaskId
+    const { activeTaskId } = stateRef.current
+    if (activeTaskId) {
+      taskElapsedRef.current.delete(activeTaskId)
+      setTaskElapsed(new Map(taskElapsedRef.current))
+    }
     setTimerState(INITIAL_STATE)
-    if (id) onSkip(id)
-  }, [clearTick, timerState.activeTaskId, onSkip])
+    if (activeTaskId) onSkip(activeTaskId)
+  }, [clearTick, onSkip])
 
   const reset = useCallback(() => {
     clearTick()
+    const { activeTaskId } = stateRef.current
+    if (activeTaskId) {
+      taskElapsedRef.current.delete(activeTaskId)
+      setTaskElapsed(new Map(taskElapsedRef.current))
+    }
     setTimerState(INITIAL_STATE)
   }, [clearTick])
 
-  // Cleanup on unmount
+  const adjustRemaining = useCallback((deltaMin: number) => {
+    setTimerState((prev) => ({
+      ...prev,
+      remainingSeconds: Math.max(0, prev.remainingSeconds + deltaMin * 60),
+    }))
+  }, [])
+
   useEffect(() => () => clearTick(), [clearTick])
 
-  return { timerState, start, pause, resume, complete, skip, reset }
+  return { timerState, taskElapsed, select, start, pause, resume, complete, skip, reset, adjustRemaining }
 }

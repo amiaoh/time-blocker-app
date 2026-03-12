@@ -11,3 +11,7 @@ export function formatMinutes(minutes: number): string {
   const m = minutes % 60
   return m === 0 ? `${h}h` : `${h}h ${m}m`
 }
+
+export function formatTimeShort(date: Date): string {
+  return date.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })
+}

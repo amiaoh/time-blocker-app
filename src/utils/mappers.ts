@@ -10,6 +10,7 @@ export function rowToTask(row: TaskRow): Task {
     icon: row.icon ?? '📋',
     position: row.position,
     status: row.status,
+    spentSeconds: row.spent_seconds ?? undefined,
     taskDate: row.task_date,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
