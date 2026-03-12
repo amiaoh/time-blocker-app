@@ -6,6 +6,7 @@ interface TimerDisplayProps {
   remainingSeconds: number
   isRunning: boolean
   isIdle: boolean
+  showPie?: boolean
   onToggle?: () => void
 }
 
@@ -52,7 +53,7 @@ function sectorPath(progress: number): string {
   ].join(' ')
 }
 
-export function TimerDisplay({ remainingSeconds, isRunning, isIdle, onToggle }: TimerDisplayProps) {
+export function TimerDisplay({ remainingSeconds, isRunning, isIdle, showPie = true, onToggle }: TimerDisplayProps) {
   // Primary: how far through the current 60-min lap (1 = full circle, counts down to 0)
   const primaryProgress = isIdle ? 0 : Math.min(1, remainingSeconds / 3600)
   // Overflow: extra time beyond the first 60 min (shown on top in cyan, shrinks first)
@@ -60,7 +61,7 @@ export function TimerDisplay({ remainingSeconds, isRunning, isIdle, onToggle }: 
 
   return (
     <Box display="flex" flexDirection="column" alignItems="center" gap={2}>
-      <svg
+      {showPie && <svg
         width={SIZE}
         height={SIZE}
         style={{ userSelect: 'none' }}
@@ -138,7 +139,7 @@ export function TimerDisplay({ remainingSeconds, isRunning, isIdle, onToggle }: 
         >
           {isRunning ? '⏸' : '▶'}
         </text>
-      </svg>
+      </svg>}
 
       <Text
         fontSize="3xl"

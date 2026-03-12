@@ -1,55 +1,64 @@
-import { Box, HStack, Spinner, Stack, Text } from '@chakra-ui/react'
-import { DndContext, closestCenter } from '@dnd-kit/core'
+import { Box, HStack, Spinner, Stack, Text } from "@chakra-ui/react";
+import { DndContext, closestCenter } from "@dnd-kit/core";
 
-import { ConfirmDialog } from '@/components/shared/ConfirmDialog'
-import { DaySummary } from '@/components/projection/DaySummary'
-import { SettingsDialog } from '@/components/shared/SettingsDialog'
-import { TaskForm } from '@/components/tasks/TaskForm'
-import { TaskList } from '@/components/tasks/TaskList'
-import { TimerDisplay } from '@/components/timer/TimerDisplay'
-import { useState } from 'react'
-import { useTimerScreen } from './useTimerScreen'
+import { AppHeader } from "@/components/layout/AppHeader";
+import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
+import { SettingsDialog } from "@/components/shared/SettingsDialog";
+import { TaskForm } from "@/components/tasks/TaskForm";
+import { TaskList } from "@/components/tasks/TaskList";
+import { TimerDisplay } from "@/components/timer/TimerDisplay";
+import { useState } from "react";
+import { useTimerScreen } from "./useTimerScreen";
 
 export function TimerScreen() {
   const {
-    tasks, isLoading, loadError, activeTask, projection,
-    isFormOpen, editingTask, deletingTask, hideCompleted,
-    setIsFormOpen, setEditingTask, setDeletingTask, setHideCompleted,
-    timerState, taskElapsed, pause, resume, complete, handleTimerToggle,
-    handleAddSubmit, handleEditSubmit, handleDeleteConfirm,
-    handleReset, handleAdjustDuration, handleMoveToTop, handleChangeIcon,
-    handleClearCompleted, handleClearAll, taskTimeRanges,
-    sensors, handleDragStart, handleDragEnd, handleDragCancel,
-    isAddingTask, isUpdatingTask, isDeletingTask,
-    settings, updateSettings,
-  } = useTimerScreen()
+    tasks,
+    isLoading,
+    loadError,
+    activeTask,
+    projection,
+    isFormOpen,
+    editingTask,
+    deletingTask,
+    hideCompleted,
+    setIsFormOpen,
+    setEditingTask,
+    setDeletingTask,
+    setHideCompleted,
+    timerState,
+    taskElapsed,
+    complete,
+    handleTimerToggle,
+    handleAddSubmit,
+    handleEditSubmit,
+    handleDeleteConfirm,
+    handleReset,
+    handleAdjustDuration,
+    handleMoveToTop,
+    handleChangeIcon,
+    handleClearCompleted,
+    handleClearAll,
+    taskTimeRanges,
+    sensors,
+    handleDragStart,
+    handleDragEnd,
+    handleDragCancel,
+    isAddingTask,
+    isUpdatingTask,
+    isDeletingTask,
+    settings,
+    updateSettings,
+  } = useTimerScreen();
 
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false)
-
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
   return (
     <Box minH="100vh" bg="gray.950" pb={8}>
       <Box maxW="560px" mx="auto" px={4} pt={8}>
-        {/* Header */}
-        <HStack justify="space-between" align="center" mb={6}>
-          <Text
-            as="button"
-            fontSize="xl"
-            color="gray.600"
-            _hover={{ color: 'gray.400' }}
-            cursor="pointer"
-            bg="transparent"
-            border="none"
-            p={1}
-            onClick={() => setIsSettingsOpen(true)}
-            aria-label="Open settings"
-          >
-            ⚙️
-          </Text>
-        </HStack>
-
-        {/* Day summary — shown at top when tasks exist */}
-        {!isLoading && tasks.length > 0 && <DaySummary projection={projection} />}
+        <AppHeader
+          projection={projection}
+          onOpenSettings={() => setIsSettingsOpen(true)}
+        />
 
         {/* Timer */}
         <Box mb={6} textAlign="center" role="region" aria-label="Timer">
@@ -57,16 +66,17 @@ export function TimerScreen() {
             remainingSeconds={timerState.remainingSeconds}
             isRunning={timerState.isRunning}
             isIdle={!activeTask}
+            showPie={settings.showPieTimer}
             onToggle={activeTask ? handleTimerToggle : undefined}
           />
           <Text
-            color={activeTask ? 'white' : 'gray.600'}
-            fontWeight={activeTask ? 'semibold' : 'normal'}
+            color={activeTask ? "white" : "gray.600"}
+            fontWeight={activeTask ? "semibold" : "normal"}
             fontSize="lg"
             mb={4}
             minH={7}
           >
-            {activeTask ? activeTask.title : 'No task running'}
+            {activeTask ? activeTask.title : "No task running"}
           </Text>
 
           {activeTask && (
@@ -76,7 +86,7 @@ export function TimerScreen() {
                   as="button"
                   fontSize="sm"
                   color="gray.500"
-                  _hover={{ color: 'gray.300' }}
+                  _hover={{ color: "gray.300" }}
                   cursor="pointer"
                   bg="transparent"
                   border="none"
@@ -90,7 +100,7 @@ export function TimerScreen() {
                   as="button"
                   fontSize="sm"
                   color="gray.500"
-                  _hover={{ color: 'gray.300' }}
+                  _hover={{ color: "gray.300" }}
                   cursor="pointer"
                   bg="transparent"
                   border="none"
@@ -101,7 +111,6 @@ export function TimerScreen() {
                   +5m
                 </Text>
               </HStack>
-             
             </Stack>
           )}
         </Box>
@@ -109,8 +118,12 @@ export function TimerScreen() {
         {/* Load error */}
         {loadError && (
           <Box bg="red.900" borderRadius="lg" p={4} mb={4}>
-            <Text color="red.200" fontSize="sm" fontWeight="semibold">Failed to load tasks</Text>
-            <Text color="red.300" fontSize="xs" mt={1}>{String(loadError)}</Text>
+            <Text color="red.200" fontSize="sm" fontWeight="semibold">
+              Failed to load tasks
+            </Text>
+            <Text color="red.300" fontSize="xs" mt={1}>
+              {String(loadError)}
+            </Text>
           </Box>
         )}
 
@@ -180,5 +193,5 @@ export function TimerScreen() {
         onSave={updateSettings}
       />
     </Box>
-  )
+  );
 }

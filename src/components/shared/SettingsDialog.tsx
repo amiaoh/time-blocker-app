@@ -1,4 +1,4 @@
-import { Button, Dialog, Field, Input, Stack } from '@chakra-ui/react'
+import { Button, Dialog, Field, HStack, Input, Stack, Switch, Text } from '@chakra-ui/react'
 import { useState } from 'react'
 import type { AppSettings } from '@/hooks/useSettings'
 
@@ -11,16 +11,21 @@ interface SettingsDialogProps {
 
 export function SettingsDialog({ isOpen, onClose, settings, onSave }: SettingsDialogProps) {
   const [maxDuration, setMaxDuration] = useState(settings.maxTaskDurationMin)
+  const [showPieTimer, setShowPieTimer] = useState(settings.showPieTimer)
 
   function handleSave() {
     const clamped = Math.min(480, Math.max(5, maxDuration || 120))
-    onSave({ maxTaskDurationMin: clamped })
+    onSave({ maxTaskDurationMin: clamped, showPieTimer })
     onClose()
   }
 
   function handleOpenChange(open: boolean) {
-    if (open) setMaxDuration(settings.maxTaskDurationMin)
-    else onClose()
+    if (open) {
+      setMaxDuration(settings.maxTaskDurationMin)
+      setShowPieTimer(settings.showPieTimer)
+    } else {
+      onClose()
+    }
   }
 
   return (
@@ -50,6 +55,19 @@ export function SettingsDialog({ isOpen, onClose, settings, onSave }: SettingsDi
                   Limits how long a single task can be (5–480 min)
                 </Field.HelperText>
               </Field.Root>
+
+              <HStack justify="space-between" align="center">
+                <Text color="gray.300" fontSize="sm">Show pie timer</Text>
+                <Switch.Root
+                  checked={showPieTimer}
+                  onCheckedChange={(e) => setShowPieTimer(e.checked)}
+                  aria-label="Toggle pie timer visibility"
+                  colorPalette="teal"
+                >
+                  <Switch.HiddenInput />
+                  <Switch.Control />
+                </Switch.Root>
+              </HStack>
             </Stack>
           </Dialog.Body>
           <Dialog.Footer>

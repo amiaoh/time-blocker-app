@@ -149,7 +149,7 @@ export function TaskCard({
                 {/* Spacer to align Undo complete with Complete on other cards */}
                 <Box minW="1.75rem" flexShrink={0} />
                 <ActionBtn label="Undo complete" onClick={() => onReset(task)} hoverColor="blue.400" />
-                <Text fontSize="xs" color="gray.600" flexShrink={0} fontVariantNumeric="tabular-nums">
+                <Text fontSize="xs" color="gray.600" flexShrink={0} fontVariantNumeric="tabular-nums" backgroundColor="gray.400" borderRadius={4} paddingX={2}>
                   {spentLabel}
                 </Text>
               </>
@@ -172,9 +172,10 @@ export function TaskCard({
                 <ActionBtn label="Delete" onClick={() => onDelete(task)} hoverColor="red.400" />
                 <ActionBtn label="Top" onClick={() => onMoveToTop(task)} hoverColor="white" ariaLabel="Move to top of list" />
                 <ActionBtn label="Complete" onClick={onComplete} hoverColor="green.300" />
-
-
-              </>
+                <Text fontSize="xs" color="gray.600" flexShrink={0} fontVariantNumeric="tabular-nums" backgroundColor="gray.400" borderRadius={4} paddingX={2}>
+                  {formatSeconds(taskElapsed.get(task.id) ?? 0)}
+                </Text>
+</>
             )}
           </HStack>
         </Stack>

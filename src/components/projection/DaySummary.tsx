@@ -20,7 +20,7 @@ export function DaySummary({ projection }: DaySummaryProps) {
       bg="gray.900"
       borderRadius="xl"
       overflow="hidden"
-      mb={3}
+      flex={1}
       role="region"
       aria-label="Day summary"
     >
