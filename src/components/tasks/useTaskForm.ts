@@ -17,8 +17,8 @@ export function useTaskForm(task?: Task) {
   const [errors, setErrors] = useState<ValidationError[]>([])
 
   function setField<K extends keyof TaskFormValues>(field: K, value: TaskFormValues[K]) {
-    setValues((prev) => ({ ...prev, [field]: value }))
-    setErrors((prev) => prev.filter((e) => e.field !== field))
+    setValues((prev: TaskFormValues) => ({ ...prev, [field]: value }))
+    setErrors((prev: ValidationError[]) => prev.filter((e) => e.field !== field))
   }
 
   function validate(): boolean {

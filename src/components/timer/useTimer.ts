@@ -37,7 +37,7 @@ export function useTimer({ onComplete, onSkip }: UseTimerCallbacks): UseTimerRet
   }, [])
 
   const tick = useCallback(() => {
-    setTimerState((prev) => {
+    setTimerState((prev: TimerState) => {
       if (prev.remainingSeconds <= 1) {
         return { ...prev, remainingSeconds: 0, isRunning: false }
       }
@@ -47,7 +47,7 @@ export function useTimer({ onComplete, onSkip }: UseTimerCallbacks): UseTimerRet
 
   // Watch for timer reaching zero to fire chime
   useEffect(() => {
-    setTimerState((prev) => {
+    setTimerState((prev: TimerState) => {
       if (prev.remainingSeconds === 0 && !prev.isRunning && prev.activeTaskId !== null) {
         clearTick()
         playChime()
@@ -72,11 +72,11 @@ export function useTimer({ onComplete, onSkip }: UseTimerCallbacks): UseTimerRet
 
   const pause = useCallback(() => {
     clearTick()
-    setTimerState((prev) => ({ ...prev, isRunning: false, isPaused: true }))
+    setTimerState((prev: TimerState) => ({ ...prev, isRunning: false, isPaused: true }))
   }, [clearTick])
 
   const resume = useCallback(() => {
-    setTimerState((prev) => ({ ...prev, isRunning: true, isPaused: false }))
+    setTimerState((prev: TimerState) => ({ ...prev, isRunning: true, isPaused: false }))
     intervalRef.current = setInterval(tick, 1000)
   }, [tick])
 

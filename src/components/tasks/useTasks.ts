@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '@/lib/supabase'
 import { rowToTask, taskToInsertRow } from '@/utils/mappers'
-import type { Task, TaskColor, TaskStatus } from '@/types'
+import type { Task, TaskColor, TaskRow, TaskStatus } from '@/types'
 
 const TODAY = new Date().toISOString().split('T')[0]
 
@@ -21,7 +21,7 @@ export function useTasks(sessionId: string) {
         .order('position', { ascending: true })
 
       if (error) throw error
-      return (data ?? []).map(rowToTask)
+      return ((data ?? []) as TaskRow[]).map(rowToTask)
     },
   })
 }
@@ -42,7 +42,7 @@ export function useAddTask(sessionId: string) {
       })
       const { data, error } = await supabase.from('tasks').insert(row).select().single()
       if (error) throw error
-      return rowToTask(data)
+      return rowToTask(data as TaskRow)
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: tasksQueryKey(sessionId) }),
   })
@@ -68,7 +68,7 @@ export function useUpdateTask(sessionId: string) {
         .select()
         .single()
       if (error) throw error
-      return rowToTask(data)
+      return rowToTask(data as TaskRow)
     },
     onMutate: async (updates) => {
       await queryClient.cancelQueries({ queryKey: tasksQueryKey(sessionId) })
