@@ -54,66 +54,77 @@ export function TimerScreen() {
 
   return (
     <Box minH="100vh" bg="gray.950" pb={8}>
-      <Box maxW="560px" mx="auto" px={4} pt={8}>
-        <AppHeader
-          projection={projection}
-          onOpenSettings={() => setIsSettingsOpen(true)}
-        />
-
-        {/* Timer */}
-        <Box mb={6} textAlign="center" role="region" aria-label="Timer">
-          <TimerDisplay
-            remainingSeconds={timerState.remainingSeconds}
-            isRunning={timerState.isRunning}
-            isIdle={!activeTask}
-            showPie={settings.showPieTimer}
-            onToggle={activeTask ? handleTimerToggle : undefined}
+      <Box
+        position="sticky"
+        top={0}
+        zIndex={10}
+        bg="gray.950"
+        pb={4}
+      >
+        <Box maxW="560px" mx="auto" px={4} pt={8}>
+          <AppHeader
+            projection={projection}
+            onOpenSettings={() => setIsSettingsOpen(true)}
           />
-          <Text
-            color={activeTask ? "white" : "gray.600"}
-            fontWeight={activeTask ? "semibold" : "normal"}
-            fontSize="lg"
-            mb={4}
-            minH={7}
-          >
-            {activeTask ? activeTask.title : "No task running"}
-          </Text>
 
-          {activeTask && (
-            <Stack align="center" gap={4} mt={4}>
-              <HStack gap={3}>
-                <Text
-                  as="button"
-                  fontSize="sm"
-                  color="gray.500"
-                  _hover={{ color: "gray.300" }}
-                  cursor="pointer"
-                  bg="transparent"
-                  border="none"
-                  p={0}
-                  onClick={() => handleAdjustDuration(activeTask, -5)}
-                  aria-label="Subtract 5 minutes"
-                >
-                  −5m
-                </Text>
-                <Text
-                  as="button"
-                  fontSize="sm"
-                  color="gray.500"
-                  _hover={{ color: "gray.300" }}
-                  cursor="pointer"
-                  bg="transparent"
-                  border="none"
-                  p={0}
-                  onClick={() => handleAdjustDuration(activeTask, 5)}
-                  aria-label="Add 5 minutes"
-                >
-                  +5m
-                </Text>
-              </HStack>
-            </Stack>
-          )}
+          {/* Timer */}
+          <Box textAlign="center" role="region" aria-label="Timer">
+            <TimerDisplay
+              remainingSeconds={timerState.remainingSeconds}
+              isRunning={timerState.isRunning}
+              isIdle={!activeTask}
+              showPie={settings.showPieTimer}
+              onToggle={activeTask ? handleTimerToggle : undefined}
+            />
+            <Text
+              color={activeTask ? "white" : "gray.600"}
+              fontWeight={activeTask ? "semibold" : "normal"}
+              fontSize="lg"
+              mb={4}
+              minH={7}
+            >
+              {activeTask ? activeTask.title : "No task running"}
+            </Text>
+
+            {activeTask && (
+              <Stack align="center" gap={4} mt={4}>
+                <HStack gap={3}>
+                  <Text
+                    as="button"
+                    fontSize="sm"
+                    color="gray.500"
+                    _hover={{ color: "gray.300" }}
+                    cursor="pointer"
+                    bg="transparent"
+                    border="none"
+                    p={0}
+                    onClick={() => handleAdjustDuration(activeTask, -5)}
+                    aria-label="Subtract 5 minutes"
+                  >
+                    −5m
+                  </Text>
+                  <Text
+                    as="button"
+                    fontSize="sm"
+                    color="gray.500"
+                    _hover={{ color: "gray.300" }}
+                    cursor="pointer"
+                    bg="transparent"
+                    border="none"
+                    p={0}
+                    onClick={() => handleAdjustDuration(activeTask, 5)}
+                    aria-label="Add 5 minutes"
+                  >
+                    +5m
+                  </Text>
+                </HStack>
+              </Stack>
+            )}
+          </Box>
         </Box>
+      </Box>
+
+      <Box maxW="560px" mx="auto" px={4}>
 
         {/* Load error */}
         {loadError && (
