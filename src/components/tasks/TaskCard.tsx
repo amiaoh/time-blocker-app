@@ -13,6 +13,7 @@ interface TaskCardProps {
   timerState: TimerState
   taskElapsed: Map<string, number>
   timeRange?: { start: Date; end: Date }
+  use24HourTime: boolean
   onComplete: () => void
   onDelete: (task: Task) => void
   onReset: (task: Task) => void
@@ -25,6 +26,7 @@ export function TaskCard({
   timerState,
   taskElapsed,
   timeRange,
+  use24HourTime,
   onComplete,
   onDelete,
   onReset,
@@ -47,9 +49,7 @@ export function TaskCard({
 
   const timeLabel = isActive
     ? formatSeconds(timerState.remainingSeconds)
-    : isDone
-      ? formatSeconds(task.durationMin * 60)
-      : formatSeconds(taskElapsed.get(task.id) ?? 0)
+    : formatSeconds(task.durationMin * 60)
 
   return (
     <Box
@@ -83,7 +83,7 @@ export function TaskCard({
             >
               {task.title}
             </Text>
-            {timeRange && <TimeRangePill start={timeRange.start} end={timeRange.end} />}
+            {timeRange && <TimeRangePill start={timeRange.start} end={timeRange.end} use24HourTime={use24HourTime} />}
           </HStack>
 
           <TaskCardActions

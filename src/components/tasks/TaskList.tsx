@@ -11,6 +11,7 @@ interface TaskListProps {
   timerState: TimerState
   taskElapsed: Map<string, number>
   taskTimeRanges: Map<string, { start: Date; end: Date }>
+  use24HourTime: boolean
   hideCompleted: boolean
   onToggleHideCompleted: () => void
   onAddTask: () => void
@@ -29,6 +30,7 @@ export function TaskList({
   timerState,
   taskElapsed,
   taskTimeRanges,
+  use24HourTime,
   hideCompleted,
   onToggleHideCompleted,
   onAddTask,
@@ -64,6 +66,7 @@ export function TaskList({
             timerState={timerState}
             taskElapsed={taskElapsed}
             timeRange={taskTimeRanges.get(task.id)}
+            use24HourTime={use24HourTime}
             onComplete={onComplete}
             onDelete={onDelete}
             onReset={onReset}

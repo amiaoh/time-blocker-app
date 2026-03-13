@@ -1,8 +1,9 @@
 import { Box, HStack, Text } from '@chakra-ui/react'
+import type { Task, TimerState } from '@/types'
+
 import { ActionBtn } from '@/components/shared/ActionBtn'
 import { ElapsedBadge } from './ElapsedBadge'
 import { formatSeconds } from '@/utils/formatTime'
-import type { Task, TimerState } from '@/types'
 
 interface TaskCardActionsProps {
   task: Task

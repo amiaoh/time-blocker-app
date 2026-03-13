@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { PointerSensor, TouchSensor, useSensor, useSensors } from '@dnd-kit/core'
 import { useTimer } from '@/components/timer/useTimer'
 import { useDragOrder } from '@/components/ordering/useDragOrder'
@@ -33,7 +33,7 @@ export function useTimerScreen() {
   // Refs to break the timer ↔ task circular dependency without stale closures
   const tasksRef = useRef<Task[]>([])
   const startRef = useRef<((task: Task) => void) | null>(null)
-  useEffect(() => { tasksRef.current = tasks }, [tasks])
+  useLayoutEffect(() => { tasksRef.current = tasks }, [tasks])
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
@@ -83,7 +83,7 @@ export function useTimerScreen() {
   })
 
   // Must be set after useTimer so startRef always holds the latest start fn
-  useEffect(() => { startRef.current = start }, [start])
+  useLayoutEffect(() => { startRef.current = start }, [start])
 
   // Auto-select the first pending task when tasks load and nothing is active
   useEffect(() => {
@@ -130,9 +130,10 @@ export function useTimerScreen() {
     addTask.mutate(
       { ...values, position: maxPosition + 1000 },
       {
-        onSuccess: () => {
+        onSuccess: (newTask) => {
           setIsFormOpen(false)
           toaster.create({ title: 'Task added', type: 'success', duration: 2000 })
+          if (timerState.activeTaskId === null) select(newTask)
         },
         onError: (err) => toaster.create({ title: 'Failed to add task', description: errorMessage(err), type: 'error' }),
       },

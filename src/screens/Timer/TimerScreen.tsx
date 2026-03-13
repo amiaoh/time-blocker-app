@@ -65,10 +65,10 @@ export function TimerScreen() {
         <Box maxW="560px" mx="auto" px={4} pt={8}>
           <AppHeader
             projection={projection}
+            use24HourTime={settings.use24HourTime}
             onOpenSettings={() => setIsSettingsOpen(true)}
           />
 
-          {/* Timer */}
           <Box textAlign="center" role="region" aria-label="Timer">
             <TimerDisplay
               remainingSeconds={timerState.remainingSeconds}
@@ -84,7 +84,7 @@ export function TimerScreen() {
               mb={4}
               minH={7}
             >
-              {activeTask ? activeTask.title : "No task running"}
+              {activeTask ? activeTask.title : null}
             </Text>
 
             {activeTask && (
@@ -134,6 +134,7 @@ export function TimerScreen() {
               timerState={timerState}
               taskElapsed={taskElapsed}
               taskTimeRanges={taskTimeRanges}
+              use24HourTime={settings.use24HourTime}
               hideCompleted={hideCompleted}
               onToggleHideCompleted={() => setHideCompleted((v) => !v)}
               onAddTask={() => setIsFormOpen(true)}

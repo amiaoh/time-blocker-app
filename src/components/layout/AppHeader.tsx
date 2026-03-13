@@ -1,18 +1,21 @@
-import { HStack, Text } from '@chakra-ui/react'
+import { Button, HStack, Text } from '@chakra-ui/react'
+
 import { DaySummary } from '@/components/projection/DaySummary'
 import type { ProjectionResult } from '@/types'
 
 interface AppHeaderProps {
   projection: ProjectionResult
+  use24HourTime: boolean
   onOpenSettings: () => void
   onAddPreset?: () => void
 }
 
-export function AppHeader({ projection, onOpenSettings, onAddPreset }: AppHeaderProps) {
+export function AppHeader({ projection, use24HourTime, onOpenSettings, onAddPreset }: AppHeaderProps) {
   return (
     <HStack justify="space-between" align="center" mb={4} gap={3}>
       {/* Settings */}
-      <Text
+      
+      {/* <Text
         as="button"
         fontSize="lg"
         color="gray.500"
@@ -26,12 +29,25 @@ export function AppHeader({ projection, onOpenSettings, onAddPreset }: AppHeader
         aria-label="Open settings"
       >
         ⚙
-      </Text>
+      </Text> */}
+        <Button
+        as="button"
+        fontSize="lg"
+        color="gray.500"
+        _hover={{ color: 'gray.300' }}
+        cursor="pointer"
+        bg="transparent"
+        border="none"
+        p={1}
+        flexShrink={0}
+        onClick={onOpenSettings}
+        aria-label="Open settings"
+      >
+        ⚙
+      </Button>
 
-      {/* Day summary — expands to fill remaining space */}
-      <DaySummary projection={projection} />
+      <DaySummary projection={projection} use24HourTime={use24HourTime} />
 
-      {/* Add preset list */}
       <Text
         as="button"
         fontSize="lg"

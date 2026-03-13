@@ -4,9 +4,10 @@ import { formatTimeShort } from '@/utils/formatTime'
 interface TimeRangePillProps {
   start: Date
   end: Date
+  use24HourTime?: boolean
 }
 
-export function TimeRangePill({ start, end }: TimeRangePillProps) {
+export function TimeRangePill({ start, end, use24HourTime = false }: TimeRangePillProps) {
   return (
     <HStack pt={2}>
       <Text
@@ -17,7 +18,7 @@ export function TimeRangePill({ start, end }: TimeRangePillProps) {
         borderRadius={4}
         paddingX={2}
       >
-        {formatTimeShort(start)} → {formatTimeShort(end)}
+        {formatTimeShort(start, use24HourTime)} → {formatTimeShort(end, use24HourTime)}
       </Text>
     </HStack>
   )

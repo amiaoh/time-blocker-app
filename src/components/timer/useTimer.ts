@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { useChime } from './useChime'
 import type { Task, TimerState } from '@/types'
 
@@ -33,9 +33,9 @@ export function useTimer({ onComplete, onSkip }: UseTimerCallbacks): UseTimerRet
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const { play: playChime } = useChime()
 
-  // Always-current ref so callbacks don't go stale
+  // Always-current ref so callbacks don't go stale — useLayoutEffect keeps it synchronous before effects fire
   const stateRef = useRef<TimerState>(INITIAL_STATE)
-  useEffect(() => { stateRef.current = timerState }, [timerState])
+  useLayoutEffect(() => { stateRef.current = timerState }, [timerState])
 
   // Per-task accumulated elapsed seconds (persists when switching tasks)
   const taskElapsedRef = useRef<Map<string, number>>(new Map())

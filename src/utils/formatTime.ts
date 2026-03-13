@@ -12,6 +12,6 @@ export function formatMinutes(minutes: number): string {
   return m === 0 ? `${h}h` : `${h}h ${m}m`
 }
 
-export function formatTimeShort(date: Date): string {
-  return date.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })
+export function formatTimeShort(date: Date, use24Hour = false): string {
+  return date.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: !use24Hour })
 }

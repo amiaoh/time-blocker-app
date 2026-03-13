@@ -6,9 +6,10 @@ import { formatMinutes } from '@/utils/formatTime'
 
 interface DaySummaryProps {
   projection: ProjectionResult
+  use24HourTime?: boolean
 }
 
-export function DaySummary({ projection }: DaySummaryProps) {
+export function DaySummary({ projection, use24HourTime = false }: DaySummaryProps) {
   const { finishTime, totalRemainingMinutes } = projection
 
   if (totalRemainingMinutes === 0) return null
@@ -35,7 +36,7 @@ export function DaySummary({ projection }: DaySummaryProps) {
 
       <Box flex={1} textAlign="center" py={3} px={4}>
         <Text color="white" fontWeight="semibold" fontSize="sm">
-          {formatFinishTime(finishTime)}
+          {formatFinishTime(finishTime, use24HourTime)}
         </Text>
         <Text color="gray.500" fontSize="xs">End time</Text>
       </Box>

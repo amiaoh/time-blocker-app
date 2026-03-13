@@ -9,6 +9,6 @@ export function calcFinishTime(now: Date, totalRemainingMinutes: number): Projec
   return { finishTime, totalRemainingMinutes }
 }
 
-export function formatFinishTime(date: Date): string {
-  return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+export function formatFinishTime(date: Date, use24Hour = false): string {
+  return date.toLocaleTimeString([], { hour: use24Hour ? '2-digit' : 'numeric', minute: '2-digit', hour12: !use24Hour })
 }

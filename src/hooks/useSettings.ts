@@ -3,11 +3,13 @@ import { useState } from 'react'
 export interface AppSettings {
   maxTaskDurationMin: number
   showPieTimer: boolean
+  use24HourTime: boolean
 }
 
 const DEFAULTS: AppSettings = {
   maxTaskDurationMin: 120,
   showPieTimer: true,
+  use24HourTime: false,
 }
 
 const STORAGE_KEY = 'time-blocker-settings'

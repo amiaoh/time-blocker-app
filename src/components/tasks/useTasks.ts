@@ -45,7 +45,13 @@ export function useAddTask(sessionId: string) {
       if (error) throw error
       return rowToTask(data as TaskRow)
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: tasksQueryKey(sessionId) }),
+    onSuccess: (newTask) => {
+      queryClient.setQueryData<Task[]>(tasksQueryKey(sessionId), (old) => {
+        const existing = old ?? []
+        return existing.some((t) => t.id === newTask.id) ? existing : [...existing, newTask]
+      })
+      queryClient.invalidateQueries({ queryKey: tasksQueryKey(sessionId) })
+    },
   })
 }
 

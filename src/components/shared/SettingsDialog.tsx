@@ -12,10 +12,11 @@ interface SettingsDialogProps {
 export function SettingsDialog({ isOpen, onClose, settings, onSave }: SettingsDialogProps) {
   const [maxDuration, setMaxDuration] = useState(settings.maxTaskDurationMin)
   const [showPieTimer, setShowPieTimer] = useState(settings.showPieTimer)
+  const [use24HourTime, setUse24HourTime] = useState(settings.use24HourTime)
 
   function handleSave() {
     const clamped = Math.min(480, Math.max(5, maxDuration || 120))
-    onSave({ maxTaskDurationMin: clamped, showPieTimer })
+    onSave({ maxTaskDurationMin: clamped, showPieTimer, use24HourTime })
     onClose()
   }
 
@@ -23,6 +24,7 @@ export function SettingsDialog({ isOpen, onClose, settings, onSave }: SettingsDi
     if (open) {
       setMaxDuration(settings.maxTaskDurationMin)
       setShowPieTimer(settings.showPieTimer)
+      setUse24HourTime(settings.use24HourTime)
     } else {
       onClose()
     }
@@ -62,6 +64,19 @@ export function SettingsDialog({ isOpen, onClose, settings, onSave }: SettingsDi
                   checked={showPieTimer}
                   onCheckedChange={(e) => setShowPieTimer(e.checked)}
                   aria-label="Toggle pie timer visibility"
+                  colorPalette="teal"
+                >
+                  <Switch.HiddenInput />
+                  <Switch.Control />
+                </Switch.Root>
+              </HStack>
+
+              <HStack justify="space-between" align="center">
+                <Text color="gray.300" fontSize="sm">24-hour time</Text>
+                <Switch.Root
+                  checked={use24HourTime}
+                  onCheckedChange={(e) => setUse24HourTime(e.checked)}
+                  aria-label="Toggle 24-hour time format"
                   colorPalette="teal"
                 >
                   <Switch.HiddenInput />

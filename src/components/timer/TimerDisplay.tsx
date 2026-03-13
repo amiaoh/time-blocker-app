@@ -1,9 +1,10 @@
 import { Box, Text } from '@chakra-ui/react'
-import { formatSeconds } from '@/utils/formatTime'
-import { SIZE, CX, CY, OUTER_R } from './timerGeometry'
+import { CX, CY, OUTER_R, SIZE } from './timerGeometry'
+
 import { ClockMarks } from './ClockMarks'
 import { PieSectors } from './PieSectors'
 import { SvgPlayPause } from './SvgPlayPause'
+import { formatSeconds } from '@/utils/formatTime'
 
 interface TimerDisplayProps {
   remainingSeconds: number
@@ -42,7 +43,7 @@ export function TimerDisplay({ remainingSeconds, isRunning, isIdle, showPie = tr
         aria-atomic="true"
         aria-label={isIdle ? 'No timer running' : `Time remaining: ${formatSeconds(remainingSeconds)}`}
       >
-        {isIdle ? '--:--' : formatSeconds(remainingSeconds)}
+        {isIdle ? null : formatSeconds(remainingSeconds)}
       </Text>
     </Box>
   )
