@@ -10,6 +10,7 @@ import { TimerAdjustControls } from "@/components/timer/TimerAdjustControls";
 import { TimerDisplay } from "@/components/timer/TimerDisplay";
 import { useState } from "react";
 import { useTimerScreen } from "./useTimerScreen";
+import { MAX_CONTAINER_WIDTH } from "@/constants";
 
 export function TimerScreen() {
   const {
@@ -63,7 +64,7 @@ export function TimerScreen() {
         bg="gray.950"
         pb={4}
       >
-        <Box maxW="560px" mx="auto" px={4} pt={8}>
+        <Box maxW={MAX_CONTAINER_WIDTH} mx="auto" px={4} pt={8}>
           <AppHeader
             projection={projection}
             use24HourTime={settings.use24HourTime}
@@ -103,7 +104,7 @@ export function TimerScreen() {
         </Box>
       </Box>
 
-      <Box maxW="560px" mx="auto" px={4}>
+      <Box maxW={MAX_CONTAINER_WIDTH} mx="auto" px={4}>
 
         {/* Load error */}
         {loadError && (

@@ -1,6 +1,7 @@
 import { Button, Dialog, Field, HStack, Input, Stack, Switch, Text } from '@chakra-ui/react'
 import { useState } from 'react'
 import type { AppSettings } from '@/hooks/useSettings'
+import { MIN_TASK_DURATION_MIN, MAX_TASK_DURATION_MIN, DEFAULT_MAX_TASK_DURATION_MIN } from '@/constants'
 
 interface SettingsDialogProps {
   isOpen: boolean
@@ -15,7 +16,7 @@ export function SettingsDialog({ isOpen, onClose, settings, onSave }: SettingsDi
   const [use24HourTime, setUse24HourTime] = useState(settings.use24HourTime)
 
   function handleSave() {
-    const clamped = Math.min(480, Math.max(5, maxDuration || 120))
+    const clamped = Math.min(MAX_TASK_DURATION_MIN, Math.max(MIN_TASK_DURATION_MIN, maxDuration || DEFAULT_MAX_TASK_DURATION_MIN))
     onSave({ maxTaskDurationMin: clamped, showPieTimer, use24HourTime })
     onClose()
   }
@@ -46,15 +47,15 @@ export function SettingsDialog({ isOpen, onClose, settings, onSave }: SettingsDi
                   type="number"
                   value={maxDuration || ''}
                   onChange={(e) => setMaxDuration(parseInt(e.target.value, 10) || 0)}
-                  min={5}
-                  max={480}
+                  min={MIN_TASK_DURATION_MIN}
+                  max={MAX_TASK_DURATION_MIN}
                   bg="gray.800"
                   borderColor="gray.600"
                   color="white"
                   aria-label="Maximum task duration in minutes"
                 />
                 <Field.HelperText color="gray.500">
-                  Limits how long a single task can be (5–480 min)
+                  Limits how long a single task can be ({MIN_TASK_DURATION_MIN}–{MAX_TASK_DURATION_MIN} min)
                 </Field.HelperText>
               </Field.Root>
 

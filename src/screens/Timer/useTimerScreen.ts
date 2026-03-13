@@ -8,6 +8,7 @@ import { useSessionId } from '@/hooks/useSessionId'
 import { useSettings } from '@/hooks/useSettings'
 import { toaster } from '@/lib/toaster'
 import type { Task, TaskFormValues } from '@/types'
+import { TOAST_DURATION_MS, MIN_TASK_DURATION_MIN } from '@/constants'
 
 function errorMessage(err: unknown): string {
   if (err instanceof Error) return err.message
@@ -51,7 +52,7 @@ export function useTimerScreen() {
         { id: taskId, status: 'completed', spentSeconds: elapsedSeconds },
         {
           onSuccess: () => {
-            toaster.create({ title: 'Task completed! 🎉', type: 'success', duration: 2000 })
+            toaster.create({ title: 'Task completed! 🎉', type: 'success', duration: TOAST_DURATION_MS })
             autoStartNext(taskId)
           },
           onError: (err) => toaster.create({ title: 'Failed to complete task', description: errorMessage(err), type: 'error' }),
@@ -67,7 +68,7 @@ export function useTimerScreen() {
         { id: taskId, status: 'skipped' },
         {
           onSuccess: () => {
-            toaster.create({ title: 'Task skipped', type: 'info', duration: 2000 })
+            toaster.create({ title: 'Task skipped', type: 'info', duration: TOAST_DURATION_MS })
             autoStartNext(taskId)
           },
           onError: (err) => toaster.create({ title: 'Failed to skip task', description: errorMessage(err), type: 'error' }),
@@ -132,7 +133,7 @@ export function useTimerScreen() {
       {
         onSuccess: (newTask) => {
           setIsFormOpen(false)
-          toaster.create({ title: 'Task added', type: 'success', duration: 2000 })
+          toaster.create({ title: 'Task added', type: 'success', duration: TOAST_DURATION_MS })
           if (timerState.activeTaskId === null) select(newTask)
         },
         onError: (err) => toaster.create({ title: 'Failed to add task', description: errorMessage(err), type: 'error' }),
@@ -147,7 +148,7 @@ export function useTimerScreen() {
       {
         onSuccess: () => {
           setEditingTask(undefined)
-          toaster.create({ title: 'Task updated', type: 'success', duration: 2000 })
+          toaster.create({ title: 'Task updated', type: 'success', duration: TOAST_DURATION_MS })
         },
         onError: (err) => toaster.create({ title: 'Failed to update task', description: errorMessage(err), type: 'error' }),
       },
@@ -159,7 +160,7 @@ export function useTimerScreen() {
     deleteTask.mutate(deletingTask.id, {
       onSuccess: () => {
         setDeletingTask(undefined)
-        toaster.create({ title: 'Task deleted', type: 'info', duration: 2000 })
+        toaster.create({ title: 'Task deleted', type: 'info', duration: TOAST_DURATION_MS })
       },
       onError: (err) => toaster.create({ title: 'Failed to delete task', description: errorMessage(err), type: 'error' }),
     })
@@ -169,20 +170,20 @@ export function useTimerScreen() {
     updateTask.mutate(
       { id: task.id, status: 'pending' },
       {
-        onSuccess: () => toaster.create({ title: 'Task reset', type: 'info', duration: 2000 }),
+        onSuccess: () => toaster.create({ title: 'Task reset', type: 'info', duration: TOAST_DURATION_MS }),
         onError: (err) => toaster.create({ title: 'Failed to reset task', description: errorMessage(err), type: 'error' }),
       },
     )
   }
 
   function handleAdjustDuration(task: Task, deltaMin: number) {
-    const newDuration = Math.min(settings.maxTaskDurationMin, Math.max(5, task.durationMin + deltaMin))
+    const newDuration = Math.min(settings.maxTaskDurationMin, Math.max(MIN_TASK_DURATION_MIN, task.durationMin + deltaMin))
     const actualDelta = newDuration - task.durationMin
 
     if (deltaMin > 0 && newDuration === settings.maxTaskDurationMin) {
-      toaster.create({ title: 'Maximum task time reached!', type: 'info', duration: 2000 })
-    } else if (deltaMin < 0 && newDuration === 5) {
-      toaster.create({ title: "Can't decrease the time!", type: 'info', duration: 2000 })
+      toaster.create({ title: 'Maximum task time reached!', type: 'info', duration: TOAST_DURATION_MS })
+    } else if (deltaMin < 0 && newDuration === MIN_TASK_DURATION_MIN) {
+      toaster.create({ title: "Can't decrease the time!", type: 'info', duration: TOAST_DURATION_MS })
     }
 
     if (actualDelta === 0) return
@@ -200,7 +201,7 @@ export function useTimerScreen() {
 
   function handleClearCompleted() {
     clearCompleted.mutate(undefined, {
-      onSuccess: () => toaster.create({ title: 'Completed tasks cleared 🎉', type: 'info', duration: 2000 }),
+      onSuccess: () => toaster.create({ title: 'Completed tasks cleared 🎉', type: 'info', duration: TOAST_DURATION_MS }),
       onError: (err) => toaster.create({ title: 'Failed to clear tasks', description: errorMessage(err), type: 'error' }),
     })
   }
@@ -221,7 +222,7 @@ export function useTimerScreen() {
 
   function handleClearAll() {
     clearAll.mutate(undefined, {
-      onSuccess: () => toaster.create({ title: 'All tasks cleared 🧹', type: 'info', duration: 2000 }),
+      onSuccess: () => toaster.create({ title: 'All tasks cleared 🧹', type: 'info', duration: TOAST_DURATION_MS }),
       onError: (err) => toaster.create({ title: 'Failed to clear tasks', description: errorMessage(err), type: 'error' }),
     })
   }

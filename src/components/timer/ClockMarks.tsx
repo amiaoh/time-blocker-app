@@ -1,11 +1,9 @@
-import { OUTER_R, INNER_MARKER_R, LABEL_R, polarToXY } from './timerGeometry'
-
-const MARKS = Array.from({ length: 12 }, (_, i) => i * 5)
+import { OUTER_R, INNER_MARKER_R, LABEL_R, CLOCK_MARKS, TICK_COLOR, TICK_LABEL_COLOR, polarToXY } from './timerGeometry'
 
 export function ClockMarks() {
   return (
     <>
-      {MARKS.map((mark) => {
+      {CLOCK_MARKS.map((mark) => {
         const angleDeg = (mark / 60) * 360
         const outer = polarToXY(angleDeg, OUTER_R)
         const inner = polarToXY(angleDeg, INNER_MARKER_R + 4)
@@ -15,7 +13,7 @@ export function ClockMarks() {
             <line
               x1={inner.x} y1={inner.y}
               x2={outer.x} y2={outer.y}
-              stroke="#4A5568"
+              stroke={TICK_COLOR}
               strokeWidth={mark === 0 ? 2 : 1}
             />
             <text
@@ -23,7 +21,7 @@ export function ClockMarks() {
               textAnchor="middle"
               dominantBaseline="middle"
               fontSize={10}
-              fill="#718096"
+              fill={TICK_LABEL_COLOR}
               fontFamily="system-ui, sans-serif"
             >
               {mark}

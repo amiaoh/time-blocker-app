@@ -1,5 +1,5 @@
 import { Box, Text } from '@chakra-ui/react'
-import { CX, CY, OUTER_R, SIZE } from './timerGeometry'
+import { CX, CY, OUTER_R, SIZE, TIMER_BG } from './timerGeometry'
 
 import { ClockMarks } from './ClockMarks'
 import { PieSectors } from './PieSectors'
@@ -25,7 +25,7 @@ export function TimerDisplay({ remainingSeconds, isRunning, isIdle, showPie = tr
           role="img"
           aria-label={isIdle ? 'Timer idle' : `${formatSeconds(remainingSeconds)} remaining`}
         >
-          <circle cx={CX} cy={CY} r={OUTER_R} fill="#1A202C" />
+          <circle cx={CX} cy={CY} r={OUTER_R} fill={TIMER_BG} />
           {!isIdle && <PieSectors remainingSeconds={remainingSeconds} isRunning={isRunning} />}
           <ClockMarks />
           <SvgPlayPause isRunning={isRunning} isIdle={isIdle} onClick={onToggle} />

@@ -4,8 +4,23 @@ export const CY = SIZE / 2
 export const OUTER_R = 110
 export const INNER_MARKER_R = 95
 export const LABEL_R = 80
+export const PLAY_BTN_R = 28
+
+// Sector colors
 export const PRIMARY_COLOR = '#6ee7b7'
 export const OVERFLOW_COLOR = '#67e8f9'
+
+// SVG element colors
+export const TIMER_BG = '#1A202C'
+export const TICK_COLOR = '#4A5568'
+export const TICK_LABEL_COLOR = '#718096'
+export const PLAY_BTN_BG_IDLE = '#2D3748'
+export const PLAY_BTN_BG_ACTIVE = '#0F0F0F'
+
+// 5-minute interval marks around the clock face: [0, 5, 10, ..., 55]
+export const CLOCK_MARKS = Array.from({ length: 12 }, (_, i) => i * 5)
+
+export const SECONDS_PER_HOUR = 3600
 
 export function polarToXY(angleDeg: number, r: number) {
   const rad = ((angleDeg - 90) * Math.PI) / 180

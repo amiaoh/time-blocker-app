@@ -1,4 +1,4 @@
-import { CX, CY } from './timerGeometry'
+import { CX, CY, PLAY_BTN_R, PLAY_BTN_BG_IDLE, PLAY_BTN_BG_ACTIVE, TICK_COLOR } from './timerGeometry'
 
 interface SvgPlayPauseProps {
   isRunning: boolean
@@ -10,8 +10,8 @@ export function SvgPlayPause({ isRunning, isIdle, onClick }: SvgPlayPauseProps) 
   return (
     <>
       <circle
-        cx={CX} cy={CY} r={28}
-        fill={isIdle ? '#2D3748' : '#0F0F0F'}
+        cx={CX} cy={CY} r={PLAY_BTN_R}
+        fill={isIdle ? PLAY_BTN_BG_IDLE : PLAY_BTN_BG_ACTIVE}
         style={{ cursor: onClick ? 'pointer' : 'default' }}
         onClick={onClick}
         role={onClick ? 'button' : undefined}
@@ -23,7 +23,7 @@ export function SvgPlayPause({ isRunning, isIdle, onClick }: SvgPlayPauseProps) 
         textAnchor="middle"
         dominantBaseline="central"
         fontSize={15}
-        fill={isIdle ? '#4A5568' : 'white'}
+        fill={isIdle ? TICK_COLOR : 'white'}
         aria-hidden="true"
         style={{ cursor: onClick ? 'pointer' : 'default', pointerEvents: 'none', userSelect: 'none' }}
       >

@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { DEFAULT_MAX_TASK_DURATION_MIN } from '@/constants'
 
 export interface AppSettings {
   maxTaskDurationMin: number
@@ -7,7 +8,7 @@ export interface AppSettings {
 }
 
 const DEFAULTS: AppSettings = {
-  maxTaskDurationMin: 120,
+  maxTaskDurationMin: DEFAULT_MAX_TASK_DURATION_MIN,
   showPieTimer: true,
   use24HourTime: false,
 }
