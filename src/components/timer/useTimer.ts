@@ -13,6 +13,7 @@ const INITIAL_STATE: TimerState = {
 interface UseTimerReturn {
   timerState: TimerState
   taskElapsed: Map<string, number>
+  taskRemaining: Map<string, number>
   select: (task: Task) => void
   start: (task: Task) => void
   pause: () => void
@@ -37,9 +38,11 @@ export function useTimer({ onComplete, onSkip }: UseTimerCallbacks): UseTimerRet
   const stateRef = useRef<TimerState>(INITIAL_STATE)
   useLayoutEffect(() => { stateRef.current = timerState }, [timerState])
 
-  // Per-task accumulated elapsed seconds (persists when switching tasks)
+  // Per-task accumulated elapsed + remaining seconds (persists when switching tasks)
   const taskElapsedRef = useRef<Map<string, number>>(new Map())
+  const taskRemainingRef = useRef<Map<string, number>>(new Map())
   const [taskElapsed, setTaskElapsed] = useState<Map<string, number>>(new Map())
+  const [taskRemaining, setTaskRemaining] = useState<Map<string, number>>(new Map())
 
   const clearTick = useCallback(() => {
     if (intervalRef.current !== null) {
@@ -66,10 +69,12 @@ export function useTimer({ onComplete, onSkip }: UseTimerCallbacks): UseTimerRet
   }, [timerState.remainingSeconds, timerState.isRunning, timerState.activeTaskId, clearTick, playChime])
 
   const saveCurrentElapsed = useCallback(() => {
-    const { activeTaskId, elapsedSeconds } = stateRef.current
+    const { activeTaskId, elapsedSeconds, remainingSeconds } = stateRef.current
     if (activeTaskId) {
       taskElapsedRef.current.set(activeTaskId, elapsedSeconds)
+      taskRemainingRef.current.set(activeTaskId, remainingSeconds)
       setTaskElapsed(new Map(taskElapsedRef.current))
+      setTaskRemaining(new Map(taskRemainingRef.current))
     }
   }, [])
 
@@ -77,9 +82,10 @@ export function useTimer({ onComplete, onSkip }: UseTimerCallbacks): UseTimerRet
     clearTick()
     saveCurrentElapsed()
     const prevElapsed = taskElapsedRef.current.get(task.id) ?? 0
+    const prevRemaining = taskRemainingRef.current.get(task.id) ?? task.durationMin * 60
     setTimerState({
       activeTaskId: task.id,
-      remainingSeconds: task.durationMin * 60,
+      remainingSeconds: prevRemaining,
       elapsedSeconds: prevElapsed,
       isRunning: false,
       isPaused: false,
@@ -90,9 +96,10 @@ export function useTimer({ onComplete, onSkip }: UseTimerCallbacks): UseTimerRet
     clearTick()
     saveCurrentElapsed()
     const prevElapsed = taskElapsedRef.current.get(task.id) ?? 0
+    const prevRemaining = taskRemainingRef.current.get(task.id) ?? task.durationMin * 60
     setTimerState({
       activeTaskId: task.id,
-      remainingSeconds: task.durationMin * 60,
+      remainingSeconds: prevRemaining,
       elapsedSeconds: prevElapsed,
       isRunning: true,
       isPaused: false,
@@ -115,7 +122,9 @@ export function useTimer({ onComplete, onSkip }: UseTimerCallbacks): UseTimerRet
     const { activeTaskId, elapsedSeconds } = stateRef.current
     if (activeTaskId) {
       taskElapsedRef.current.delete(activeTaskId)
+      taskRemainingRef.current.delete(activeTaskId)
       setTaskElapsed(new Map(taskElapsedRef.current))
+      setTaskRemaining(new Map(taskRemainingRef.current))
     }
     setTimerState(INITIAL_STATE)
     if (activeTaskId) onComplete(activeTaskId, elapsedSeconds)
@@ -126,7 +135,9 @@ export function useTimer({ onComplete, onSkip }: UseTimerCallbacks): UseTimerRet
     const { activeTaskId } = stateRef.current
     if (activeTaskId) {
       taskElapsedRef.current.delete(activeTaskId)
+      taskRemainingRef.current.delete(activeTaskId)
       setTaskElapsed(new Map(taskElapsedRef.current))
+      setTaskRemaining(new Map(taskRemainingRef.current))
     }
     setTimerState(INITIAL_STATE)
     if (activeTaskId) onSkip(activeTaskId)
@@ -137,7 +148,9 @@ export function useTimer({ onComplete, onSkip }: UseTimerCallbacks): UseTimerRet
     const { activeTaskId } = stateRef.current
     if (activeTaskId) {
       taskElapsedRef.current.delete(activeTaskId)
+      taskRemainingRef.current.delete(activeTaskId)
       setTaskElapsed(new Map(taskElapsedRef.current))
+      setTaskRemaining(new Map(taskRemainingRef.current))
     }
     setTimerState(INITIAL_STATE)
   }, [clearTick])
@@ -151,5 +164,5 @@ export function useTimer({ onComplete, onSkip }: UseTimerCallbacks): UseTimerRet
 
   useEffect(() => () => clearTick(), [clearTick])
 
-  return { timerState, taskElapsed, select, start, pause, resume, complete, skip, reset, adjustRemaining }
+  return { timerState, taskElapsed, taskRemaining, select, start, pause, resume, complete, skip, reset, adjustRemaining }
 }

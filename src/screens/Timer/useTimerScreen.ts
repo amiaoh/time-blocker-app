@@ -77,7 +77,7 @@ export function useTimerScreen() {
     [updateTask, autoStartNext],
   )
 
-  const { timerState, taskElapsed, select, start, pause, resume, complete, skip, adjustRemaining } = useTimer({
+  const { timerState, taskElapsed, taskRemaining, select, start, pause, resume, complete, skip, adjustRemaining } = useTimer({
     onComplete: handleComplete,
     onSkip: handleSkip,
   })
@@ -255,6 +255,7 @@ export function useTimerScreen() {
     // Timer
     timerState,
     taskElapsed,
+    taskRemaining,
     select,
     start,
     pause,

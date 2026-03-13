@@ -28,6 +28,7 @@ export function TimerScreen() {
     setHideCompleted,
     timerState,
     taskElapsed,
+    taskRemaining,
     complete,
     handleTimerToggle,
     handleAddSubmit,
@@ -133,6 +134,7 @@ export function TimerScreen() {
               tasks={tasks}
               timerState={timerState}
               taskElapsed={taskElapsed}
+              taskRemaining={taskRemaining}
               taskTimeRanges={taskTimeRanges}
               use24HourTime={settings.use24HourTime}
               hideCompleted={hideCompleted}
