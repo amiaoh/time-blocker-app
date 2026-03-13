@@ -83,7 +83,7 @@ export function useUpdateTask(sessionId: string) {
       await queryClient.cancelQueries({ queryKey: tasksQueryKey(sessionId) })
       const previous = queryClient.getQueryData<Task[]>(tasksQueryKey(sessionId))
       queryClient.setQueryData<Task[]>(tasksQueryKey(sessionId), (old) =>
-        (old ?? []).map((t) => (t.id === updates.id ? { ...t, ...updates } : t)),
+        (old ?? []).map((t) => (t.id === updates.id ? { ...t, ...updates } : t)).sort((a, b) => a.position - b.position),
       )
       return { previous }
     },
