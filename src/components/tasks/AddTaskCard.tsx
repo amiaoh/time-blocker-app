@@ -1,4 +1,4 @@
-import { Box, Text } from '@chakra-ui/react'
+import { Button, Text } from '@chakra-ui/react'
 
 interface AddTaskCardProps {
   onClick: () => void
@@ -6,8 +6,8 @@ interface AddTaskCardProps {
 
 export function AddTaskCard({ onClick }: AddTaskCardProps) {
   return (
-    <Box
-      as="button"
+    <Button
+      variant="outline"
       onClick={onClick}
       w="100%"
       borderRadius="xl"
@@ -15,16 +15,16 @@ export function AddTaskCard({ onClick }: AddTaskCardProps) {
       borderStyle="dashed"
       borderColor="gray.700"
       py={5}
-      textAlign="center"
-      cursor="pointer"
-      bg="transparent"
+      h="auto"
+      flexDirection="column"
       color="gray.600"
-      _hover={{ borderColor: 'gray.500', color: 'gray.400' }}
+      bg="transparent"
+      _hover={{ borderColor: 'gray.500', color: 'gray.400', bg: 'transparent' }}
       transition="border-color 0.15s, color 0.15s"
       aria-label="Add new task"
     >
       <Text fontSize="xl" lineHeight={1}>+</Text>
       <Text fontSize="sm" mt={1}>Add task</Text>
-    </Box>
+    </Button>
   )
 }

@@ -1,4 +1,4 @@
-import { HStack, Text } from '@chakra-ui/react'
+import { Button, HStack } from '@chakra-ui/react'
 import { TimerToggleButton } from './TimerToggleButton'
 
 interface TimerAdjustControlsProps {
@@ -12,37 +12,35 @@ interface TimerAdjustControlsProps {
 export function TimerAdjustControls({ isRunning, showToggle, onMinus, onPlus, onToggle }: TimerAdjustControlsProps) {
   return (
     <HStack gap={6} align="center">
-      <Text
-        as="button"
+      <Button
+        variant="ghost"
         fontSize="sm"
         color="gray.500"
-        _hover={{ color: 'gray.300' }}
-        cursor="pointer"
-        bg="transparent"
-        border="none"
+        _hover={{ color: 'gray.300', bg: 'transparent' }}
         p={0}
+        h="auto"
+        minW="auto"
         onClick={onMinus}
         aria-label="Subtract 5 minutes"
       >
         −5m
-      </Text>
+      </Button>
 
       {showToggle && <TimerToggleButton isRunning={isRunning} onClick={onToggle} />}
 
-      <Text
-        as="button"
+      <Button
+        variant="ghost"
         fontSize="sm"
         color="gray.500"
-        _hover={{ color: 'gray.300' }}
-        cursor="pointer"
-        bg="transparent"
-        border="none"
+        _hover={{ color: 'gray.300', bg: 'transparent' }}
         p={0}
+        h="auto"
+        minW="auto"
         onClick={onPlus}
         aria-label="Add 5 minutes"
       >
         +5m
-      </Text>
+      </Button>
     </HStack>
   )
 }

@@ -1,4 +1,4 @@
-import { Box, Text } from '@chakra-ui/react'
+import { Button, Text } from '@chakra-ui/react'
 
 interface TimerToggleButtonProps {
   isRunning: boolean
@@ -7,16 +7,13 @@ interface TimerToggleButtonProps {
 
 export function TimerToggleButton({ isRunning, onClick }: TimerToggleButtonProps) {
   return (
-    <Box
-      as="button"
+    <Button
       w={12}
       h={12}
       borderRadius="full"
       bg="gray.700"
-      display="flex"
-      alignItems="center"
-      justifyContent="center"
-      cursor="pointer"
+      p={0}
+      minW="auto"
       _hover={{ bg: 'gray.600' }}
       onClick={onClick}
       aria-label={isRunning ? 'Pause timer' : 'Start timer'}
@@ -24,6 +21,6 @@ export function TimerToggleButton({ isRunning, onClick }: TimerToggleButtonProps
       <Text fontSize="lg" aria-hidden="true">
         {isRunning ? '⏸' : '▶'}
       </Text>
-    </Box>
+    </Button>
   )
 }

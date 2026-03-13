@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { Box } from '@chakra-ui/react'
+import { Box, Button } from '@chakra-ui/react'
 import Picker from '@emoji-mart/react'
 import data from '@emoji-mart/data'
 
@@ -28,25 +28,23 @@ export function EmojiPickerPopover({ currentIcon, color, onSelect, disabled }: E
   return (
     <Box ref={containerRef} position="relative" flexShrink={0}>
       {/* Coloured icon square — matches original design, click to change emoji */}
-      <Box
-        as="button"
+      <Button
         w={10}
         h={10}
         borderRadius="lg"
         bg={color}
-        display="flex"
-        alignItems="center"
-        justifyContent="center"
+        p={0}
+        minW="auto"
         fontSize="lg"
-        border="none"
-        cursor={disabled ? 'default' : 'pointer'}
+        disabled={disabled}
         opacity={disabled ? 0.6 : 1}
+        _hover={{ bg: color, opacity: disabled ? 0.6 : 0.85 }}
         onClick={() => !disabled && setOpen((v) => !v)}
         style={{ userSelect: 'none' }}
         aria-label="Change icon"
       >
         {currentIcon}
-      </Box>
+      </Button>
 
       {open && (
         <Box

@@ -1,4 +1,4 @@
-import { Button, HStack, Text } from '@chakra-ui/react'
+import { Button, HStack } from '@chakra-ui/react'
 
 import { DaySummary } from '@/components/projection/DaySummary'
 import type { ProjectionResult } from '@/types'
@@ -13,32 +13,14 @@ interface AppHeaderProps {
 export function AppHeader({ projection, use24HourTime, onOpenSettings, onAddPreset }: AppHeaderProps) {
   return (
     <HStack justify="space-between" align="center" mb={4} gap={3}>
-      {/* Settings */}
-      
-      {/* <Text
-        as="button"
+      <Button
+        variant="ghost"
         fontSize="lg"
         color="gray.500"
-        _hover={{ color: 'gray.300' }}
-        cursor="pointer"
-        bg="transparent"
-        border="none"
+        _hover={{ color: 'gray.300', bg: 'transparent' }}
         p={1}
-        flexShrink={0}
-        onClick={onOpenSettings}
-        aria-label="Open settings"
-      >
-        ⚙
-      </Text> */}
-        <Button
-        as="button"
-        fontSize="lg"
-        color="gray.500"
-        _hover={{ color: 'gray.300' }}
-        cursor="pointer"
-        bg="transparent"
-        border="none"
-        p={1}
+        h="auto"
+        minW="auto"
         flexShrink={0}
         onClick={onOpenSettings}
         aria-label="Open settings"
@@ -48,22 +30,21 @@ export function AppHeader({ projection, use24HourTime, onOpenSettings, onAddPres
 
       <DaySummary projection={projection} use24HourTime={use24HourTime} />
 
-      <Text
-        as="button"
+      <Button
+        variant="ghost"
         fontSize="lg"
         color="gray.500"
-        _hover={{ color: 'gray.300' }}
-        cursor="pointer"
-        bg="transparent"
-        border="none"
+        _hover={{ color: 'gray.300', bg: 'transparent' }}
         p={1}
+        h="auto"
+        minW="auto"
         flexShrink={0}
         onClick={onAddPreset}
         aria-label="Add preset list"
         title="Add preset list"
       >
         ≡+
-      </Text>
+      </Button>
     </HStack>
   )
 }

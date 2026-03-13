@@ -1,4 +1,4 @@
-import { Text } from '@chakra-ui/react'
+import { Button } from '@chakra-ui/react'
 
 interface ActionBtnProps {
   label: string
@@ -10,20 +10,19 @@ interface ActionBtnProps {
 
 export function ActionBtn({ label, onClick, color = 'gray.500', hoverColor = 'white', ariaLabel }: ActionBtnProps) {
   return (
-    <Text
-      as="button"
+    <Button
+      variant="ghost"
       fontSize="sm"
       color={color}
-      _hover={{ color: hoverColor }}
-      cursor="pointer"
-      onClick={onClick}
-      bg="transparent"
-      border="none"
+      _hover={{ color: hoverColor, bg: 'transparent' }}
       p={0}
+      h="auto"
+      minW="auto"
       flexShrink={0}
+      onClick={onClick}
       aria-label={ariaLabel ?? label}
     >
       {label}
-    </Text>
+    </Button>
   )
 }

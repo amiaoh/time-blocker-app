@@ -1,4 +1,4 @@
-import { Text } from '@chakra-ui/react'
+import { Button } from '@chakra-ui/react'
 
 interface TextBtnProps {
   label: string
@@ -8,22 +8,19 @@ interface TextBtnProps {
 
 export function TextBtn({ label, icon, onClick }: TextBtnProps) {
   return (
-    <Text
-      as="button"
+    <Button
+      variant="ghost"
       fontSize="sm"
       color="gray.500"
-      _hover={{ color: 'gray.200' }}
-      cursor="pointer"
-      bg="transparent"
-      border="none"
+      _hover={{ color: 'gray.200', bg: 'transparent' }}
       p={0}
-      display="flex"
-      alignItems="center"
+      h="auto"
+      minW="auto"
       gap={1}
       onClick={onClick}
       aria-label={label}
     >
       {icon} {label}
-    </Text>
+    </Button>
   )
 }
