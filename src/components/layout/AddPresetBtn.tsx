@@ -13,6 +13,7 @@ export function AddPresetBtn({ onClick }: AddPresetBtnProps) {
       _hover={{ color: 'gray.300', bg: 'transparent' }}
       p={1}
       h="auto"
+      w="32px"
       minW="auto"
       flexShrink={0}
       onClick={onClick}

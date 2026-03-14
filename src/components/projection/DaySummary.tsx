@@ -1,4 +1,4 @@
-import { Box, HStack, Text } from '@chakra-ui/react'
+import { Box, HStack, Separator, Text } from '@chakra-ui/react'
 
 import type { ProjectionResult } from '@/types'
 import { formatFinishTime } from '@/utils/calcFinishTime'
@@ -32,7 +32,7 @@ export function DaySummary({ projection, use24HourTime = false }: DaySummaryProp
         <Text color="gray.500" fontSize="xs">List time</Text>
       </Box>
 
-      <Box w="1px" bg="gray.700" alignSelf="stretch" />
+      <Separator orientation="vertical" borderColor="gray.600" borderWidth="1px" alignSelf="center" h="12" />
 
       <Box flex={1} textAlign="center" py={3} px={4}>
         <Text color="white" fontWeight="semibold" fontSize="sm">
