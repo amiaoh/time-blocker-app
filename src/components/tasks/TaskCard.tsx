@@ -21,6 +21,7 @@ interface TaskCardProps {
   onReset: (task: Task) => void
   onMoveToTop: (task: Task) => void
   onChangeIcon: (task: Task, icon: string) => void
+  onEdit: (task: Task) => void
 }
 
 export function TaskCard({
@@ -35,6 +36,7 @@ export function TaskCard({
   onReset,
   onMoveToTop,
   onChangeIcon,
+  onEdit,
 }: TaskCardProps) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: task.id,
@@ -142,6 +144,7 @@ export function TaskCard({
               onDelete={() => onDelete(task)}
               onReset={() => onReset(task)}
               onMoveToTop={() => onMoveToTop(task)}
+              onEdit={() => onEdit(task)}
             />
           </GridItem>
         </Grid>

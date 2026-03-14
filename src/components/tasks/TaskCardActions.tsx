@@ -14,6 +14,7 @@ interface TaskCardActionsProps {
   onDelete: () => void
   onReset: () => void
   onMoveToTop: () => void
+  onEdit: () => void
 }
 
 export function TaskCardActions({
@@ -25,6 +26,7 @@ export function TaskCardActions({
   onDelete,
   onReset,
   onMoveToTop,
+  onEdit,
 }: TaskCardActionsProps) {
   return (
     <HStack gap={2} align="center" overflow="hidden">
@@ -45,6 +47,7 @@ export function TaskCardActions({
           <ActionBtn label="Delete" onClick={onDelete} hoverColor="red.400" />
           <ActionBtn label="Reset" onClick={onReset} hoverColor="blue.400" />
           <ActionBtn label="Complete" onClick={onComplete} hoverColor="green.300" />
+          <ActionBtn label="Edit" onClick={onEdit} hoverColor="white" />
           <ElapsedBadge label={formatSeconds(timerState.elapsedSeconds)} />
         </>
       ) : (
@@ -52,6 +55,7 @@ export function TaskCardActions({
           <ActionBtn label="Delete" onClick={onDelete} hoverColor="red.400" />
           <ActionBtn label="Top" onClick={onMoveToTop} hoverColor="white" ariaLabel="Move to top of list" />
           <ActionBtn label="Complete" onClick={onComplete} hoverColor="green.300" />
+          <ActionBtn label="Edit" onClick={onEdit} hoverColor="white" />
           <ElapsedBadge label={formatSeconds(taskElapsed.get(task.id) ?? 0)} />
         </>
       )}

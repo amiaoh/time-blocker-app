@@ -10,6 +10,7 @@ import { AppHeader } from "@/components/layout/AppHeader";
 import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
 import { SettingsDialog } from "@/components/shared/SettingsDialog";
 import { TaskForm } from "@/components/tasks/TaskForm";
+import { TaskEditSheet } from "@/components/tasks/TaskEditSheet";
 import { TaskList } from "@/components/tasks/TaskList";
 import { TimerAdjustControls } from "@/components/timer/TimerAdjustControls";
 import { TimerDisplay } from "@/components/timer/TimerDisplay";
@@ -158,6 +159,7 @@ export function TimerScreen({ onOpenPresets }: TimerScreenProps) {
               onReset={handleReset}
               onMoveToTop={handleMoveToTop}
               onChangeIcon={handleChangeIcon}
+              onEdit={(task) => setEditingTask(task)}
             />
           </DndContext>
         )}
@@ -171,11 +173,11 @@ export function TimerScreen({ onOpenPresets }: TimerScreenProps) {
         maxDurationMin={settings.maxTaskDurationMin}
       />
 
-      <TaskForm
-        isOpen={!!editingTask}
+      <TaskEditSheet
+        key={editingTask?.id}
+        task={editingTask}
         onClose={() => setEditingTask(undefined)}
         onSubmit={handleEditSubmit}
-        editingTask={editingTask}
         isLoading={isUpdatingTask}
         maxDurationMin={settings.maxTaskDurationMin}
       />
