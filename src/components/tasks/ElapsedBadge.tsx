@@ -14,6 +14,7 @@ export function ElapsedBadge({ label }: ElapsedBadgeProps) {
       backgroundColor="whiteAlpha.300"
       borderRadius={4}
       paddingX={2}
+      ml="auto"
     >
       {label}
     </Text>
