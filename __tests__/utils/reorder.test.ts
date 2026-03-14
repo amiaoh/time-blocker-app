@@ -8,7 +8,7 @@ function makeTask(id: string, position: number): Task {
     sessionId: 'sess',
     title: id,
     durationMin: 25,
-    color: '#A78BFA',
+    color: '#7C4B1A',
     position,
     status: 'pending',
     taskDate: '2024-01-01',

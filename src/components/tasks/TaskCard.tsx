@@ -57,9 +57,11 @@ export function TaskCard({
     <Box
       ref={setNodeRef}
       style={style}
-      bg={isActive ? 'gray.800' : 'gray.900'}
+      bg={task.color}
       borderRadius="xl"
       role="listitem"
+      outline={isActive ? '2px solid white' : 'none'}
+      outlineOffset="2px"
       aria-label={`Task: ${task.title}, ${task.durationMin} minutes, ${task.status}`}
     >
       <HStack align="center" gap={3} p={4} pt={timeRange ? 1 : 4}>
@@ -73,7 +75,6 @@ export function TaskCard({
           <HStack justifyContent="space-between" alignItems="baseline">
             <EmojiPickerPopover
               currentIcon={task.icon}
-              color={task.color}
               onSelect={(icon) => onChangeIcon(task, icon)}
               disabled={isDone}
             />

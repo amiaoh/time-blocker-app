@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { validateTaskForm } from '@/utils/taskValidation'
 import type { Task, TaskColor, TaskFormValues, ValidationError } from '@/types'
 
-const DEFAULT_COLOR: TaskColor = '#A78BFA'
+const DEFAULT_COLOR: TaskColor = '#7C4B1A'
 
 function defaultValues(task?: Task): TaskFormValues {
   return {

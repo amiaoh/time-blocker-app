@@ -1,15 +1,14 @@
-import { useEffect, useRef, useState } from 'react'
 import { Box, Button } from '@chakra-ui/react'
 import EmojiPicker, { type EmojiClickData, Theme } from 'emoji-picker-react'
+import { useEffect, useRef, useState } from 'react'
 
 interface EmojiPickerPopoverProps {
   currentIcon: string
-  color: string
   onSelect: (emoji: string) => void
   disabled?: boolean
 }
 
-export function EmojiPickerPopover({ currentIcon, color, onSelect, disabled }: EmojiPickerPopoverProps) {
+export function EmojiPickerPopover({ currentIcon, onSelect, disabled }: EmojiPickerPopoverProps) {
   const [open, setOpen] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
 
@@ -26,18 +25,17 @@ export function EmojiPickerPopover({ currentIcon, color, onSelect, disabled }: E
 
   return (
     <Box ref={containerRef} position="relative" flexShrink={0}>
-      {/* Coloured icon square — matches original design, click to change emoji */}
       <Button
         w={10}
         h={10}
         borderRadius="lg"
-        bg={color}
+        bg="inherit"
         p={0}
         minW="auto"
-        fontSize="lg"
+        fontSize="2xl"
         disabled={disabled}
         opacity={disabled ? 0.6 : 1}
-        _hover={{ bg: color, opacity: disabled ? 0.6 : 0.85 }}
+        _hover={{ bg: 'whiteAlpha.200', opacity: disabled ? 0.6 : 1 }}
         onClick={() => !disabled && setOpen((v) => !v)}
         style={{ userSelect: 'none' }}
         aria-label="Change icon"

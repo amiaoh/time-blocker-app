@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest'
 import { validateTaskForm } from '@/utils/taskValidation'
 import type { TaskFormValues } from '@/types'
 
-const valid: TaskFormValues = { title: 'Write tests', durationMin: 25, color: '#A78BFA' }
+const valid: TaskFormValues = { title: 'Write tests', durationMin: 25, color: '#7C4B1A' }
 
 describe('validateTaskForm', () => {
   it('returns no errors for valid input', () => {

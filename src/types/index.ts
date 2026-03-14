@@ -1,24 +1,16 @@
 export type TaskStatus = 'pending' | 'active' | 'completed' | 'skipped'
 
 export type TaskColor =
-  | '#F87171'
-  | '#FB923C'
-  | '#FBBF24'
-  | '#4ADE80'
-  | '#60A5FA'
-  | '#A78BFA'
-  | '#F472B6'
-  | '#94A3B8'
+  | '#7C2D2D'  // high
+  | '#7C4B1A'  // medium
+  | '#1D3D6B'  // low
 
-export const TASK_COLORS: TaskColor[] = [
-  '#F87171',
-  '#FB923C',
-  '#FBBF24',
-  '#4ADE80',
-  '#60A5FA',
-  '#A78BFA',
-  '#F472B6',
-  '#94A3B8',
+export const TASK_COLORS: TaskColor[] = ['#7C2D2D', '#7C4B1A', '#1D3D6B']
+
+export const PRIORITY_COLORS: { color: TaskColor; label: string }[] = [
+  { color: '#7C2D2D', label: 'High' },
+  { color: '#7C4B1A', label: 'Medium' },
+  { color: '#1D3D6B', label: 'Low' },
 ]
 
 export interface Task {

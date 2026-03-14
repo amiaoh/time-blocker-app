@@ -36,7 +36,7 @@ function PresetFormInner({ isOpen, onClose, onSubmit, editingPreset, isLoading }
           <Dialog.Body>
             <Stack gap={4}>
               <HStack gap={3} align="center">
-                <EmojiPickerPopover currentIcon={icon} color="#A78BFA" onSelect={setIcon} />
+                <EmojiPickerPopover currentIcon={icon} onSelect={setIcon} />
                 <Text color="gray.400" fontSize="sm">Tap to change icon</Text>
               </HStack>
 
