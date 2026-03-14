@@ -86,7 +86,7 @@ export function TaskCard({
             >
               {task.title}
             </Text>
-            {timeRange && <TimeRangePill start={timeRange.start} end={timeRange.end} use24HourTime={use24HourTime} />}
+            {timeRange && <TimeRangePill start={timeRange.start} end={timeRange.end} cardColor={task.color} use24HourTime={use24HourTime} />}
           </HStack>
 
           <TaskCardActions

@@ -8,10 +8,10 @@ export function ElapsedBadge({ label }: ElapsedBadgeProps) {
   return (
     <Text
       fontSize="xs"
-      color="gray.600"
+      color="white"
       flexShrink={0}
       fontVariantNumeric="tabular-nums"
-      backgroundColor="gray.400"
+      backgroundColor="whiteAlpha.300"
       borderRadius={4}
       paddingX={2}
     >

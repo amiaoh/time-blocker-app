@@ -4,17 +4,19 @@ import { formatTimeShort } from '@/utils/formatTime'
 interface TimeRangePillProps {
   start: Date
   end: Date
+  cardColor: string
   use24HourTime?: boolean
 }
 
-export function TimeRangePill({ start, end, use24HourTime = false }: TimeRangePillProps) {
+export function TimeRangePill({ start, end, cardColor, use24HourTime = false }: TimeRangePillProps) {
   return (
     <HStack pt={2}>
       <Text
         fontSize="xs"
-        color="gray.300"
+        fontWeight="semibold"
         fontVariantNumeric="tabular-nums"
-        backgroundColor="teal.700"
+        backgroundColor="white"
+        color={cardColor}
         borderRadius={4}
         paddingX={2}
       >

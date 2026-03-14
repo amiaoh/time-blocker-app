@@ -32,7 +32,7 @@ export function TaskCardActions({
 
   return (
     <HStack gap={2} align="center" overflow="hidden" justifyContent="space-between">
-      <Text fontSize="sm" color={isDone ? 'gray.600' : 'gray.400'} fontVariantNumeric="tabular-nums" flexShrink={0}>
+      <Text fontSize="sm" color={isDone ? 'whiteAlpha.400' : 'white'} fontVariantNumeric="tabular-nums" flexShrink={0}>
         {timeLabel}
       </Text>
 
