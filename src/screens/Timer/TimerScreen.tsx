@@ -1,5 +1,10 @@
 import { Box, Spinner, Stack, Text } from "@chakra-ui/react";
-import { DndContext, closestCenter } from "@dnd-kit/core";
+import { DndContext, closestCenter, pointerWithin, type CollisionDetection } from "@dnd-kit/core";
+
+const collisionDetection: CollisionDetection = (args) => {
+  const pointerHits = pointerWithin(args)
+  return pointerHits.length > 0 ? pointerHits : closestCenter(args)
+}
 
 import { AppHeader } from "@/components/layout/AppHeader";
 import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
@@ -131,7 +136,7 @@ export function TimerScreen({ onOpenPresets }: TimerScreenProps) {
         ) : (
           <DndContext
             sensors={sensors}
-            collisionDetection={closestCenter}
+            collisionDetection={collisionDetection}
             onDragStart={handleDragStart}
             onDragEnd={handleDragEnd}
             onDragCancel={handleDragCancel}

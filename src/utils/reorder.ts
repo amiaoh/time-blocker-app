@@ -20,9 +20,11 @@ export function reorderTasks(tasks: Task[], activeId: string, overId: string): T
   // Build new order array
   const reordered = [...sorted]
   const [moved] = reordered.splice(activeIndex, 1)
-  // After removing activeIndex, overIndex shifts by 1 if it was after the removed item
-  const insertAt = activeIndex < overIndex ? overIndex - 1 : overIndex
-  reordered.splice(insertAt, 0, moved)
+  // overIndex is the target slot in the original array; after splicing out activeIndex
+  // the target slot is still correct because dnd-kit's over.id always refers to the
+  // original item, not a shifted index.
+  reordered.splice(overIndex, 0, moved)
+  const insertAt = overIndex
 
   // Compute new fractional position for the moved item
   const prevPos = reordered[insertAt - 1]?.position ?? 0

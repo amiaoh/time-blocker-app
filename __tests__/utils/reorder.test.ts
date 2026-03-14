@@ -27,7 +27,7 @@ describe('reorderTasks', () => {
   it('moves a task down', () => {
     const result = reorderTasks(tasks, 'a', 'c')
     const sorted = [...result].sort((x, y) => x.position - y.position)
-    expect(sorted.map((t) => t.id)).toEqual(['b', 'a', 'c'])
+    expect(sorted.map((t) => t.id)).toEqual(['b', 'c', 'a'])
   })
 
   it('moves a task up', () => {

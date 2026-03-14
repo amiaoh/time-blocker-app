@@ -21,6 +21,7 @@ export function DragHandle(props: DragHandleProps) {
       alignSelf="stretch"
       fontSize="lg"
       aria-label="Drag to reorder"
+      style={{ touchAction: 'none' }}
     >
       ⠿
     </Box>
