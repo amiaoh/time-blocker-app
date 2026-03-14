@@ -1,5 +1,3 @@
-import type { Task } from '@/types'
-
 const REBALANCE_THRESHOLD = 0.001
 
 /**
@@ -8,7 +6,7 @@ const REBALANCE_THRESHOLD = 0.001
  * Uses fractional indexing — only the moved item gets a new position value
  * unless positions become too close and a full rebalance is needed.
  */
-export function reorderTasks(tasks: Task[], activeId: string, overId: string): Task[] {
+export function reorderTasks<T extends { id: string; position: number }>(tasks: T[], activeId: string, overId: string): T[] {
   const sorted = [...tasks].sort((a, b) => a.position - b.position)
   const activeIndex = sorted.findIndex((t) => t.id === activeId)
   const overIndex = sorted.findIndex((t) => t.id === overId)

@@ -1,14 +1,13 @@
 import { useState } from 'react'
 import type { DragEndEvent, DragStartEvent } from '@dnd-kit/core'
 import { reorderTasks } from '@/utils/reorder'
-import type { Task } from '@/types'
 
-interface UseDragOrderProps {
-  tasks: Task[]
-  onReorder: (tasks: Task[]) => void
+interface UseDragOrderProps<T extends { id: string; position: number }> {
+  tasks: T[]
+  onReorder: (tasks: T[]) => void
 }
 
-export function useDragOrder({ tasks, onReorder }: UseDragOrderProps) {
+export function useDragOrder<T extends { id: string; position: number }>({ tasks, onReorder }: UseDragOrderProps<T>) {
   const [activeId, setActiveId] = useState<string | null>(null)
 
   function handleDragStart(event: DragStartEvent) {

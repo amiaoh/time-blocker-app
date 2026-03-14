@@ -5,8 +5,11 @@ import {
   useAddPresetTask,
   useDeletePresetTask,
   useDuplicatePresetTask,
+  useUpdatePresetTask,
   useLoadPreset,
 } from '@/components/presets/usePresets'
+import { useDragOrder } from '@/components/ordering/useDragOrder'
+import { PointerSensor, TouchSensor, useSensor, useSensors } from '@dnd-kit/core'
 import { toaster } from '@/lib/toaster'
 import { TOAST_DURATION_MS } from '@/constants'
 import type { PresetTask, TaskFormValues } from '@/types'
@@ -19,9 +22,27 @@ export function usePresetDetailScreen(presetId: string, onLoadSuccess: () => voi
   const sessionId = useSessionId()
   const { data: tasks = [], isLoading: isTasksLoading } = usePresetTasks(presetId)
   const addTask = useAddPresetTask(presetId)
+  const updateTask = useUpdatePresetTask(presetId)
   const deleteTask = useDeletePresetTask(presetId)
   const duplicateTask = useDuplicatePresetTask(presetId)
   const loadPreset = useLoadPreset(sessionId)
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
+    useSensor(TouchSensor, { activationConstraint: { delay: 200, tolerance: 10 } }),
+  )
+
+  const { handleDragStart, handleDragEnd, handleDragCancel } = useDragOrder({
+    tasks,
+    onReorder: (reordered) => {
+      reordered.forEach((task) => {
+        const orig = tasks.find((t) => t.id === task.id)
+        if (orig && orig.position !== task.position) {
+          updateTask.mutate({ id: task.id, position: task.position })
+        }
+      })
+    },
+  })
 
   const [deselectedIds, setDeselectedIds] = useState<Set<string>>(new Set())
   const [isAddTaskOpen, setIsAddTaskOpen] = useState(false)
@@ -99,5 +120,9 @@ export function usePresetDetailScreen(presetId: string, onLoadSuccess: () => voi
     setIsAddTaskOpen,
     isAddingTask: addTask.isPending,
     isLoading: loadPreset.isPending,
+    sensors,
+    handleDragStart,
+    handleDragEnd,
+    handleDragCancel,
   }
 }

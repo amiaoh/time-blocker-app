@@ -124,19 +124,53 @@ export function useAddPresetTask(presetId: string) {
   })
 }
 
+export function useUpdatePresetTask(presetId: string) {
+  const queryClient = useQueryClient()
+  const qk = presetTasksQueryKey(presetId)
+  return useMutation({
+    mutationFn: async ({ id, position }: { id: string; position: number }) => {
+      const { error } = await supabase.from('preset_tasks').update({ position }).eq('id', id)
+      if (error) throw error
+    },
+    onMutate: async ({ id, position }) => {
+      await queryClient.cancelQueries({ queryKey: qk })
+      const previous = queryClient.getQueryData<PresetTask[]>(qk)
+      queryClient.setQueryData<PresetTask[]>(qk, (old) =>
+        old?.map((t) => t.id === id ? { ...t, position } : t) ?? []
+      )
+      return { previous }
+    },
+    onError: (_err, _vars, context) => {
+      if (context?.previous) queryClient.setQueryData(qk, context.previous)
+    },
+    onSettled: () => queryClient.invalidateQueries({ queryKey: qk }),
+  })
+}
+
 export function useDeletePresetTask(presetId: string) {
   const queryClient = useQueryClient()
+  const qk = presetTasksQueryKey(presetId)
   return useMutation({
     mutationFn: async (taskId: string) => {
       const { error } = await supabase.from('preset_tasks').delete().eq('id', taskId)
       if (error) throw error
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: presetTasksQueryKey(presetId) }),
+    onMutate: async (taskId) => {
+      await queryClient.cancelQueries({ queryKey: qk })
+      const previous = queryClient.getQueryData<PresetTask[]>(qk)
+      queryClient.setQueryData<PresetTask[]>(qk, (old) => old?.filter((t) => t.id !== taskId) ?? [])
+      return { previous }
+    },
+    onError: (_err, _vars, context) => {
+      if (context?.previous) queryClient.setQueryData(qk, context.previous)
+    },
+    onSettled: () => queryClient.invalidateQueries({ queryKey: qk }),
   })
 }
 
 export function useDuplicatePresetTask(presetId: string) {
   const queryClient = useQueryClient()
+  const qk = presetTasksQueryKey(presetId)
   return useMutation({
     mutationFn: async (task: PresetTask) => {
       const { data, error } = await supabase
@@ -147,7 +181,17 @@ export function useDuplicatePresetTask(presetId: string) {
       if (error) throw error
       return rowToPresetTask(data as PresetTaskRow)
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: presetTasksQueryKey(presetId) }),
+    onMutate: async (task) => {
+      await queryClient.cancelQueries({ queryKey: qk })
+      const previous = queryClient.getQueryData<PresetTask[]>(qk)
+      const optimistic: PresetTask = { ...task, id: `temp-${Date.now()}`, position: task.position + 500 }
+      queryClient.setQueryData<PresetTask[]>(qk, (old) => old ? [...old, optimistic] : [optimistic])
+      return { previous }
+    },
+    onError: (_err, _vars, context) => {
+      if (context?.previous) queryClient.setQueryData(qk, context.previous)
+    },
+    onSettled: () => queryClient.invalidateQueries({ queryKey: qk }),
   })
 }
 

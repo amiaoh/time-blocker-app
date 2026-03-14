@@ -1,4 +1,6 @@
 import { Box, Button, HStack, Spinner, Stack, Text } from '@chakra-ui/react'
+import { DndContext, closestCenter } from '@dnd-kit/core'
+import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
 
 import { MAX_CONTAINER_WIDTH } from '@/constants'
 import type { PresetList } from '@/types'
@@ -26,6 +28,10 @@ export function PresetDetailScreen({ preset, onBack, onLoadSuccess }: PresetDeta
     setIsAddTaskOpen,
     isAddingTask,
     isLoading,
+    sensors,
+    handleDragStart,
+    handleDragEnd,
+    handleDragCancel,
   } = usePresetDetailScreen(preset.id, onLoadSuccess)
 
   return (
@@ -63,16 +69,26 @@ export function PresetDetailScreen({ preset, onBack, onLoadSuccess }: PresetDeta
           </Box>
         ) : (
           <Stack gap={3}>
-            {tasks.map((task) => (
-              <PresetTaskCard
-                key={task.id}
-                task={task}
-                isSelected={isSelected(task.id)}
-                onDelete={() => handleDelete(task.id)}
-                onDuplicate={() => handleDuplicate(task)}
-                onToggleSelect={() => toggleSelect(task.id)}
-              />
-            ))}
+            <DndContext
+              sensors={sensors}
+              collisionDetection={closestCenter}
+              onDragStart={handleDragStart}
+              onDragEnd={handleDragEnd}
+              onDragCancel={handleDragCancel}
+            >
+              <SortableContext items={tasks.map((t) => t.id)} strategy={verticalListSortingStrategy}>
+                {tasks.map((task) => (
+                  <PresetTaskCard
+                    key={task.id}
+                    task={task}
+                    isSelected={isSelected(task.id)}
+                    onDelete={() => handleDelete(task.id)}
+                    onDuplicate={() => handleDuplicate(task)}
+                    onToggleSelect={() => toggleSelect(task.id)}
+                  />
+                ))}
+              </SortableContext>
+            </DndContext>
 
             <Button
               variant="ghost"
