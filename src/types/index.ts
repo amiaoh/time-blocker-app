@@ -63,6 +63,45 @@ export interface ProjectionResult {
   totalRemainingMinutes: number
 }
 
+export interface PresetList {
+  id: string
+  sessionId: string
+  name: string
+  icon: string
+  position: number
+}
+
+export interface PresetTask {
+  id: string
+  presetId: string
+  title: string
+  durationMin: number
+  color: TaskColor
+  icon: string
+  position: number
+}
+
+// Supabase DB row shapes (snake_case)
+export interface PresetListRow {
+  id: string
+  session_id: string
+  name: string
+  icon: string
+  position: number
+  created_at: string
+  updated_at: string
+}
+
+export interface PresetTaskRow {
+  id: string
+  preset_id: string
+  title: string
+  duration_min: number
+  color: string
+  icon: string
+  position: number
+}
+
 // Supabase DB row shape (snake_case)
 export interface TaskRow {
   id: string

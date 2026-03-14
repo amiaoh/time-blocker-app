@@ -1,4 +1,4 @@
-import type { Task, TaskRow, TaskColor } from '@/types'
+import type { Task, TaskRow, TaskColor, PresetList, PresetListRow, PresetTask, PresetTaskRow } from '@/types'
 
 export function rowToTask(row: TaskRow): Task {
   return {
@@ -14,6 +14,28 @@ export function rowToTask(row: TaskRow): Task {
     taskDate: row.task_date,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
+  }
+}
+
+export function rowToPresetList(row: PresetListRow): PresetList {
+  return {
+    id: row.id,
+    sessionId: row.session_id,
+    name: row.name,
+    icon: row.icon,
+    position: row.position,
+  }
+}
+
+export function rowToPresetTask(row: PresetTaskRow): PresetTask {
+  return {
+    id: row.id,
+    presetId: row.preset_id,
+    title: row.title,
+    durationMin: row.duration_min,
+    color: row.color as TaskColor,
+    icon: row.icon,
+    position: row.position,
   }
 }
 

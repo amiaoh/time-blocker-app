@@ -12,7 +12,11 @@ import { useState } from "react";
 import { useTimerScreen } from "./useTimerScreen";
 import { MAX_CONTAINER_WIDTH } from "@/constants";
 
-export function TimerScreen() {
+interface TimerScreenProps {
+  onOpenPresets: () => void
+}
+
+export function TimerScreen({ onOpenPresets }: TimerScreenProps) {
   const {
     tasks,
     isLoading,
@@ -69,6 +73,7 @@ export function TimerScreen() {
             projection={projection}
             use24HourTime={settings.use24HourTime}
             onOpenSettings={() => setIsSettingsOpen(true)}
+            onAddPreset={onOpenPresets}
           />
 
           <Box textAlign="center" role="region" aria-label="Timer">
