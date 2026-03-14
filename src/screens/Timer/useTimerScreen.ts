@@ -150,13 +150,11 @@ export function useTimerScreen() {
 
   function handleEditSubmit(values: TaskFormValues) {
     if (!editingTask) return
+    setEditingTask(undefined)
     updateTask.mutate(
       { id: editingTask.id, ...values },
       {
-        onSuccess: () => {
-          setEditingTask(undefined)
-          toaster.create({ title: 'Task updated', type: 'success', duration: TOAST_DURATION_MS })
-        },
+        onSuccess: () => toaster.create({ title: 'Task updated', type: 'success', duration: TOAST_DURATION_MS }),
         onError: (err) => toaster.create({ title: 'Failed to update task', description: errorMessage(err), type: 'error' }),
       },
     )
