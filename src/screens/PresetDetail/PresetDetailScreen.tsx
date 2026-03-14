@@ -8,9 +8,10 @@ import type { PresetList } from '@/types'
 interface PresetDetailScreenProps {
   preset: PresetList
   onBack: () => void
+  onLoadSuccess: () => void
 }
 
-export function PresetDetailScreen({ preset, onBack }: PresetDetailScreenProps) {
+export function PresetDetailScreen({ preset, onBack, onLoadSuccess }: PresetDetailScreenProps) {
   const {
     tasks,
     isTasksLoading,
@@ -24,7 +25,7 @@ export function PresetDetailScreen({ preset, onBack }: PresetDetailScreenProps) 
     setIsAddTaskOpen,
     isAddingTask,
     isLoading,
-  } = usePresetDetailScreen(preset.id)
+  } = usePresetDetailScreen(preset.id, onLoadSuccess)
 
   return (
     <Box minH="100vh" bg="gray.950" pb={28}>

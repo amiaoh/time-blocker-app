@@ -26,6 +26,7 @@ export function AppRouter() {
       <PresetDetailScreen
         preset={screen.preset}
         onBack={() => setScreen({ name: 'presets' })}
+        onLoadSuccess={() => setScreen({ name: 'timer' })}
       />
     )
   }

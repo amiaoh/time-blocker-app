@@ -15,7 +15,7 @@ function errorMessage(err: unknown): string {
   return err instanceof Error ? err.message : String(err)
 }
 
-export function usePresetDetailScreen(presetId: string) {
+export function usePresetDetailScreen(presetId: string, onLoadSuccess: () => void) {
   const sessionId = useSessionId()
   const { data: tasks = [], isLoading: isTasksLoading } = usePresetTasks(presetId)
   const addTask = useAddPresetTask(presetId)
@@ -73,12 +73,14 @@ export function usePresetDetailScreen(presetId: string) {
     loadPreset.mutate(
       { tasks: selectedTasks, position },
       {
-        onSuccess: () =>
+        onSuccess: () => {
           toaster.create({
             title: `${selectedTasks.length} task${selectedTasks.length === 1 ? '' : 's'} loaded`,
             type: 'success',
             duration: TOAST_DURATION_MS,
-          }),
+          })
+          onLoadSuccess()
+        },
         onError: (err) => toaster.create({ title: 'Failed to load preset', description: errorMessage(err), type: 'error' }),
       },
     )
