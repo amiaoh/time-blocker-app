@@ -1,7 +1,11 @@
-import { Box, Button, Grid, GridItem, HStack, Spinner, Stack, Text } from '@chakra-ui/react'
+import { Box, Button, HStack, Spinner, Stack, Text } from '@chakra-ui/react'
+import { DndContext, DragOverlay, closestCenter } from '@dnd-kit/core'
+import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
+import { useSensors, useSensor, PointerSensor, KeyboardSensor } from '@dnd-kit/core'
+import { sortableKeyboardCoordinates } from '@dnd-kit/sortable'
 import { MAX_CONTAINER_WIDTH } from '@/constants'
+import { TodoistTaskCard } from '@/components/presets/TodoistTaskCard'
 import { useTodoistPresetScreen } from './useTodoistPresetScreen'
-import { ActionBtn } from '@/components/shared/ActionBtn'
 
 interface TodoistPresetScreenProps {
   onBack: () => void
@@ -9,8 +13,18 @@ interface TodoistPresetScreenProps {
 }
 
 export function TodoistPresetScreen({ onBack, onLoadSuccess }: TodoistPresetScreenProps) {
-  const { token, tasks, isTasksLoading, isFetching, error, refetch, isSelected, toggleSelect, handleLoad, isLoading } =
-    useTodoistPresetScreen(onLoadSuccess)
+  const {
+    token, orderedTasks, isTasksLoading, isFetching, error, refetch,
+    isSelected, toggleSelect, handleLoad, isLoading,
+    activeId, handleDragStart, handleDragEnd, handleDragCancel,
+  } = useTodoistPresetScreen(onLoadSuccess)
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
+  )
+
+  const activeTask = activeId ? orderedTasks.find((t) => t.id === activeId) ?? null : null
 
   return (
     <Box minH="100vh" bg="gray.950" pb={28}>
@@ -33,7 +47,7 @@ export function TodoistPresetScreen({ onBack, onLoadSuccess }: TodoistPresetScre
           <Text fontSize="4xl" lineHeight={1}>☑️</Text>
           <Text fontSize="2xl" fontWeight="bold" color="white">Todoist Today</Text>
           <Text color="gray.500" fontSize="sm">
-            {tasks.length === 0 && !isTasksLoading ? '' : `${tasks.length} task${tasks.length === 1 ? '' : 's'} due today`}
+            {orderedTasks.length === 0 && !isTasksLoading ? '' : `${orderedTasks.length} task${orderedTasks.length === 1 ? '' : 's'} due today`}
           </Text>
         </Stack>
 
@@ -49,52 +63,44 @@ export function TodoistPresetScreen({ onBack, onLoadSuccess }: TodoistPresetScre
             <Text color="red.200" fontWeight="semibold">Failed to load Todoist tasks</Text>
             <Text color="red.300" fontSize="sm" mt={1}>{(error as Error).message}</Text>
           </Box>
-        ) : tasks.length === 0 ? (
+        ) : orderedTasks.length === 0 ? (
           <Box bg="gray.800" borderRadius="xl" p={6} textAlign="center">
             <Text color="gray.400">No tasks due today in Todoist 🎉</Text>
           </Box>
         ) : (
-          <Stack gap={3}>
-            {tasks.map((task) => (
-              <Box
-                key={task.id}
-                bg={task.color}
-                borderRadius="xl"
-                opacity={isSelected(task.id) ? 1 : 0.45}
-                transition="opacity 0.15s"
-              >
-                <HStack align="stretch" gap={0}>
-                  <Box w={8} flexShrink={0} />
-                  <Grid templateColumns="auto 1fr" templateRows="auto auto"
-                    columnGap={3} flex={1} pb={3} pr={4} pl={2} pt={3} minW={0} alignItems="center">
-                    <GridItem display="flex" justifyContent="center">
-                      <Text fontSize="xl" lineHeight={1.2}>{task.icon}</Text>
-                    </GridItem>
-                    <GridItem minW={0}>
-                      <Text fontWeight="semibold" fontSize="md" color="white" truncate>{task.title}</Text>
-                    </GridItem>
-                    <GridItem display="flex" justifyContent="center">
-                      <Text fontSize="xs" fontWeight="semibold" color="white" fontVariantNumeric="tabular-nums">
-                        {task.durationMin}m
-                      </Text>
-                    </GridItem>
-                    <GridItem minW={0}>
-                      <ActionBtn
-                        label={isSelected(task.id) ? 'Selected ✓' : 'Select'}
-                        onClick={() => toggleSelect(task.id)}
-                        color={isSelected(task.id) ? 'white' : 'whiteAlpha.500'}
-                        hoverColor="white"
-                      />
-                    </GridItem>
-                  </Grid>
-                </HStack>
-              </Box>
-            ))}
-          </Stack>
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            onDragStart={handleDragStart}
+            onDragEnd={handleDragEnd}
+            onDragCancel={handleDragCancel}
+          >
+            <SortableContext items={orderedTasks.map((t) => t.id)} strategy={verticalListSortingStrategy}>
+              <Stack gap={3}>
+                {orderedTasks.map((task) => (
+                  <TodoistTaskCard
+                    key={task.id}
+                    task={task}
+                    isSelected={isSelected(task.id)}
+                    onToggleSelect={() => toggleSelect(task.id)}
+                  />
+                ))}
+              </Stack>
+            </SortableContext>
+            <DragOverlay>
+              {activeTask && (
+                <TodoistTaskCard
+                  task={activeTask}
+                  isSelected={isSelected(activeTask.id)}
+                  onToggleSelect={() => {}}
+                />
+              )}
+            </DragOverlay>
+          </DndContext>
         )}
       </Box>
 
-      {token && tasks.length > 0 && (
+      {token && orderedTasks.length > 0 && (
         <Box position="fixed" bottom={0} left={0} right={0} bg="gray.950" pt={3} pb={6} px={4}
           borderTop="1px solid" borderColor="gray.800">
           <Box maxW={MAX_CONTAINER_WIDTH} mx="auto">

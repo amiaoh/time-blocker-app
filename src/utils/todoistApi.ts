@@ -26,6 +26,8 @@ export interface MappedTodoistTask {
   color: TaskColor
   icon: string
   durationMin: number
+  priority: number
+  position: number
 }
 
 export async function fetchTodayTodoistTasks(token: string): Promise<MappedTodoistTask[]> {
@@ -49,11 +51,14 @@ export async function fetchTodayTodoistTasks(token: string): Promise<MappedTodoi
 
   return allTasks
     .filter((t) => !t.is_completed)
-    .map((t) => ({
+    .sort((a, b) => b.priority - a.priority)
+    .map((t, i) => ({
       id: t.id,
       title: t.content,
       color: priorityToColor(t.priority),
       icon: emojiFromTaskName(t.content),
       durationMin: 25,
+      priority: t.priority,
+      position: (i + 1) * 1000,
     }))
 }

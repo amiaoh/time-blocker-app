@@ -1,10 +1,12 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useSessionId } from '@/hooks/useSessionId'
 import { useSettings } from '@/hooks/useSettings'
 import { useTodoistTasks } from '@/hooks/useTodoistTasks'
 import { useLoadPreset } from '@/components/presets/usePresets'
+import { useDragOrder } from '@/components/ordering/useDragOrder'
 import { toaster } from '@/lib/toaster'
 import { TOAST_DURATION_MS } from '@/constants'
+import type { MappedTodoistTask } from '@/utils/todoistApi'
 import type { PresetTask } from '@/types'
 
 function errorMessage(err: unknown): string {
@@ -19,7 +21,19 @@ export function useTodoistPresetScreen(onLoadSuccess: () => void) {
   const { data: tasks = [], isLoading: isTasksLoading, error, refetch, isFetching } = useTodoistTasks(token)
   const loadPreset = useLoadPreset(sessionId)
 
+  const [orderedTasks, setOrderedTasks] = useState<MappedTodoistTask[]>([])
   const [deselectedIds, setDeselectedIds] = useState<Set<string>>(new Set())
+
+  // Sync ordered tasks when fresh data arrives (e.g. initial load or refresh)
+  useEffect(() => {
+    setOrderedTasks(tasks)
+    setDeselectedIds(new Set())
+  }, [tasks])
+
+  const { activeId, handleDragStart, handleDragEnd, handleDragCancel } = useDragOrder({
+    tasks: orderedTasks,
+    onReorder: setOrderedTasks,
+  })
 
   function isSelected(id: string) {
     return !deselectedIds.has(id)
@@ -35,7 +49,7 @@ export function useTodoistPresetScreen(onLoadSuccess: () => void) {
   }
 
   function handleLoad(position: 'top' | 'bottom') {
-    const selected = tasks.filter((t) => !deselectedIds.has(t.id))
+    const selected = orderedTasks.filter((t) => !deselectedIds.has(t.id))
     if (selected.length === 0) {
       toaster.create({ title: 'No tasks selected', type: 'info', duration: TOAST_DURATION_MS })
       return
@@ -63,7 +77,7 @@ export function useTodoistPresetScreen(onLoadSuccess: () => void) {
 
   return {
     token,
-    tasks,
+    orderedTasks,
     isTasksLoading,
     isFetching,
     error,
@@ -72,5 +86,9 @@ export function useTodoistPresetScreen(onLoadSuccess: () => void) {
     toggleSelect,
     handleLoad,
     isLoading: loadPreset.isPending,
+    activeId,
+    handleDragStart,
+    handleDragEnd,
+    handleDragCancel,
   }
 }
