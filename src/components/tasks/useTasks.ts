@@ -159,7 +159,7 @@ export function useClearAll(sessionId: string) {
         .from('tasks')
         .delete()
         .eq('session_id', sessionId)
-        .gte('position', 0)
+        .eq('task_date', TODAY)
       if (error) throw error
     },
     onMutate: async () => {
@@ -171,5 +171,6 @@ export function useClearAll(sessionId: string) {
     onError: (_err, _vars, ctx) => {
       if (ctx?.previous) queryClient.setQueryData(tasksQueryKey(sessionId), ctx.previous)
     },
+    onSettled: () => queryClient.invalidateQueries({ queryKey: tasksQueryKey(sessionId) }),
   })
 }

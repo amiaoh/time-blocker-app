@@ -18,7 +18,7 @@ export function useTodoistPresetScreen(onLoadSuccess: () => void) {
   const { settings } = useSettings()
   const token = settings.todoistToken || undefined
 
-  const { data: tasks = [], isLoading: isTasksLoading, error, refetch, isFetching } = useTodoistTasks(token)
+  const { data: tasks, isLoading: isTasksLoading, error, refetch, isFetching } = useTodoistTasks(token)
   const loadPreset = useLoadPreset(sessionId)
 
   const [orderedTasks, setOrderedTasks] = useState<MappedTodoistTask[]>([])
@@ -26,6 +26,7 @@ export function useTodoistPresetScreen(onLoadSuccess: () => void) {
 
   // Sync ordered tasks when fresh data arrives (e.g. initial load or refresh)
   useEffect(() => {
+    if (tasks === undefined) return
     setOrderedTasks(tasks)
     setDeselectedIds(new Set())
   }, [tasks])
