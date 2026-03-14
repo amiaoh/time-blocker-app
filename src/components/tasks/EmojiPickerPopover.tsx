@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { Box, Button } from '@chakra-ui/react'
-import Picker from '@emoji-mart/react'
-import data from '@emoji-mart/data'
+import EmojiPicker, { type EmojiClickData, Theme } from 'emoji-picker-react'
 
 interface EmojiPickerPopoverProps {
   currentIcon: string
@@ -54,13 +53,12 @@ export function EmojiPickerPopover({ currentIcon, color, onSelect, disabled }: E
           zIndex={1000}
           style={{ filter: 'drop-shadow(0 8px 24px rgba(0,0,0,0.6))' }}
         >
-          <Picker
-            data={data}
-            theme="dark"
-            previewPosition="none"
-            skinTonePosition="none"
-            onEmojiSelect={(emoji: { native: string }) => {
-              onSelect(emoji.native)
+          <EmojiPicker
+            theme={Theme.DARK}
+            previewConfig={{ showPreview: false }}
+            skinTonesDisabled
+            onEmojiClick={(emoji: EmojiClickData) => {
+              onSelect(emoji.emoji)
               setOpen(false)
             }}
           />
