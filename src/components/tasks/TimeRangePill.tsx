@@ -1,4 +1,4 @@
-import { HStack, Text } from '@chakra-ui/react'
+import { Text } from '@chakra-ui/react'
 import { formatTimeShort } from '@/utils/formatTime'
 
 interface TimeRangePillProps {
@@ -10,18 +10,20 @@ interface TimeRangePillProps {
 
 export function TimeRangePill({ start, end, cardColor, use24HourTime = false }: TimeRangePillProps) {
   return (
-    <HStack pt={2}>
-      <Text
-        fontSize="xs"
-        fontWeight="semibold"
-        fontVariantNumeric="tabular-nums"
-        backgroundColor="white"
-        color={cardColor}
-        borderRadius={4}
-        paddingX={2}
-      >
-        {formatTimeShort(start, use24HourTime)} → {formatTimeShort(end, use24HourTime)}
-      </Text>
-    </HStack>
+    <Text
+      fontSize="xs"
+      fontWeight="semibold"
+      fontVariantNumeric="tabular-nums"
+      backgroundColor="white"
+      color={cardColor}
+      borderTopRightRadius="xl"
+      borderBottomLeftRadius="xl"
+      borderTopLeftRadius={0}
+      borderBottomRightRadius={0}
+      paddingX={2}
+      paddingY={1}
+    >
+      {formatTimeShort(start, use24HourTime)} → {formatTimeShort(end, use24HourTime)}
+    </Text>
   )
 }

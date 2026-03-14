@@ -1,4 +1,4 @@
-import { Box, HStack, Text } from '@chakra-ui/react'
+import { Box, HStack } from '@chakra-ui/react'
 import type { Task, TimerState } from '@/types'
 
 import { ActionBtn } from '@/components/shared/ActionBtn'
@@ -10,7 +10,6 @@ interface TaskCardActionsProps {
   timerState: TimerState
   taskElapsed: Map<string, number>
   isActive: boolean
-  timeLabel: string
   onComplete: () => void
   onDelete: () => void
   onReset: () => void
@@ -22,20 +21,13 @@ export function TaskCardActions({
   timerState,
   taskElapsed,
   isActive,
-  timeLabel,
   onComplete,
   onDelete,
   onReset,
   onMoveToTop,
 }: TaskCardActionsProps) {
-  const isDone = task.status === 'completed' || task.status === 'skipped'
-
   return (
-    <HStack gap={2} align="center" overflow="hidden" justifyContent="space-between">
-      <Text fontSize="sm" color={isDone ? 'whiteAlpha.400' : 'white'} fontVariantNumeric="tabular-nums" flexShrink={0}>
-        {timeLabel}
-      </Text>
-
+    <HStack gap={2} align="center" overflow="hidden">
       {task.status === 'completed' ? (
         <>
           <ActionBtn label="Delete" onClick={onDelete} hoverColor="red.400" />

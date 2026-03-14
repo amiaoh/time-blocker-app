@@ -1,11 +1,12 @@
-import { Box, HStack, Stack, Text } from '@chakra-ui/react'
+import { Box, Grid, GridItem, HStack, Text } from '@chakra-ui/react'
 import type { Task, TimerState } from '@/types'
-import { formatSeconds } from '@/utils/formatTime'
+
 import { CSS } from '@dnd-kit/utilities'
 import { DragHandle } from '@/components/ordering/DragHandle'
 import { EmojiPickerPopover } from './EmojiPickerPopover'
-import { TimeRangePill } from './TimeRangePill'
 import { TaskCardActions } from './TaskCardActions'
+import { TimeRangePill } from './TimeRangePill'
+import { formatSeconds } from '@/utils/formatTime'
 import { useSortable } from '@dnd-kit/sortable'
 
 interface TaskCardProps {
@@ -59,48 +60,91 @@ export function TaskCard({
       style={style}
       bg={task.color}
       borderRadius="xl"
+      position="relative"
       role="listitem"
-      outline={isActive ? '2px solid white' : 'none'}
-      outlineOffset="2px"
+      boxShadow={isActive ? 'inset 0 0 0 2px white' : 'none'}
       aria-label={`Task: ${task.title}, ${task.durationMin} minutes, ${task.status}`}
     >
-      <HStack align="center" gap={3} p={4} pt={timeRange ? 1 : 4}>
+      {timeRange && (
+        <Box position="absolute" top={0} right={0}>
+          <TimeRangePill
+            start={timeRange.start}
+            end={timeRange.end}
+            cardColor={task.color}
+            use24HourTime={use24HourTime}
+          />
+        </Box>
+      )}
+
+      <HStack align="stretch" gap={0}>
         {!isDone ? (
           <DragHandle {...attributes} {...listeners} />
         ) : (
-          <Box w={4} flexShrink={0} />
+          <Box w={8} flexShrink={0} />
         )}
 
-        <Stack flex={1} minW={0} gap={1}>
-          <HStack justifyContent="space-between" alignItems="baseline">
+        {/* 2×2 grid: [emoji][title] / [duration][actions] */}
+        <Grid
+          templateColumns="auto 1fr"
+          templateRows="auto auto"
+          columnGap={3}
+          rowGap={0}
+          flex={1}
+          pb={3}
+          pr={4}
+          pl={2}
+          pt={timeRange ? 7 : 3}
+          minW={0}
+          alignItems="center"
+        >
+          {/* Row 1 left: emoji */}
+          <GridItem display="flex" justifyContent="center">
             <EmojiPickerPopover
               currentIcon={task.icon}
               onSelect={(icon) => onChangeIcon(task, icon)}
               disabled={isDone}
             />
+          </GridItem>
+
+          {/* Row 1 right: title */}
+          <GridItem minW={0}>
             <Text
               fontWeight="semibold"
-              color={isDone ? 'gray.500' : 'white'}
+              fontSize="md"
+              color={isDone ? 'whiteAlpha.500' : 'white'}
               textDecoration={task.status === 'completed' ? 'line-through' : 'none'}
               truncate
             >
               {task.title}
             </Text>
-            {timeRange && <TimeRangePill start={timeRange.start} end={timeRange.end} cardColor={task.color} use24HourTime={use24HourTime} />}
-          </HStack>
+          </GridItem>
 
-          <TaskCardActions
-            task={task}
-            timerState={timerState}
-            taskElapsed={taskElapsed}
-            isActive={isActive}
-            timeLabel={timeLabel}
-            onComplete={onComplete}
-            onDelete={() => onDelete(task)}
-            onReset={() => onReset(task)}
-            onMoveToTop={() => onMoveToTop(task)}
-          />
-        </Stack>
+          {/* Row 2 left: duration */}
+          <GridItem display="flex" justifyContent="center">
+            <Text
+              fontSize="xs"
+              fontWeight="semibold"
+              color={isDone ? 'whiteAlpha.400' : 'white'}
+              fontVariantNumeric="tabular-nums"
+            >
+              {timeLabel}
+            </Text>
+          </GridItem>
+
+          {/* Row 2 right: actions */}
+          <GridItem minW={0}>
+            <TaskCardActions
+              task={task}
+              timerState={timerState}
+              taskElapsed={taskElapsed}
+              isActive={isActive}
+              onComplete={onComplete}
+              onDelete={() => onDelete(task)}
+              onReset={() => onReset(task)}
+              onMoveToTop={() => onMoveToTop(task)}
+            />
+          </GridItem>
+        </Grid>
       </HStack>
     </Box>
   )

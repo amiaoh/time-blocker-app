@@ -9,14 +9,18 @@ export function DragHandle(props: DragHandleProps) {
       {...props}
       as="div"
       cursor="grab"
-      color="gray.600"
-      _hover={{ color: 'gray.400' }}
+      color="whiteAlpha.600"
+      borderLeftRadius="xl"
+      _hover={{ bg: 'whiteAlpha.300', color: 'white' }}
       _active={{ cursor: 'grabbing' }}
       display="flex"
       alignItems="center"
-      px={1}
-      aria-label="Drag to reorder"
+      justifyContent="center"
+      w={8}
       flexShrink={0}
+      alignSelf="stretch"
+      fontSize="lg"
+      aria-label="Drag to reorder"
     >
       ⠿
     </Box>

@@ -26,13 +26,13 @@ export function EmojiPickerPopover({ currentIcon, onSelect, disabled }: EmojiPic
   return (
     <Box ref={containerRef} position="relative" flexShrink={0}>
       <Button
-        w={10}
-        h={10}
+        w={14}
+        h={14}
         borderRadius="lg"
         bg="inherit"
         p={0}
         minW="auto"
-        fontSize="2xl"
+        fontSize="3xl"
         disabled={disabled}
         opacity={disabled ? 0.6 : 1}
         _hover={{ bg: 'whiteAlpha.200', opacity: disabled ? 0.6 : 1 }}
