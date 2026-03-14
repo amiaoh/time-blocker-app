@@ -102,6 +102,13 @@ export function useTimerScreen() {
           updateTask.mutate({ id: task.id, position: task.position })
         }
       })
+      // After reorder, if the timer is idle re-select the new top pending task
+      if (!timerState.isRunning && !timerState.isPaused) {
+        const newTop = reordered.find((t) => t.status === 'pending')
+        if (newTop && newTop.id !== timerState.activeTaskId) {
+          select(newTop)
+        }
+      }
     },
   })
 
