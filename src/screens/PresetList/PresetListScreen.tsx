@@ -2,15 +2,17 @@ import { Box, Button, HStack, SimpleGrid, Spinner, Text } from '@chakra-ui/react
 import { MAX_CONTAINER_WIDTH } from '@/constants'
 import { PresetCard } from '@/components/presets/PresetCard'
 import { PresetForm } from '@/components/presets/PresetForm'
+import { TodoistPresetCard } from '@/components/presets/TodoistPresetCard'
 import { usePresetListScreen } from './usePresetListScreen'
 import type { PresetList } from '@/types'
 
 interface PresetListScreenProps {
   onBack: () => void
   onOpenPreset: (preset: PresetList) => void
+  onOpenTodoist: () => void
 }
 
-export function PresetListScreen({ onBack, onOpenPreset }: PresetListScreenProps) {
+export function PresetListScreen({ onBack, onOpenPreset, onOpenTodoist }: PresetListScreenProps) {
   const { presets, isLoading, isFormOpen, setIsFormOpen, handleAddSubmit, isAddingPreset } = usePresetListScreen()
 
   return (
@@ -45,6 +47,7 @@ export function PresetListScreen({ onBack, onOpenPreset }: PresetListScreenProps
           </Box>
         ) : (
           <SimpleGrid columns={2} gap={4}>
+            <TodoistPresetCard onClick={onOpenTodoist} />
             {presets.map((preset) => (
               <PresetCard
                 key={preset.id}

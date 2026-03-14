@@ -2,12 +2,14 @@ import { useState } from 'react'
 import { TimerScreen } from '@/screens/Timer/TimerScreen'
 import { PresetListScreen } from '@/screens/PresetList/PresetListScreen'
 import { PresetDetailScreen } from '@/screens/PresetDetail/PresetDetailScreen'
+import { TodoistPresetScreen } from '@/screens/TodoistPreset/TodoistPresetScreen'
 import type { PresetList } from '@/types'
 
 type Screen =
   | { name: 'timer' }
   | { name: 'presets' }
   | { name: 'preset-detail'; preset: PresetList }
+  | { name: 'todoist-preset' }
 
 export function AppRouter() {
   const [screen, setScreen] = useState<Screen>({ name: 'timer' })
@@ -17,6 +19,7 @@ export function AppRouter() {
       <PresetListScreen
         onBack={() => setScreen({ name: 'timer' })}
         onOpenPreset={(preset) => setScreen({ name: 'preset-detail', preset })}
+        onOpenTodoist={() => setScreen({ name: 'todoist-preset' })}
       />
     )
   }
@@ -25,6 +28,15 @@ export function AppRouter() {
     return (
       <PresetDetailScreen
         preset={screen.preset}
+        onBack={() => setScreen({ name: 'presets' })}
+        onLoadSuccess={() => setScreen({ name: 'timer' })}
+      />
+    )
+  }
+
+  if (screen.name === 'todoist-preset') {
+    return (
+      <TodoistPresetScreen
         onBack={() => setScreen({ name: 'presets' })}
         onLoadSuccess={() => setScreen({ name: 'timer' })}
       />

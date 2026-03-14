@@ -5,12 +5,14 @@ export interface AppSettings {
   maxTaskDurationMin: number
   showPieTimer: boolean
   use24HourTime: boolean
+  todoistToken: string
 }
 
 const DEFAULTS: AppSettings = {
   maxTaskDurationMin: DEFAULT_MAX_TASK_DURATION_MIN,
   showPieTimer: true,
   use24HourTime: false,
+  todoistToken: '',
 }
 
 const STORAGE_KEY = 'time-blocker-settings'

@@ -14,10 +14,11 @@ export function SettingsDialog({ isOpen, onClose, settings, onSave }: SettingsDi
   const [maxDuration, setMaxDuration] = useState(settings.maxTaskDurationMin)
   const [showPieTimer, setShowPieTimer] = useState(settings.showPieTimer)
   const [use24HourTime, setUse24HourTime] = useState(settings.use24HourTime)
+  const [todoistToken, setTodoistToken] = useState(settings.todoistToken)
 
   function handleSave() {
     const clamped = Math.min(MAX_TASK_DURATION_MIN, Math.max(MIN_TASK_DURATION_MIN, maxDuration || DEFAULT_MAX_TASK_DURATION_MIN))
-    onSave({ maxTaskDurationMin: clamped, showPieTimer, use24HourTime })
+    onSave({ maxTaskDurationMin: clamped, showPieTimer, use24HourTime, todoistToken: todoistToken.trim() })
     onClose()
   }
 
@@ -26,6 +27,7 @@ export function SettingsDialog({ isOpen, onClose, settings, onSave }: SettingsDi
       setMaxDuration(settings.maxTaskDurationMin)
       setShowPieTimer(settings.showPieTimer)
       setUse24HourTime(settings.use24HourTime)
+      setTodoistToken(settings.todoistToken)
     } else {
       onClose()
     }
@@ -71,6 +73,23 @@ export function SettingsDialog({ isOpen, onClose, settings, onSave }: SettingsDi
                   <Switch.Control />
                 </Switch.Root>
               </HStack>
+
+              <Field.Root>
+                <Field.Label color="gray.300">Todoist API token</Field.Label>
+                <Input
+                  type="password"
+                  value={todoistToken}
+                  onChange={(e) => setTodoistToken(e.target.value)}
+                  placeholder="Paste your API token"
+                  bg="gray.800"
+                  borderColor="gray.600"
+                  color="white"
+                  _placeholder={{ color: 'gray.500' }}
+                />
+                <Field.HelperText color="gray.500">
+                  From todoist.com → Settings → Integrations → Developer
+                </Field.HelperText>
+              </Field.Root>
 
               <HStack justify="space-between" align="center">
                 <Text color="gray.300" fontSize="sm">24-hour time</Text>
