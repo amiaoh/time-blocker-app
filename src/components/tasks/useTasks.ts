@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '@/lib/supabase'
 import { rowToTask, taskToInsertRow } from '@/utils/mappers'
-import type { Task, TaskColor, TaskRow, TaskStatus, TaskUpdate } from '@/types'
+import type { Task, TaskColor, TaskRow, TaskUpdate } from '@/types'
 
 const TODAY = new Date().toISOString().split('T')[0]
 
