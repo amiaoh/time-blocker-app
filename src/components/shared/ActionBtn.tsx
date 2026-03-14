@@ -8,7 +8,7 @@ interface ActionBtnProps {
   ariaLabel?: string
 }
 
-export function ActionBtn({ label, onClick, color = 'whiteAlpha.600', hoverColor = 'white', ariaLabel }: ActionBtnProps) {
+export function ActionBtn({ label, onClick, color = 'whiteAlpha.800', hoverColor = 'white', ariaLabel }: ActionBtnProps) {
   return (
     <Button
       variant="ghost"

@@ -1,9 +1,10 @@
 import { Box, Button, HStack, Spinner, Stack, Text } from '@chakra-ui/react'
+
 import { MAX_CONTAINER_WIDTH } from '@/constants'
+import type { PresetList } from '@/types'
 import { PresetTaskCard } from '@/components/presets/PresetTaskCard'
 import { TaskForm } from '@/components/tasks/TaskForm'
 import { usePresetDetailScreen } from './usePresetDetailScreen'
-import type { PresetList } from '@/types'
 
 interface PresetDetailScreenProps {
   preset: PresetList
@@ -75,8 +76,8 @@ export function PresetDetailScreen({ preset, onBack, onLoadSuccess }: PresetDeta
 
             <Button
               variant="ghost"
-              color="gray.500"
-              _hover={{ color: 'gray.300', bg: 'transparent' }}
+              color="gray.400"
+              _hover={{ color: 'gray.200', bg: 'transparent' }}
               fontSize="sm"
               h="auto"
               py={3}

@@ -109,7 +109,7 @@ export function TimerScreen({ onOpenPresets }: TimerScreenProps) {
         </Box>
       </Box>
 
-      <Box maxW={MAX_CONTAINER_WIDTH} mx="auto" px={4}>
+      <Box maxW={MAX_CONTAINER_WIDTH} mx="auto" px={4} pt={2}>
 
         {/* Load error */}
         {loadError && (

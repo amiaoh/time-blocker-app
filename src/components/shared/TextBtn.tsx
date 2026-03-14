@@ -11,7 +11,7 @@ export function TextBtn({ label, icon, onClick }: TextBtnProps) {
     <Button
       variant="ghost"
       fontSize="sm"
-      color="gray.500"
+      color="gray.200"
       _hover={{ color: 'gray.200', bg: 'transparent' }}
       p={0}
       h="auto"

@@ -13,11 +13,11 @@ export function AddTaskCard({ onClick }: AddTaskCardProps) {
       borderRadius="xl"
       borderWidth={2}
       borderStyle="dashed"
-      borderColor="gray.700"
+      borderColor="whiteAlpha.800"
       py={5}
       h="auto"
       flexDirection="column"
-      color="gray.600"
+      color="whiteAlpha.800"
       bg="transparent"
       _hover={{ borderColor: 'gray.500', color: 'gray.400', bg: 'transparent' }}
       transition="border-color 0.15s, color 0.15s"
