@@ -86,18 +86,18 @@ export function TaskList({
       <AddTaskCard onClick={onAddTask} />
 
       {/* Bottom controls */}
-      <HStack justify="space-between" pt={1}>
-        <TextBtn
-          icon="🕶"
-          label={hideCompleted ? 'Show completed' : 'Hide completed'}
-          onClick={onToggleHideCompleted}
-        />
-        <HStack gap={2}>
+      <HStack justify="space-between" align="flex-start" pt={1}>
+        <Stack gap={1}>
+          <TextBtn
+            icon="🕶"
+            label={hideCompleted ? 'Show completed' : 'Hide completed'}
+            onClick={onToggleHideCompleted}
+          />
           {hasDone && (
             <TextBtn icon="🎉" label="Clear completed" onClick={onClearCompleted} />
           )}
-          <TextBtn icon="🧹" label="Clear all" onClick={onClearAll} />
-        </HStack>
+        </Stack>
+        <TextBtn icon="🧹" label="Clear all" onClick={onClearAll} />
       </HStack>
     </Stack>
   )
