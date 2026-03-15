@@ -12,7 +12,7 @@ export function SvgPlayPause({ isRunning, isIdle, onClick }: SvgPlayPauseProps) 
       <circle
         cx={CX} cy={CY} r={PLAY_BTN_R}
         fill={isIdle ? PLAY_BTN_BG_IDLE : PLAY_BTN_BG_ACTIVE}
-        style={{ cursor: onClick ? 'pointer' : 'default', outline: 'none' }}
+        style={{ cursor: onClick ? 'pointer' : 'default', outline: 'none', WebkitTapHighlightColor: 'transparent' }}
         onClick={onClick}
         role={onClick ? 'button' : undefined}
         aria-label={isRunning ? 'Pause timer' : 'Start timer'}
