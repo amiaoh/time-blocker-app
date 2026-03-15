@@ -9,12 +9,12 @@ export function ElapsedBadge({ label, isOvertime }: ElapsedBadgeProps) {
   return (
     <Text
       fontSize="xs"
-      color={isOvertime ? 'red.300' : 'white'}
+      color={isOvertime ? 'red.300' : 'gray.500'}
       flexShrink={0}
       fontVariantNumeric="tabular-nums"
-      backgroundColor={isOvertime ? 'red.900' : 'whiteAlpha.300'}
-      borderRadius={4}
-      paddingX={2}
+      backgroundColor={isOvertime ? 'red.900' : undefined}
+      borderRadius={isOvertime ? 4 : undefined}
+      paddingX={isOvertime ? 2 : undefined}
       ml="auto"
     >
       {label}

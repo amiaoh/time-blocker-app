@@ -10,7 +10,8 @@ export function AddPresetBtn({ onClick }: AddPresetBtnProps) {
       variant="ghost"
       fontSize="lg"
       color="gray.500"
-      _hover={{ color: 'gray.300', bg: 'transparent' }}
+      _hover={{ color: 'gray.300', bg: 'whiteAlpha.100' }}
+      _active={{ bg: 'whiteAlpha.200', opacity: 0.8 }}
       p={1}
       h="auto"
       w="32px"

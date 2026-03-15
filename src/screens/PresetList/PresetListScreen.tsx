@@ -22,8 +22,10 @@ export function PresetListScreen({ onBack, onOpenPreset, onOpenTodoist }: Preset
           <Button
             variant="ghost"
             color="gray.400"
-            _hover={{ color: 'white', bg: 'transparent' }}
-            p={0}
+            _hover={{ color: 'white', bg: 'whiteAlpha.100' }}
+            _active={{ bg: 'whiteAlpha.200', opacity: 0.8 }}
+            px={2}
+            py={1}
             h="auto"
             fontSize="2xl"
             onClick={onBack}
@@ -80,6 +82,7 @@ export function PresetListScreen({ onBack, onOpenPreset, onOpenTodoist }: Preset
             borderRadius="full"
             h={12}
             _hover={{ bg: 'gray.900' }}
+            _active={{ bg: 'gray.800' }}
             onClick={() => setIsFormOpen(true)}
           >
             Add preset

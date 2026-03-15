@@ -22,8 +22,10 @@ const adjustBtnProps = {
   variant: 'ghost' as const,
   fontSize: 'sm',
   color: 'gray.500',
-  _hover: { color: 'gray.300', bg: 'transparent' },
-  p: 0,
+  _hover: { color: 'gray.300', bg: 'whiteAlpha.100' },
+  _active: { bg: 'whiteAlpha.200', opacity: 0.8 },
+  px: 3,
+  py: 2,
   h: 'auto',
   minW: '42px',
 }

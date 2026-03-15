@@ -41,8 +41,10 @@ export function PresetDetailScreen({ preset, onBack, onLoadSuccess }: PresetDeta
           <Button
             variant="ghost"
             color="gray.400"
-            _hover={{ color: 'white', bg: 'transparent' }}
-            p={0}
+            _hover={{ color: 'white', bg: 'whiteAlpha.100' }}
+            _active={{ bg: 'whiteAlpha.200', opacity: 0.8 }}
+            px={2}
+            py={1}
             h="auto"
             fontSize="2xl"
             onClick={onBack}
@@ -93,7 +95,8 @@ export function PresetDetailScreen({ preset, onBack, onLoadSuccess }: PresetDeta
             <Button
               variant="ghost"
               color="gray.400"
-              _hover={{ color: 'gray.200', bg: 'transparent' }}
+              _hover={{ color: 'gray.200', bg: 'whiteAlpha.100' }}
+              _active={{ bg: 'whiteAlpha.200', opacity: 0.8 }}
               fontSize="sm"
               h="auto"
               py={3}
@@ -127,6 +130,7 @@ export function PresetDetailScreen({ preset, onBack, onLoadSuccess }: PresetDeta
                 borderRadius="full"
                 h={12}
                 _hover={{ bg: 'gray.900' }}
+                _active={{ bg: 'gray.800' }}
                 onClick={() => handleLoad('top')}
                 loading={isLoading}
               >
@@ -139,6 +143,7 @@ export function PresetDetailScreen({ preset, onBack, onLoadSuccess }: PresetDeta
                 borderRadius="full"
                 h={12}
                 _hover={{ bg: 'gray.900' }}
+                _active={{ bg: 'gray.800' }}
                 onClick={() => handleLoad('bottom')}
                 loading={isLoading}
               >

@@ -15,6 +15,7 @@ export function TimerToggleButton({ isRunning, onClick }: TimerToggleButtonProps
       p={0}
       minW="auto"
       _hover={{ bg: 'gray.600' }}
+      _active={{ bg: 'gray.500' }}
       onClick={onClick}
       aria-label={isRunning ? 'Pause timer' : 'Start timer'}
     >

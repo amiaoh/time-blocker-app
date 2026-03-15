@@ -12,7 +12,7 @@ export function DragHandle(props: DragHandleProps) {
       color="whiteAlpha.600"
       borderLeftRadius="xl"
       _hover={{ bg: 'whiteAlpha.300', color: 'white' }}
-      _active={{ cursor: 'grabbing' }}
+      _active={{ cursor: 'grabbing', bg: 'whiteAlpha.400' }}
       display="flex"
       alignItems="center"
       justifyContent="center"

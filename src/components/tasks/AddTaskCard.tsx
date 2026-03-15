@@ -20,6 +20,7 @@ export function AddTaskCard({ onClick }: AddTaskCardProps) {
       color="whiteAlpha.800"
       bg="transparent"
       _hover={{ borderColor: 'gray.500', color: 'gray.400', bg: 'transparent' }}
+      _active={{ bg: 'whiteAlpha.100', opacity: 0.8 }}
       transition="border-color 0.15s, color 0.15s"
       aria-label="Add new task"
     >

@@ -30,14 +30,16 @@ export function TodoistPresetScreen({ onBack, onLoadSuccess }: TodoistPresetScre
     <Box minH="100vh" bg="gray.950" pb={28}>
       <Box maxW={MAX_CONTAINER_WIDTH} mx="auto" px={4} pt={8}>
         <HStack mb={6} align="center">
-          <Button variant="ghost" color="gray.400" _hover={{ color: 'white', bg: 'transparent' }}
-            p={0} h="auto" fontSize="2xl" onClick={onBack} aria-label="Back">
+          <Button variant="ghost" color="gray.400" _hover={{ color: 'white', bg: 'whiteAlpha.100' }}
+            _active={{ bg: 'whiteAlpha.200', opacity: 0.8 }}
+            px={2} py={1} h="auto" fontSize="2xl" onClick={onBack} aria-label="Back">
             ‹
           </Button>
           <Box flex={1} />
           {token && (
-            <Button variant="ghost" color="gray.500" _hover={{ color: 'white', bg: 'transparent' }}
-              p={0} h="auto" fontSize="sm" onClick={() => refetch()} loading={isFetching} aria-label="Refresh">
+            <Button variant="ghost" color="gray.500" _hover={{ color: 'white', bg: 'whiteAlpha.100' }}
+              _active={{ bg: 'whiteAlpha.200', opacity: 0.8 }}
+              px={2} py={1} h="auto" fontSize="sm" onClick={() => refetch()} loading={isFetching} aria-label="Refresh">
               ↻ Refresh
             </Button>
           )}
@@ -106,11 +108,11 @@ export function TodoistPresetScreen({ onBack, onLoadSuccess }: TodoistPresetScre
           <Box maxW={MAX_CONTAINER_WIDTH} mx="auto">
             <HStack gap={3}>
               <Button flex={1} bg="black" color="white" borderRadius="full" h={12}
-                _hover={{ bg: 'gray.900' }} onClick={() => handleLoad('top')} loading={isLoading}>
+                _hover={{ bg: 'gray.900' }} _active={{ bg: 'gray.800' }} onClick={() => handleLoad('top')} loading={isLoading}>
                 Load to Top
               </Button>
               <Button flex={1} bg="black" color="white" borderRadius="full" h={12}
-                _hover={{ bg: 'gray.900' }} onClick={() => handleLoad('bottom')} loading={isLoading}>
+                _hover={{ bg: 'gray.900' }} _active={{ bg: 'gray.800' }} onClick={() => handleLoad('bottom')} loading={isLoading}>
                 Load to Bottom
               </Button>
             </HStack>
