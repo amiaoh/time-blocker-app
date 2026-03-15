@@ -1,13 +1,26 @@
-import { PRIMARY_COLOR, OVERFLOW_COLOR, SECONDS_PER_HOUR, sectorPath } from './timerGeometry'
+import { PRIMARY_COLOR, OVERFLOW_COLOR, OVERTIME_COLOR, SECONDS_PER_HOUR, sectorPath } from './timerGeometry'
 
 interface PieSectorsProps {
   remainingSeconds: number
   isRunning: boolean
+  isOvertime: boolean
+  overtimeSeconds: number
 }
 
-export function PieSectors({ remainingSeconds, isRunning }: PieSectorsProps) {
+export function PieSectors({ remainingSeconds, isRunning, isOvertime, overtimeSeconds }: PieSectorsProps) {
   const primaryProgress = Math.min(1, remainingSeconds / SECONDS_PER_HOUR)
   const overflowProgress = Math.max(0, (remainingSeconds - SECONDS_PER_HOUR) / SECONDS_PER_HOUR)
+  const overtimeProgress = isOvertime ? Math.min(1, overtimeSeconds / SECONDS_PER_HOUR) : 0
+
+  if (isOvertime) {
+    return overtimeProgress > 0 ? (
+      <path
+        d={sectorPath(overtimeProgress)}
+        fill={OVERTIME_COLOR}
+        opacity={0.85}
+      />
+    ) : null
+  }
 
   return (
     <>

@@ -174,7 +174,7 @@ export function useTimerScreen() {
   function handleReset(task: Task) {
     clearTaskTimer(task.id)
     updateTask.mutate(
-      { id: task.id, status: 'pending', spentSeconds: 0 },
+      { id: task.id, status: 'pending', spentSeconds: 0, originalDurationMin: undefined },
       {
         onSuccess: () => toaster.create({ title: 'Task reset', type: 'info', duration: TOAST_DURATION_MS }),
         onError: (err) => toaster.create({ title: 'Failed to reset task', description: errorMessage(err), type: 'error' }),
@@ -237,7 +237,12 @@ export function useTimerScreen() {
     if (!activeTask) return
     if (timerState.isRunning) pause()
     else if (timerState.isPaused) resume()
-    else start(activeTask)
+    else {
+      if (activeTask.originalDurationMin === undefined) {
+        updateTask.mutate({ id: activeTask.id, originalDurationMin: activeTask.durationMin })
+      }
+      start(activeTask)
+    }
   }
 
   return {

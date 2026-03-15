@@ -53,20 +53,27 @@ export function useTimer({ onComplete, onSkip }: UseTimerCallbacks): UseTimerRet
 
   const tick = useCallback(() => {
     setTimerState((prev) => {
+      // When remaining hits 0, keep running — timer continues in overtime
       if (prev.remainingSeconds <= 1) {
-        return { ...prev, remainingSeconds: 0, elapsedSeconds: prev.elapsedSeconds + 1, isRunning: false }
+        return { ...prev, remainingSeconds: 0, elapsedSeconds: prev.elapsedSeconds + 1 }
       }
       return { ...prev, remainingSeconds: prev.remainingSeconds - 1, elapsedSeconds: prev.elapsedSeconds + 1 }
     })
   }, [])
 
-  // Watch for timer reaching zero
+  // Play chime once when timer first transitions to overtime
+  const chimedForTaskRef = useRef<string | null>(null)
   useEffect(() => {
-    if (timerState.remainingSeconds === 0 && !timerState.isRunning && timerState.activeTaskId !== null) {
-      clearTick()
+    if (
+      timerState.remainingSeconds === 0 &&
+      timerState.isRunning &&
+      timerState.activeTaskId !== null &&
+      chimedForTaskRef.current !== timerState.activeTaskId
+    ) {
+      chimedForTaskRef.current = timerState.activeTaskId
       playChime()
     }
-  }, [timerState.remainingSeconds, timerState.isRunning, timerState.activeTaskId, clearTick, playChime])
+  }, [timerState.remainingSeconds, timerState.isRunning, timerState.activeTaskId, playChime])
 
   const saveCurrentElapsed = useCallback(() => {
     const { activeTaskId, elapsedSeconds, remainingSeconds } = stateRef.current
@@ -145,6 +152,7 @@ export function useTimer({ onComplete, onSkip }: UseTimerCallbacks): UseTimerRet
 
   const clearTaskTimer = useCallback((taskId: string) => {
     const { activeTaskId } = stateRef.current
+    if (chimedForTaskRef.current === taskId) chimedForTaskRef.current = null
     taskElapsedRef.current.delete(taskId)
     taskRemainingRef.current.delete(taskId)
     setTaskElapsed(new Map(taskElapsedRef.current))

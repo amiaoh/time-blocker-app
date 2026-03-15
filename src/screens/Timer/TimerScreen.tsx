@@ -65,6 +65,10 @@ export function TimerScreen({ onOpenPresets }: TimerScreenProps) {
 
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
+  const isOvertime = timerState.remainingSeconds === 0 && timerState.elapsedSeconds > 0 && !!activeTask
+  const plannedSeconds = activeTask ? (activeTask.originalDurationMin ?? activeTask.durationMin) * 60 : 0
+  const overtimeSeconds = isOvertime ? Math.max(0, timerState.elapsedSeconds - plannedSeconds) : 0
+
   return (
     <Box minH="100vh" bg="gray.950" pb={8}>
       <Box
@@ -87,17 +91,19 @@ export function TimerScreen({ onOpenPresets }: TimerScreenProps) {
               remainingSeconds={timerState.remainingSeconds}
               isRunning={timerState.isRunning}
               isIdle={!activeTask}
+              isOvertime={isOvertime}
+              overtimeSeconds={overtimeSeconds}
               showPie={settings.showPieTimer}
               onToggle={activeTask ? handleTimerToggle : undefined}
             />
             <Text
-              color={activeTask ? "white" : "gray.600"}
+              color={!activeTask ? "gray.600" : isOvertime ? "red.400" : "white"}
               fontWeight={activeTask ? "semibold" : "normal"}
               fontSize="lg"
               mb={4}
               minH={7}
             >
-              {activeTask ? activeTask.title : null}
+              {activeTask ? (isOvertime ? `Overtime: ${activeTask.title}` : activeTask.title) : null}
             </Text>
 
             {activeTask && (

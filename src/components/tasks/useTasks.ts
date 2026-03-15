@@ -68,6 +68,7 @@ export function useUpdateTask(sessionId: string) {
       if (updates.position !== undefined) dbUpdates.position = updates.position
       if (updates.status !== undefined) dbUpdates.status = updates.status
       if (updates.spentSeconds !== undefined) dbUpdates.spent_seconds = updates.spentSeconds
+      if (updates.originalDurationMin !== undefined) dbUpdates.original_duration_min = updates.originalDurationMin ?? null
 
       const { data, error } = await supabase
         .from('tasks')

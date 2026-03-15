@@ -11,6 +11,7 @@ export function rowToTask(row: TaskRow): Task {
     position: row.position,
     status: row.status,
     spentSeconds: row.spent_seconds ?? undefined,
+    originalDurationMin: row.original_duration_min ?? undefined,
     taskDate: row.task_date,
     createdAt: row.created_at,
     updatedAt: row.updated_at,

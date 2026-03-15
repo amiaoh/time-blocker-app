@@ -23,13 +23,14 @@ export interface Task {
   position: number
   status: TaskStatus
   spentSeconds?: number
+  originalDurationMin?: number
   taskDate: string
   createdAt: string
   updatedAt: string
 }
 
 export type TaskInsert = Omit<Task, 'id' | 'createdAt' | 'updatedAt'>
-export type TaskUpdate = Partial<Pick<Task, 'title' | 'durationMin' | 'color' | 'icon' | 'position' | 'status' | 'spentSeconds'>>
+export type TaskUpdate = Partial<Pick<Task, 'title' | 'durationMin' | 'color' | 'icon' | 'position' | 'status' | 'spentSeconds' | 'originalDurationMin'>>
 
 export interface TaskFormValues {
   title: string
@@ -105,6 +106,7 @@ export interface TaskRow {
   position: number
   status: TaskStatus
   spent_seconds?: number | null
+  original_duration_min?: number | null
   task_date: string
   created_at: string
   updated_at: string

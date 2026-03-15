@@ -33,6 +33,11 @@ export function TaskCardActions({
   const isSkipped = task.status === 'skipped'
   const isPending = task.status === 'pending'
 
+  const plannedSeconds = (task.originalDurationMin ?? task.durationMin) * 60
+  const completedOvertime = isCompleted && (task.spentSeconds ?? 0) > plannedSeconds
+  const activeOvertime = isActive && timerState.elapsedSeconds > plannedSeconds
+  const pendingOvertime = isPending && !isActive && (taskElapsed.get(task.id) ?? 0) > plannedSeconds
+
   return (
     <HStack gap={2} align="center" overflow="hidden">
       {/* Col 1: delete — always */}
@@ -54,9 +59,9 @@ export function TaskCardActions({
       {isPending && <ActionBtn label="✎" ariaLabel="Edit" onClick={onEdit} hoverColor="white" />}
 
       {/* Elapsed */}
-      {isCompleted && <ElapsedBadge label={formatSeconds(task.spentSeconds ?? 0)} />}
-      {isActive && <ElapsedBadge label={formatSeconds(timerState.elapsedSeconds)} />}
-      {isPending && !isActive && <ElapsedBadge label={formatSeconds(taskElapsed.get(task.id) ?? 0)} />}
+      {isCompleted && <ElapsedBadge label={formatSeconds(task.spentSeconds ?? 0)} isOvertime={completedOvertime} />}
+      {isActive && <ElapsedBadge label={formatSeconds(timerState.elapsedSeconds)} isOvertime={activeOvertime} />}
+      {isPending && !isActive && <ElapsedBadge label={formatSeconds(taskElapsed.get(task.id) ?? 0)} isOvertime={pendingOvertime} />}
     </HStack>
   )
 }

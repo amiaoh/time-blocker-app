@@ -9,6 +9,7 @@ export const PLAY_BTN_R = 28
 // Sector colors
 export const PRIMARY_COLOR = '#6ee7b7'
 export const OVERFLOW_COLOR = '#67e8f9'
+export const OVERTIME_COLOR = '#FC8181' // red.300
 
 // SVG element colors
 export const TIMER_BG = '#1A202C'
