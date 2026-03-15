@@ -1,4 +1,4 @@
-import { Box, Text } from '@chakra-ui/react'
+import { Box, Button, HStack, Text } from '@chakra-ui/react'
 import { CX, CY, OUTER_R, SIZE, TIMER_BG } from './timerGeometry'
 
 import { ClockMarks } from './ClockMarks'
@@ -14,9 +14,21 @@ interface TimerDisplayProps {
   overtimeSeconds: number
   showPie?: boolean
   onToggle?: () => void
+  onMinus?: () => void
+  onPlus?: () => void
 }
 
-export function TimerDisplay({ remainingSeconds, isRunning, isIdle, isOvertime, overtimeSeconds, showPie = true, onToggle }: TimerDisplayProps) {
+const adjustBtnProps = {
+  variant: 'ghost' as const,
+  fontSize: 'sm',
+  color: 'gray.500',
+  _hover: { color: 'gray.300', bg: 'transparent' },
+  p: 0,
+  h: 'auto',
+  minW: '42px',
+}
+
+export function TimerDisplay({ remainingSeconds, isRunning, isIdle, isOvertime, overtimeSeconds, showPie = true, onToggle, onMinus, onPlus }: TimerDisplayProps) {
   const timeLabel = isOvertime ? formatSeconds(overtimeSeconds) : formatSeconds(remainingSeconds)
 
   return (
@@ -36,18 +48,27 @@ export function TimerDisplay({ remainingSeconds, isRunning, isIdle, isOvertime, 
         </svg>
       )}
 
-      <Text
-        fontSize="3xl"
-        fontWeight="bold"
-        color={isIdle ? 'gray.600' : isOvertime ? 'red.400' : 'white'}
-        fontVariantNumeric="tabular-nums"
-        letterSpacing="wider"
-        mt={-2}
-        aria-live="off"
-        aria-atomic="true"
-      >
-        {isIdle ? null : timeLabel}
-      </Text>
+      <HStack gap={5} align="center" mt={-2}>
+        {onMinus && showPie ? (
+          <Button {...adjustBtnProps} onClick={onMinus} aria-label="Subtract 5 minutes">−5m</Button>
+        ) : <Box minW="32px" />}
+
+        <Text
+          fontSize="3xl"
+          fontWeight="bold"
+          color={isIdle ? 'gray.600' : isOvertime ? 'red.400' : 'white'}
+          fontVariantNumeric="tabular-nums"
+          letterSpacing="wider"
+          aria-live="off"
+          aria-atomic="true"
+        >
+          {isIdle ? null : timeLabel}
+        </Text>
+
+        {onPlus && showPie ? (
+          <Button {...adjustBtnProps} onClick={onPlus} aria-label="Add 5 minutes">+5m</Button>
+        ) : <Box minW="32px" />}
+      </HStack>
     </Box>
   )
 }

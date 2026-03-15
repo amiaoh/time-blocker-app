@@ -95,7 +95,10 @@ export function TimerScreen({ onOpenPresets }: TimerScreenProps) {
               overtimeSeconds={overtimeSeconds}
               showPie={settings.showPieTimer}
               onToggle={activeTask ? handleTimerToggle : undefined}
+              onMinus={activeTask ? () => handleAdjustDuration(activeTask, -5) : undefined}
+              onPlus={activeTask ? () => handleAdjustDuration(activeTask, 5) : undefined}
             />
+
             <Text
               color={!activeTask ? "gray.600" : isOvertime ? "red.400" : "white"}
               fontWeight={activeTask ? "semibold" : "normal"}
@@ -106,11 +109,11 @@ export function TimerScreen({ onOpenPresets }: TimerScreenProps) {
               {activeTask ? (isOvertime ? `Overtime: ${activeTask.title}` : activeTask.title) : null}
             </Text>
 
-            {activeTask && (
+            {activeTask && !settings.showPieTimer && (
               <Stack align="center" gap={4} mt={4}>
                 <TimerAdjustControls
                   isRunning={timerState.isRunning}
-                  showToggle={!settings.showPieTimer}
+                  showToggle={true}
                   onMinus={() => handleAdjustDuration(activeTask, -5)}
                   onPlus={() => handleAdjustDuration(activeTask, 5)}
                   onToggle={handleTimerToggle}
