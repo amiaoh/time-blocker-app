@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { validateTaskForm } from '@/utils/taskValidation'
+import { parseTaskInput } from '@/utils/parseTaskInput'
 import type { Task, TaskColor, TaskFormValues, ValidationError } from '@/types'
 
 const DEFAULT_COLOR: TaskColor = '#7C4B1A'
@@ -21,10 +22,19 @@ export function useTaskForm(task?: Task, maxDurationMin = 120) {
     setErrors((prev: ValidationError[]) => prev.filter((e) => e.field !== field))
   }
 
-  function validate(): boolean {
-    const errs = validateTaskForm(values, maxDurationMin)
+  /** Parses shorthand from the title, validates, and returns merged values or null on error. */
+  function validate(): TaskFormValues | null {
+    const parsed = parseTaskInput(values.title)
+    const merged: TaskFormValues = {
+      title: parsed.title,
+      durationMin: parsed.durationMin ?? values.durationMin,
+      color: parsed.color ?? values.color,
+    }
+    const errs = validateTaskForm(merged, maxDurationMin)
     setErrors(errs)
-    return errs.length === 0
+    if (errs.length > 0) return null
+    setValues(merged)
+    return merged
   }
 
   function reset() {

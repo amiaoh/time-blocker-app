@@ -25,8 +25,9 @@ export function TaskForm({ isOpen, onClose, onSubmit, editingTask, isLoading, ma
   const { values, setField, validate, reset, errorFor } = useTaskForm(editingTask, maxDurationMin)
 
   function handleSubmit() {
-    if (!validate()) return
-    onSubmit(values)
+    const parsed = validate()
+    if (!parsed) return
+    onSubmit(parsed)
     reset()
   }
 

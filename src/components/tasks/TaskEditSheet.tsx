@@ -15,8 +15,9 @@ export function TaskEditSheet({ task, isLoading, maxDurationMin = 120, onClose, 
   const { values, setField, validate, reset, errorFor } = useTaskForm(task, maxDurationMin)
 
   function handleSubmit() {
-    if (!validate()) return
-    onSubmit(values)
+    const parsed = validate()
+    if (!parsed) return
+    onSubmit(parsed)
     reset()
   }
 
