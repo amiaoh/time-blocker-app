@@ -20,7 +20,7 @@ interface UseTimerReturn {
   resume: () => void
   complete: () => void
   skip: () => void
-  reset: () => void
+  clearTaskTimer: (taskId: string) => void
   adjustRemaining: (deltaMin: number) => void
 }
 
@@ -143,16 +143,16 @@ export function useTimer({ onComplete, onSkip }: UseTimerCallbacks): UseTimerRet
     if (activeTaskId) onSkip(activeTaskId)
   }, [clearTick, onSkip])
 
-  const reset = useCallback(() => {
-    clearTick()
+  const clearTaskTimer = useCallback((taskId: string) => {
     const { activeTaskId } = stateRef.current
-    if (activeTaskId) {
-      taskElapsedRef.current.delete(activeTaskId)
-      taskRemainingRef.current.delete(activeTaskId)
-      setTaskElapsed(new Map(taskElapsedRef.current))
-      setTaskRemaining(new Map(taskRemainingRef.current))
+    taskElapsedRef.current.delete(taskId)
+    taskRemainingRef.current.delete(taskId)
+    setTaskElapsed(new Map(taskElapsedRef.current))
+    setTaskRemaining(new Map(taskRemainingRef.current))
+    if (activeTaskId === taskId) {
+      clearTick()
+      setTimerState(INITIAL_STATE)
     }
-    setTimerState(INITIAL_STATE)
   }, [clearTick])
 
   const adjustRemaining = useCallback((deltaMin: number) => {
@@ -164,5 +164,5 @@ export function useTimer({ onComplete, onSkip }: UseTimerCallbacks): UseTimerRet
 
   useEffect(() => () => clearTick(), [clearTick])
 
-  return { timerState, taskElapsed, taskRemaining, select, start, pause, resume, complete, skip, reset, adjustRemaining }
+  return { timerState, taskElapsed, taskRemaining, select, start, pause, resume, complete, skip, clearTaskTimer, adjustRemaining }
 }
