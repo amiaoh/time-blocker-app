@@ -1,4 +1,4 @@
-import { Box, Stack, Text } from '@chakra-ui/react'
+import { Box, Flex, Stack, Text } from '@chakra-ui/react'
 import type { PresetList } from '@/types'
 import { PresetCardActions } from './PresetCardActions'
 
@@ -19,7 +19,9 @@ export function PresetCard({ preset, onEdit, onLoad }: PresetCardProps) {
       onClick={onEdit}
     >
       <Stack gap={2} align="center" textAlign="center">
-        <Text fontSize="3xl" lineHeight={1}>{preset.icon}</Text>
+        <Flex h={10} align="center" justify="center">
+          <Text fontSize="3xl" lineHeight={1}>{preset.icon}</Text>
+        </Flex>
         <Text fontWeight="bold" color="white" fontSize="sm" lineHeight={1.3}>
           {preset.name}
         </Text>

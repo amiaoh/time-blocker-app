@@ -89,12 +89,12 @@ export function TaskCard({
         <Grid
           templateColumns="auto 1fr"
           templateRows="auto auto"
-          columnGap={3}
+          columnGap={1}
           rowGap={0}
           flex={1}
           pb={3}
           pr={4}
-          pl={2}
+          pl={0}
           pt={timeRange ? 7 : 3}
           minW={0}
           alignItems="center"
