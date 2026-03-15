@@ -57,7 +57,7 @@ export function PresetTaskCard({ task, isSelected, onDelete, onDuplicate, onTogg
 
           {/* Row 1 right: title */}
           <GridItem minW={0}>
-            <Text fontWeight="semibold" fontSize="md" color="white" truncate>
+            <Text fontWeight="semibold" fontSize="md" color="white" lineClamp={2}>
               {task.title}
             </Text>
           </GridItem>

@@ -47,7 +47,7 @@ export function TodoistTaskCard({ task, isSelected, onToggleSelect }: TodoistTas
             <Text fontSize="xl" lineHeight={1.2}>{task.icon}</Text>
           </GridItem>
           <GridItem minW={0}>
-            <Text fontWeight="semibold" fontSize="md" color="white" truncate>{task.title}</Text>
+            <Text fontWeight="semibold" fontSize="md" color="white" lineClamp={2}>{task.title}</Text>
           </GridItem>
           <GridItem display="flex" justifyContent="center">
             <Text fontSize="xs" fontWeight="semibold" color="white" fontVariantNumeric="tabular-nums">

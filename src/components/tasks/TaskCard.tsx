@@ -115,7 +115,7 @@ export function TaskCard({
               fontSize="md"
               color={isDone ? 'whiteAlpha.500' : 'white'}
               textDecoration={task.status === 'completed' ? 'line-through' : 'none'}
-              truncate
+              lineClamp={2}
             >
               {task.title}
             </Text>
