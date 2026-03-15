@@ -39,7 +39,7 @@ export function TimerDisplay({ remainingSeconds, isRunning, isIdle, isOvertime, 
         <svg
           width={SIZE}
           height={SIZE}
-          style={{ userSelect: 'none' }}
+          style={{ userSelect: 'none', WebkitTapHighlightColor: 'transparent' }}
           role="img"
           aria-label={isIdle ? 'Timer idle' : isOvertime ? `${formatSeconds(overtimeSeconds)} overtime` : `${formatSeconds(remainingSeconds)} remaining`}
         >
