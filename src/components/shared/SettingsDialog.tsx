@@ -1,40 +1,75 @@
-import { Button, Dialog, Field, HStack, Input, Stack, Switch, Text } from '@chakra-ui/react'
-import { useState } from 'react'
-import type { AppSettings } from '@/hooks/useSettings'
-import { MIN_TASK_DURATION_MIN, MAX_TASK_DURATION_MIN, DEFAULT_MAX_TASK_DURATION_MIN } from '@/constants'
+import {
+  Button,
+  Dialog,
+  Field,
+  HStack,
+  Input,
+  Stack,
+  Switch,
+  Text,
+} from "@chakra-ui/react";
+import {
+  DEFAULT_MAX_TASK_DURATION_MIN,
+  MAX_TASK_DURATION_MIN,
+  MIN_TASK_DURATION_MIN,
+} from "@/constants";
+
+import type { AppSettings } from "@/hooks/useSettings";
+import { useState } from "react";
 
 interface SettingsDialogProps {
-  isOpen: boolean
-  onClose: () => void
-  settings: AppSettings
-  onSave: (updates: Partial<AppSettings>) => void
+  isOpen: boolean;
+  onClose: () => void;
+  settings: AppSettings;
+  onSave: (updates: Partial<AppSettings>) => void;
 }
 
-export function SettingsDialog({ isOpen, onClose, settings, onSave }: SettingsDialogProps) {
-  const [maxDuration, setMaxDuration] = useState(settings.maxTaskDurationMin)
-  const [showPieTimer, setShowPieTimer] = useState(settings.showPieTimer)
-  const [use24HourTime, setUse24HourTime] = useState(settings.use24HourTime)
-  const [todoistToken, setTodoistToken] = useState(settings.todoistToken)
+export function SettingsDialog({
+  isOpen,
+  onClose,
+  settings,
+  onSave,
+}: SettingsDialogProps) {
+  const [maxDuration, setMaxDuration] = useState(settings.maxTaskDurationMin);
+  const [showPieTimer, setShowPieTimer] = useState(settings.showPieTimer);
+  const [use24HourTime, setUse24HourTime] = useState(settings.use24HourTime);
+  const [todoistToken, setTodoistToken] = useState(settings.todoistToken);
 
   function handleSave() {
-    const clamped = Math.min(MAX_TASK_DURATION_MIN, Math.max(MIN_TASK_DURATION_MIN, maxDuration || DEFAULT_MAX_TASK_DURATION_MIN))
-    onSave({ maxTaskDurationMin: clamped, showPieTimer, use24HourTime, todoistToken: todoistToken.trim() })
-    onClose()
+    const clamped = Math.min(
+      MAX_TASK_DURATION_MIN,
+      Math.max(
+        MIN_TASK_DURATION_MIN,
+        maxDuration || DEFAULT_MAX_TASK_DURATION_MIN,
+      ),
+    );
+    onSave({
+      maxTaskDurationMin: clamped,
+      showPieTimer,
+      use24HourTime,
+      todoistToken: todoistToken.trim(),
+    });
+    onClose();
   }
 
   function handleOpenChange(open: boolean) {
     if (open) {
-      setMaxDuration(settings.maxTaskDurationMin)
-      setShowPieTimer(settings.showPieTimer)
-      setUse24HourTime(settings.use24HourTime)
-      setTodoistToken(settings.todoistToken)
+      setMaxDuration(settings.maxTaskDurationMin);
+      setShowPieTimer(settings.showPieTimer);
+      setUse24HourTime(settings.use24HourTime);
+      setTodoistToken(settings.todoistToken);
     } else {
-      onClose()
+      onClose();
     }
   }
 
   return (
-    <Dialog.Root open={isOpen} onOpenChange={(e) => handleOpenChange(e.open)} placement="center" size="sm">
+    <Dialog.Root
+      open={isOpen}
+      onOpenChange={(e) => handleOpenChange(e.open)}
+      placement="center"
+      size="sm"
+    >
       <Dialog.Backdrop />
       <Dialog.Positioner>
         <Dialog.Content bg="gray.900" borderColor="gray.700" borderWidth={1}>
@@ -43,26 +78,10 @@ export function SettingsDialog({ isOpen, onClose, settings, onSave }: SettingsDi
           </Dialog.Header>
           <Dialog.Body>
             <Stack gap={5}>
-              <Field.Root>
-                <Field.Label color="gray.300">Max task duration (minutes)</Field.Label>
-                <Input
-                  type="number"
-                  value={maxDuration || ''}
-                  onChange={(e) => setMaxDuration(parseInt(e.target.value, 10) || 0)}
-                  min={MIN_TASK_DURATION_MIN}
-                  max={MAX_TASK_DURATION_MIN}
-                  bg="gray.800"
-                  borderColor="gray.600"
-                  color="white"
-                  aria-label="Maximum task duration in minutes"
-                />
-                <Field.HelperText color="gray.500">
-                  Limits how long a single task can be ({MIN_TASK_DURATION_MIN}–{MAX_TASK_DURATION_MIN} min)
-                </Field.HelperText>
-              </Field.Root>
-
               <HStack justify="space-between" align="center">
-                <Text color="gray.300" fontSize="sm">Show pie timer</Text>
+                <Text color="gray.300" fontSize="sm">
+                  Show pie timer
+                </Text>
                 <Switch.Root
                   checked={showPieTimer}
                   onCheckedChange={(e) => setShowPieTimer(e.checked)}
@@ -73,26 +92,10 @@ export function SettingsDialog({ isOpen, onClose, settings, onSave }: SettingsDi
                   <Switch.Control />
                 </Switch.Root>
               </HStack>
-
-              <Field.Root>
-                <Field.Label color="gray.300">Todoist API token</Field.Label>
-                <Input
-                  type="password"
-                  value={todoistToken}
-                  onChange={(e) => setTodoistToken(e.target.value)}
-                  placeholder="Paste your API token"
-                  bg="gray.800"
-                  borderColor="gray.600"
-                  color="white"
-                  _placeholder={{ color: 'gray.500' }}
-                />
-                <Field.HelperText color="gray.500">
-                  From todoist.com → Settings → Integrations → Developer
-                </Field.HelperText>
-              </Field.Root>
-
               <HStack justify="space-between" align="center">
-                <Text color="gray.300" fontSize="sm">24-hour time</Text>
+                <Text color="gray.300" fontSize="sm">
+                  24-hour time
+                </Text>
                 <Switch.Root
                   checked={use24HourTime}
                   onCheckedChange={(e) => setUse24HourTime(e.checked)}
@@ -103,16 +106,61 @@ export function SettingsDialog({ isOpen, onClose, settings, onSave }: SettingsDi
                   <Switch.Control />
                 </Switch.Root>
               </HStack>
+              <Field.Root>
+                <Field.Label color="gray.300">
+                  Max task duration (minutes)
+                </Field.Label>
+                <Input
+                  type="number"
+                  value={maxDuration || ""}
+                  onChange={(e) =>
+                    setMaxDuration(parseInt(e.target.value, 10) || 0)
+                  }
+                  min={MIN_TASK_DURATION_MIN}
+                  max={MAX_TASK_DURATION_MIN}
+                  bg="gray.800"
+                  borderColor="gray.600"
+                  color="white"
+                  aria-label="Maximum task duration in minutes"
+                />
+                <Field.HelperText color="gray.500">
+                  Limits how long a single task can be ({MIN_TASK_DURATION_MIN}–
+                  {MAX_TASK_DURATION_MIN} min)
+                </Field.HelperText>
+              </Field.Root>
+              <Field.Root>
+                <Field.Label color="gray.300">Todoist API token</Field.Label>
+                <Input
+                  type="password"
+                  value={todoistToken}
+                  onChange={(e) => setTodoistToken(e.target.value)}
+                  placeholder="Paste your API token"
+                  bg="gray.800"
+                  borderColor="gray.600"
+                  color="white"
+                  _placeholder={{ color: "gray.500" }}
+                />
+                <Field.HelperText color="gray.500">
+                  From todoist.com → Settings → Integrations → Developer
+                </Field.HelperText>
+              </Field.Root>
             </Stack>
           </Dialog.Body>
           <Dialog.Footer>
-            <Button variant="ghost" onClick={onClose} color="gray.400">Cancel</Button>
-            <Button onClick={handleSave} bg="brand.600" color="white" _hover={{ bg: 'brand.500' }}>
+            <Button variant="ghost" onClick={onClose} color="gray.400">
+              Cancel
+            </Button>
+            <Button
+              onClick={handleSave}
+              bg="brand.600"
+              color="white"
+              _hover={{ bg: "brand.500" }}
+            >
               Save
             </Button>
           </Dialog.Footer>
         </Dialog.Content>
       </Dialog.Positioner>
     </Dialog.Root>
-  )
+  );
 }
