@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { PointerSensor, TouchSensor, useSensor, useSensors } from '@dnd-kit/core'
 import { useTimer } from '@/components/timer/useTimer'
+import { useTimerNotifications } from '@/components/timer/useTimerNotifications'
+import { requestNotificationPermission } from '@/utils/notifications'
 import { useDragOrder } from '@/components/ordering/useDragOrder'
 import { useProjection } from '@/components/projection/useProjection'
 import { useTasks, useAddTask, useUpdateTask, useDeleteTask, useClearCompleted, useClearAll } from '@/components/tasks/useTasks'
@@ -113,7 +115,9 @@ export function useTimerScreen() {
   })
 
   const projection = useProjection(tasks, timerState)
-  const activeTask = tasks.find((t) => t.id === timerState.activeTaskId)
+  const activeTask = tasks.find((t) => t.id === timerState.activeTaskId) ?? null
+
+  useTimerNotifications(timerState, activeTask)
 
   const taskTimeRanges = useMemo(() => {
     const pending = tasks
@@ -241,6 +245,7 @@ export function useTimerScreen() {
       if (activeTask.originalDurationMin === undefined) {
         updateTask.mutate({ id: activeTask.id, originalDurationMin: activeTask.durationMin })
       }
+      requestNotificationPermission()
       start(activeTask)
     }
   }
