@@ -13,17 +13,18 @@ export function SvgPlayPause({ isRunning, isIdle }: SvgPlayPauseProps) {
         fill={isIdle ? PLAY_BTN_BG_IDLE : PLAY_BTN_BG_ACTIVE}
         style={{ pointerEvents: 'none' }}
       />
-      <text
-        x={CX} y={CY + 1}
-        textAnchor="middle"
-        dominantBaseline="central"
-        fontSize={15}
-        fill={isIdle ? TICK_COLOR : 'white'}
-        aria-hidden="true"
-        style={{ pointerEvents: 'none', userSelect: 'none' }}
-      >
-        {isRunning ? '⏸' : '▶'}
-      </text>
+      {isRunning ? (
+        <>
+          <rect x={CX - 5.5} y={CY - 7} width={4} height={14} rx={1} fill={isIdle ? TICK_COLOR : 'white'} style={{ pointerEvents: 'none' }} />
+          <rect x={CX + 1.5} y={CY - 7} width={4} height={14} rx={1} fill={isIdle ? TICK_COLOR : 'white'} style={{ pointerEvents: 'none' }} />
+        </>
+      ) : (
+        <polygon
+          points={`${CX - 5},${CY - 8} ${CX + 9},${CY} ${CX - 5},${CY + 8}`}
+          fill={isIdle ? TICK_COLOR : 'white'}
+          style={{ pointerEvents: 'none' }}
+        />
+      )}
     </>
   )
 }
