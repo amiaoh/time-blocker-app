@@ -46,6 +46,7 @@ export function usePresetDetailScreen(presetId: string, onLoadSuccess: () => voi
 
   const [deselectedIds, setDeselectedIds] = useState<Set<string>>(new Set())
   const [isAddTaskOpen, setIsAddTaskOpen] = useState(false)
+  const [editingTask, setEditingTask] = useState<PresetTask | null>(null)
 
   function isSelected(id: string): boolean {
     return !deselectedIds.has(id)
@@ -70,6 +71,20 @@ export function usePresetDetailScreen(presetId: string, onLoadSuccess: () => voi
     duplicateTask.mutate(task, {
       onError: (err) => toaster.create({ title: 'Failed to duplicate task', description: errorMessage(err), type: 'error' }),
     })
+  }
+
+  function handleEditTaskSubmit(values: TaskFormValues) {
+    if (!editingTask) return
+    updateTask.mutate(
+      { id: editingTask.id, title: values.title, durationMin: values.durationMin, color: values.color },
+      {
+        onSuccess: () => {
+          setEditingTask(null)
+          toaster.create({ title: 'Task updated', type: 'success', duration: TOAST_DURATION_MS })
+        },
+        onError: (err) => toaster.create({ title: 'Failed to update task', description: errorMessage(err), type: 'error' }),
+      },
+    )
   }
 
   function handleAddTask(values: TaskFormValues) {
@@ -119,6 +134,10 @@ export function usePresetDetailScreen(presetId: string, onLoadSuccess: () => voi
     isAddTaskOpen,
     setIsAddTaskOpen,
     isAddingTask: addTask.isPending,
+    editingTask,
+    setEditingTask,
+    handleEditTaskSubmit,
+    isEditingTask: updateTask.isPending,
     isLoading: loadPreset.isPending,
     sensors,
     handleDragStart,

@@ -13,9 +13,10 @@ interface PresetTaskCardProps {
   onDelete: () => void
   onDuplicate: () => void
   onToggleSelect: () => void
+  onEdit: () => void
 }
 
-export function PresetTaskCard({ task, isSelected, onDelete, onDuplicate, onToggleSelect }: PresetTaskCardProps) {
+export function PresetTaskCard({ task, isSelected, onDelete, onDuplicate, onToggleSelect, onEdit }: PresetTaskCardProps) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: task.id })
 
   const style = {
@@ -81,6 +82,7 @@ export function PresetTaskCard({ task, isSelected, onDelete, onDuplicate, onTogg
               onDelete={onDelete}
               onDuplicate={onDuplicate}
               onToggleSelect={onToggleSelect}
+              onEdit={onEdit}
             />
           </GridItem>
         </Grid>

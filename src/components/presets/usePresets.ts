@@ -124,19 +124,27 @@ export function useAddPresetTask(presetId: string) {
   })
 }
 
+type PresetTaskUpdate = { id: string } & Partial<Pick<PresetTask, 'title' | 'durationMin' | 'color' | 'icon' | 'position'>>
+
 export function useUpdatePresetTask(presetId: string) {
   const queryClient = useQueryClient()
   const qk = presetTasksQueryKey(presetId)
   return useMutation({
-    mutationFn: async ({ id, position }: { id: string; position: number }) => {
-      const { error } = await supabase.from('preset_tasks').update({ position }).eq('id', id)
+    mutationFn: async ({ id, title, durationMin, color, icon, position }: PresetTaskUpdate) => {
+      const update: Record<string, unknown> = {}
+      if (title !== undefined) update.title = title
+      if (durationMin !== undefined) update.duration_min = durationMin
+      if (color !== undefined) update.color = color
+      if (icon !== undefined) update.icon = icon
+      if (position !== undefined) update.position = position
+      const { error } = await supabase.from('preset_tasks').update(update).eq('id', id)
       if (error) throw error
     },
-    onMutate: async ({ id, position }) => {
+    onMutate: async (vars) => {
       await queryClient.cancelQueries({ queryKey: qk })
       const previous = queryClient.getQueryData<PresetTask[]>(qk)
       queryClient.setQueryData<PresetTask[]>(qk, (old) =>
-        old?.map((t) => t.id === id ? { ...t, position } : t) ?? []
+        old?.map((t) => t.id === vars.id ? { ...t, ...vars } : t) ?? []
       )
       return { previous }
     },

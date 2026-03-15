@@ -1,11 +1,13 @@
 import { useState } from 'react'
 import { validateTaskForm } from '@/utils/taskValidation'
 import { parseTaskInput } from '@/utils/parseTaskInput'
-import type { Task, TaskColor, TaskFormValues, ValidationError } from '@/types'
+import type { TaskColor, TaskFormValues, ValidationError } from '@/types'
+
+type EditableTask = { title: string; durationMin: number; color: TaskColor }
 
 const DEFAULT_COLOR: TaskColor = '#7C4B1A'
 
-function defaultValues(task?: Task): TaskFormValues {
+function defaultValues(task?: EditableTask): TaskFormValues {
   return {
     title: task?.title ?? '',
     durationMin: task?.durationMin ?? 25,
@@ -13,7 +15,7 @@ function defaultValues(task?: Task): TaskFormValues {
   }
 }
 
-export function useTaskForm(task?: Task, maxDurationMin = 120) {
+export function useTaskForm(task?: EditableTask, maxDurationMin = 120) {
   const [values, setValues] = useState<TaskFormValues>(defaultValues(task))
   const [errors, setErrors] = useState<ValidationError[]>([])
 

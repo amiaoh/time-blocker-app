@@ -10,13 +10,15 @@ import {
 } from '@chakra-ui/react'
 import { useTaskForm } from './useTaskForm'
 import { ColorPicker } from './ColorPicker'
-import type { Task, TaskColor, TaskFormValues } from '@/types'
+import type { TaskColor, TaskFormValues } from '@/types'
+
+type EditableTask = { title: string; durationMin: number; color: TaskColor }
 
 interface TaskFormProps {
   isOpen: boolean
   onClose: () => void
   onSubmit: (values: TaskFormValues) => void
-  editingTask?: Task
+  editingTask?: EditableTask
   isLoading?: boolean
   maxDurationMin?: number
 }

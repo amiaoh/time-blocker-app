@@ -28,6 +28,10 @@ export function PresetDetailScreen({ preset, onBack, onLoadSuccess }: PresetDeta
     isAddTaskOpen,
     setIsAddTaskOpen,
     isAddingTask,
+    editingTask,
+    setEditingTask,
+    handleEditTaskSubmit,
+    isEditingTask,
     isLoading,
     sensors,
     handleDragStart,
@@ -87,6 +91,7 @@ export function PresetDetailScreen({ preset, onBack, onLoadSuccess }: PresetDeta
                     onDelete={() => handleDelete(task.id)}
                     onDuplicate={() => handleDuplicate(task)}
                     onToggleSelect={() => toggleSelect(task.id)}
+                    onEdit={() => setEditingTask(task)}
                   />
                 ))}
               </SortableContext>
@@ -159,6 +164,14 @@ export function PresetDetailScreen({ preset, onBack, onLoadSuccess }: PresetDeta
         onClose={() => setIsAddTaskOpen(false)}
         onSubmit={handleAddTask}
         isLoading={isAddingTask}
+      />
+
+      <TaskForm
+        isOpen={!!editingTask}
+        onClose={() => setEditingTask(null)}
+        onSubmit={handleEditTaskSubmit}
+        editingTask={editingTask ?? undefined}
+        isLoading={isEditingTask}
       />
     </Box>
   )

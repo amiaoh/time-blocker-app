@@ -1,12 +1,17 @@
-import { Box, Button, HStack, Text } from '@chakra-ui/react'
+import { Box, Button, HStack, Spinner, Text } from '@chakra-ui/react'
 import { ChevronLeft } from 'lucide-react'
 import { MAX_CONTAINER_WIDTH } from '@/constants'
+import { OverviewTimeSummary } from './OverviewTimeSummary'
+import { OverviewTaskTable } from './OverviewTaskTable'
+import { useOverviewScreen } from './useOverviewScreen'
 
 interface OverviewScreenProps {
   onBack: () => void
 }
 
 export function OverviewScreen({ onBack }: OverviewScreenProps) {
+  const { completedTasks, remainingTasks, totalPlannedMin, totalSpentMin, isLoading } = useOverviewScreen()
+
   return (
     <Box minH="100vh" bg="gray.950" pb={28}>
       <Box maxW={MAX_CONTAINER_WIDTH} mx="auto" px={4} pt={8}>
@@ -30,9 +35,19 @@ export function OverviewScreen({ onBack }: OverviewScreenProps) {
           <Box w={8} />
         </HStack>
 
-        <Text color="gray.500" textAlign="center" fontSize="sm">
-          Coming soon
-        </Text>
+        {isLoading ? (
+          <Box textAlign="center" py={12}><Spinner color="brand.400" /></Box>
+        ) : (
+          <>
+            <Text fontWeight="bold" fontSize="lg" color="white" mb={3}>Time</Text>
+            <OverviewTimeSummary totalPlannedMin={totalPlannedMin} totalSpentMin={totalSpentMin} />
+            <OverviewTaskTable title="Completed" tasks={completedTasks} />
+            <OverviewTaskTable title="Remaining" tasks={remainingTasks} />
+            {completedTasks.length === 0 && remainingTasks.length === 0 && (
+              <Text color="gray.500" textAlign="center" fontSize="sm">No tasks for today yet.</Text>
+            )}
+          </>
+        )}
       </Box>
     </Box>
   )
