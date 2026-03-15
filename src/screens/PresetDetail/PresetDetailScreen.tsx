@@ -1,4 +1,5 @@
 import { Box, Button, HStack, Spinner, Stack, Text } from '@chakra-ui/react'
+import { ChevronLeft } from 'lucide-react'
 import { DndContext, closestCenter } from '@dnd-kit/core'
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
 
@@ -46,11 +47,10 @@ export function PresetDetailScreen({ preset, onBack, onLoadSuccess }: PresetDeta
             px={2}
             py={1}
             h="auto"
-            fontSize="2xl"
             onClick={onBack}
             aria-label="Back"
           >
-            ‹
+            <ChevronLeft size={20} />
           </Button>
           <Box flex={1} />
         </HStack>

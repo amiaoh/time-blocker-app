@@ -1,4 +1,6 @@
 import { Box, Button, HStack, Spinner, Stack, Text } from '@chakra-ui/react'
+import { ChevronLeft, RefreshCw } from 'lucide-react'
+import { TodoistIcon } from '@/components/shared/TodoistIcon'
 import { DndContext, DragOverlay, closestCenter } from '@dnd-kit/core'
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import { useSensors, useSensor, PointerSensor, KeyboardSensor } from '@dnd-kit/core'
@@ -32,21 +34,21 @@ export function TodoistPresetScreen({ onBack, onLoadSuccess }: TodoistPresetScre
         <HStack mb={6} align="center">
           <Button variant="ghost" color="gray.400" _hover={{ color: 'white', bg: 'whiteAlpha.100' }}
             _active={{ bg: 'whiteAlpha.200', opacity: 0.8 }}
-            px={2} py={1} h="auto" fontSize="2xl" onClick={onBack} aria-label="Back">
-            ‹
+            px={2} py={1} h="auto" onClick={onBack} aria-label="Back">
+            <ChevronLeft size={20} />
           </Button>
           <Box flex={1} />
           {token && (
             <Button variant="ghost" color="gray.500" _hover={{ color: 'white', bg: 'whiteAlpha.100' }}
               _active={{ bg: 'whiteAlpha.200', opacity: 0.8 }}
               px={2} py={1} h="auto" fontSize="sm" onClick={() => refetch()} loading={isFetching} aria-label="Refresh">
-              ↻ Refresh
+              <HStack gap={1}><RefreshCw size={14} /><Text>Refresh</Text></HStack>
             </Button>
           )}
         </HStack>
 
         <Stack align="center" mb={8} gap={2}>
-          <Text fontSize="4xl" lineHeight={1}>☑️</Text>
+          <TodoistIcon size={48} />
           <Text fontSize="2xl" fontWeight="bold" color="white">Todoist Today</Text>
           <Text color="gray.500" fontSize="sm">
             {orderedTasks.length === 0 && !isTasksLoading ? '' : `${orderedTasks.length} task${orderedTasks.length === 1 ? '' : 's'} due today`}

@@ -1,4 +1,5 @@
 import { Box, Stack, Text } from '@chakra-ui/react'
+import { TodoistIcon } from '@/components/shared/TodoistIcon'
 
 interface TodoistPresetCardProps {
   onClick: () => void
@@ -15,7 +16,7 @@ export function TodoistPresetCard({ onClick }: TodoistPresetCardProps) {
       onClick={onClick}
     >
       <Stack gap={2} align="center" textAlign="center">
-        <Text fontSize="3xl" lineHeight={1}>☑️</Text>
+        <TodoistIcon size={36} />
         <Text fontWeight="bold" color="white" fontSize="sm" lineHeight={1.3}>
           Todoist Today
         </Text>

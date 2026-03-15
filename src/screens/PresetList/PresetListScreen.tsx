@@ -1,4 +1,5 @@
 import { Box, Button, HStack, SimpleGrid, Spinner, Text } from '@chakra-ui/react'
+import { ChevronLeft } from 'lucide-react'
 import { MAX_CONTAINER_WIDTH } from '@/constants'
 import { PresetCard } from '@/components/presets/PresetCard'
 import { PresetForm } from '@/components/presets/PresetForm'
@@ -27,11 +28,10 @@ export function PresetListScreen({ onBack, onOpenPreset, onOpenTodoist }: Preset
             px={2}
             py={1}
             h="auto"
-            fontSize="2xl"
             onClick={onBack}
             aria-label="Back"
           >
-            ‹
+            <ChevronLeft size={20} />
           </Button>
           <Text flex={1} textAlign="center" fontWeight="bold" fontSize="xl" color="white">
             Preset Lists

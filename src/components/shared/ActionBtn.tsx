@@ -1,4 +1,5 @@
 import { Button } from '@chakra-ui/react'
+import type { ReactNode } from 'react'
 
 interface ActionBtnProps {
   label: string
@@ -6,9 +7,10 @@ interface ActionBtnProps {
   color?: string
   hoverColor?: string
   ariaLabel?: string
+  children?: ReactNode
 }
 
-export function ActionBtn({ label, onClick, color = 'whiteAlpha.800', hoverColor = 'white', ariaLabel }: ActionBtnProps) {
+export function ActionBtn({ label, onClick, color = 'whiteAlpha.800', hoverColor = 'white', ariaLabel, children }: ActionBtnProps) {
   return (
     <Button
       variant="ghost"
@@ -26,7 +28,7 @@ export function ActionBtn({ label, onClick, color = 'whiteAlpha.800', hoverColor
       onClick={onClick}
       aria-label={ariaLabel ?? label}
     >
-      {label}
+      {children ?? label}
     </Button>
   )
 }

@@ -1,4 +1,5 @@
-import { Button, Text } from '@chakra-ui/react'
+import { Button } from '@chakra-ui/react'
+import { Pause, Play } from 'lucide-react'
 
 interface TimerToggleButtonProps {
   isRunning: boolean
@@ -19,9 +20,7 @@ export function TimerToggleButton({ isRunning, onClick }: TimerToggleButtonProps
       onClick={onClick}
       aria-label={isRunning ? 'Pause timer' : 'Start timer'}
     >
-      <Text fontSize="lg" aria-hidden="true">
-        {isRunning ? '⏸' : '▶'}
-      </Text>
+      {isRunning ? <Pause size={18} aria-hidden="true" /> : <Play size={18} aria-hidden="true" />}
     </Button>
   )
 }

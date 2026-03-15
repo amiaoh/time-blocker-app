@@ -20,9 +20,10 @@ import { MAX_CONTAINER_WIDTH } from "@/constants";
 
 interface TimerScreenProps {
   onOpenPresets: () => void
+  onOpenOverview: () => void
 }
 
-export function TimerScreen({ onOpenPresets }: TimerScreenProps) {
+export function TimerScreen({ onOpenPresets, onOpenOverview }: TimerScreenProps) {
   const {
     tasks,
     isLoading,
@@ -83,6 +84,7 @@ export function TimerScreen({ onOpenPresets }: TimerScreenProps) {
             projection={projection}
             use24HourTime={settings.use24HourTime}
             onOpenSettings={() => setIsSettingsOpen(true)}
+            onOpenOverview={onOpenOverview}
             onAddPreset={onOpenPresets}
           />
 

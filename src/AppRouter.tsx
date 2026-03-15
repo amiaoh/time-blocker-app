@@ -3,16 +3,22 @@ import { TimerScreen } from '@/screens/Timer/TimerScreen'
 import { PresetListScreen } from '@/screens/PresetList/PresetListScreen'
 import { PresetDetailScreen } from '@/screens/PresetDetail/PresetDetailScreen'
 import { TodoistPresetScreen } from '@/screens/TodoistPreset/TodoistPresetScreen'
+import { OverviewScreen } from '@/screens/Overview/OverviewScreen'
 import type { PresetList } from '@/types'
 
 type Screen =
   | { name: 'timer' }
+  | { name: 'overview' }
   | { name: 'presets' }
   | { name: 'preset-detail'; preset: PresetList }
   | { name: 'todoist-preset' }
 
 export function AppRouter() {
   const [screen, setScreen] = useState<Screen>({ name: 'timer' })
+
+  if (screen.name === 'overview') {
+    return <OverviewScreen onBack={() => setScreen({ name: 'timer' })} />
+  }
 
   if (screen.name === 'presets') {
     return (
@@ -44,6 +50,9 @@ export function AppRouter() {
   }
 
   return (
-    <TimerScreen onOpenPresets={() => setScreen({ name: 'presets' })} />
+    <TimerScreen
+      onOpenPresets={() => setScreen({ name: 'presets' })}
+      onOpenOverview={() => setScreen({ name: 'overview' })}
+    />
   )
 }
