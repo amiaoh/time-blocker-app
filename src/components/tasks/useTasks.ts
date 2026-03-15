@@ -70,15 +70,12 @@ export function useUpdateTask(sessionId: string) {
       if (updates.spentSeconds !== undefined) dbUpdates.spent_seconds = updates.spentSeconds
       if (updates.originalDurationMin !== undefined) dbUpdates.original_duration_min = updates.originalDurationMin ?? null
 
-      const { data, error } = await supabase
+      const { error } = await supabase
         .from('tasks')
         .update(dbUpdates)
         .eq('id', id)
         .eq('session_id', sessionId)
-        .select()
-        .single()
       if (error) throw error
-      return rowToTask(data as TaskRow)
     },
     onMutate: async (updates) => {
       await queryClient.cancelQueries({ queryKey: tasksQueryKey(sessionId) })
