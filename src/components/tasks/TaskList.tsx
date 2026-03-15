@@ -86,13 +86,13 @@ export function TaskList({
       <AddTaskCard onClick={onAddTask} />
 
       {/* Bottom controls */}
-      <HStack justify="space-between" pt={1} flexWrap="wrap" gap={2}>
+      <HStack justify="space-between" pt={1}>
         <TextBtn
           icon="🕶"
           label={hideCompleted ? 'Show completed' : 'Hide completed'}
           onClick={onToggleHideCompleted}
         />
-        <HStack gap={4}>
+        <HStack gap={2}>
           {hasDone && (
             <TextBtn icon="🎉" label="Clear completed" onClick={onClearCompleted} />
           )}
