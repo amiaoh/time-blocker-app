@@ -3,20 +3,15 @@ import { CX, CY, PLAY_BTN_R, PLAY_BTN_BG_IDLE, PLAY_BTN_BG_ACTIVE, TICK_COLOR } 
 interface SvgPlayPauseProps {
   isRunning: boolean
   isIdle: boolean
-  onClick?: () => void
 }
 
-export function SvgPlayPause({ isRunning, isIdle, onClick }: SvgPlayPauseProps) {
+export function SvgPlayPause({ isRunning, isIdle }: SvgPlayPauseProps) {
   return (
     <>
       <circle
         cx={CX} cy={CY} r={PLAY_BTN_R}
         fill={isIdle ? PLAY_BTN_BG_IDLE : PLAY_BTN_BG_ACTIVE}
-        style={{ cursor: onClick ? 'pointer' : 'default', outline: 'none', WebkitTapHighlightColor: 'transparent' }}
-        onClick={onClick}
-        role={onClick ? 'button' : undefined}
-        aria-label={isRunning ? 'Pause timer' : 'Start timer'}
-        tabIndex={onClick ? 0 : undefined}
+        style={{ pointerEvents: 'none' }}
       />
       <text
         x={CX} y={CY + 1}
@@ -25,7 +20,7 @@ export function SvgPlayPause({ isRunning, isIdle, onClick }: SvgPlayPauseProps) 
         fontSize={15}
         fill={isIdle ? TICK_COLOR : 'white'}
         aria-hidden="true"
-        style={{ cursor: onClick ? 'pointer' : 'default', pointerEvents: 'none', userSelect: 'none' }}
+        style={{ pointerEvents: 'none', userSelect: 'none' }}
       >
         {isRunning ? '⏸' : '▶'}
       </text>

@@ -1,5 +1,5 @@
 import { Box, Button, HStack, Text } from '@chakra-ui/react'
-import { CX, CY, OUTER_R, SIZE, TIMER_BG } from './timerGeometry'
+import { CX, CY, OUTER_R, PLAY_BTN_R, SIZE, TIMER_BG } from './timerGeometry'
 
 import { ClockMarks } from './ClockMarks'
 import { PieSectors } from './PieSectors'
@@ -36,18 +36,40 @@ export function TimerDisplay({ remainingSeconds, isRunning, isIdle, isOvertime, 
   return (
     <Box display="flex" flexDirection="column" alignItems="center" gap={2}>
       {showPie && (
-        <svg
-          width={SIZE}
-          height={SIZE}
-          style={{ userSelect: 'none', WebkitTapHighlightColor: 'transparent' }}
-          role="img"
-          aria-label={isIdle ? 'Timer idle' : isOvertime ? `${formatSeconds(overtimeSeconds)} overtime` : `${formatSeconds(remainingSeconds)} remaining`}
-        >
-          <circle cx={CX} cy={CY} r={OUTER_R} fill={TIMER_BG} />
-          {!isIdle && <PieSectors remainingSeconds={remainingSeconds} isRunning={isRunning} isOvertime={isOvertime} overtimeSeconds={overtimeSeconds} />}
-          <ClockMarks />
-          <SvgPlayPause isRunning={isRunning} isIdle={isIdle} onClick={onToggle} />
-        </svg>
+        <Box position="relative" display="inline-block" lineHeight={0}>
+          <svg
+            width={SIZE}
+            height={SIZE}
+            style={{ userSelect: 'none' }}
+            role="img"
+            aria-label={isIdle ? 'Timer idle' : isOvertime ? `${formatSeconds(overtimeSeconds)} overtime` : `${formatSeconds(remainingSeconds)} remaining`}
+          >
+            <circle cx={CX} cy={CY} r={OUTER_R} fill={TIMER_BG} />
+            {!isIdle && <PieSectors remainingSeconds={remainingSeconds} isRunning={isRunning} isOvertime={isOvertime} overtimeSeconds={overtimeSeconds} />}
+            <ClockMarks />
+            <SvgPlayPause isRunning={isRunning} isIdle={isIdle} />
+          </svg>
+          {onToggle && (
+            <button
+              onClick={onToggle}
+              aria-label={isRunning ? 'Pause timer' : 'Start timer'}
+              style={{
+                position: 'absolute',
+                top: CY - PLAY_BTN_R,
+                left: CX - PLAY_BTN_R,
+                width: PLAY_BTN_R * 2,
+                height: PLAY_BTN_R * 2,
+                borderRadius: '50%',
+                background: 'transparent',
+                border: 'none',
+                outline: 'none',
+                cursor: 'pointer',
+                WebkitTapHighlightColor: 'transparent',
+                touchAction: 'manipulation',
+              }}
+            />
+          )}
+        </Box>
       )}
 
       <HStack gap={5} align="center" mt={-2}>
