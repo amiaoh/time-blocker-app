@@ -86,7 +86,7 @@ export function TimerDisplay({ remainingSeconds, isRunning, isIdle, isOvertime, 
           aria-live="off"
           aria-atomic="true"
         >
-          {isIdle ? null : timeLabel}
+          {isIdle ? '--:--' : timeLabel}
         </Text>
 
         {onPlus && showPie ? (

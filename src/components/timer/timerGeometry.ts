@@ -1,9 +1,8 @@
-export const SIZE = 260
+export const SIZE = 200
 export const CX = SIZE / 2
 export const CY = SIZE / 2
-export const OUTER_R = 110
-export const INNER_MARKER_R = 95
-export const LABEL_R = 80
+export const OUTER_R = 84
+export const INNER_MARKER_R = 72
 export const PLAY_BTN_R = 28
 
 // Sector colors

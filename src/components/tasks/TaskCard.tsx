@@ -1,5 +1,6 @@
 import { Box, Grid, GridItem, HStack, Text } from '@chakra-ui/react'
 import type { Task, TimerState } from '@/types'
+import { useEffect, useRef, useState } from 'react'
 
 import { CSS } from '@dnd-kit/utilities'
 import { DragHandle } from '@/components/ordering/DragHandle'
@@ -46,6 +47,17 @@ export function TaskCard({
   const isActive = timerState.activeTaskId === task.id
   const isDone = task.status === 'completed' || task.status === 'skipped'
 
+  const prevDoneRef = useRef(isDone)
+  const [completing, setCompleting] = useState(false)
+  useEffect(() => {
+    if (!prevDoneRef.current && isDone) {
+      setCompleting(true)
+      const t = setTimeout(() => setCompleting(false), 450)
+      return () => clearTimeout(t)
+    }
+    prevDoneRef.current = isDone
+  }, [isDone])
+
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
@@ -64,7 +76,14 @@ export function TaskCard({
       borderRadius="xl"
       position="relative"
       role="listitem"
-      boxShadow={isActive ? 'inset 0 0 0 2px white' : 'none'}
+      zIndex={isActive ? 1 : 'auto'}
+      className={completing ? 'task-card-completing' : undefined}
+      boxShadow={
+        isDragging ? 'none' :
+        isActive ? 'inset 0 0 0 2.5px white, 0 0 0 4px rgba(255,255,255,0.15), 0 8px 32px rgba(0,0,0,0.6)' :
+        'none'
+      }
+      transition="box-shadow 0.2s ease"
       aria-label={`Task: ${task.title}, ${task.durationMin} minutes, ${task.status}`}
     >
       {timeRange && (

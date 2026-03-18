@@ -1,4 +1,5 @@
 import { HStack, Stack } from '@chakra-ui/react'
+import { CheckCheck, Eye, EyeOff, Trash2 } from 'lucide-react'
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import { TaskCard } from './TaskCard'
 import { AddTaskCard } from './AddTaskCard'
@@ -89,15 +90,15 @@ export function TaskList({
       <HStack justify="space-between" align="flex-start" pt={1}>
         <Stack gap={1}>
           <TextBtn
-            icon="🕶"
+            icon={hideCompleted ? <Eye size={14} /> : <EyeOff size={14} />}
             label={hideCompleted ? 'Show completed' : 'Hide completed'}
             onClick={onToggleHideCompleted}
           />
           {hasDone && (
-            <TextBtn icon="🎉" label="Clear completed" onClick={onClearCompleted} />
+            <TextBtn icon={<CheckCheck size={14} />} label="Clear completed" onClick={onClearCompleted} />
           )}
         </Stack>
-        <TextBtn icon="🧹" label="Clear all" onClick={onClearAll} />
+        <TextBtn icon={<Trash2 size={14} />} label="Clear all" onClick={onClearAll} />
       </HStack>
     </Stack>
   )

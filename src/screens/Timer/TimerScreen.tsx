@@ -78,6 +78,8 @@ export function TimerScreen({ onOpenPresets, onOpenOverview }: TimerScreenProps)
         zIndex={10}
         bg="gray.950"
         pb={4}
+        borderBottom="1px solid"
+        borderColor="whiteAlpha.100"
       >
         <Box maxW={MAX_CONTAINER_WIDTH} mx="auto" px={4} pt={8}>
           <AppHeader
@@ -102,13 +104,13 @@ export function TimerScreen({ onOpenPresets, onOpenOverview }: TimerScreenProps)
             />
 
             <Text
-              color={!activeTask ? "gray.600" : isOvertime ? "red.400" : "white"}
+              color={!activeTask ? "gray.700" : isOvertime ? "red.400" : "white"}
               fontWeight={activeTask ? "semibold" : "normal"}
-              fontSize="lg"
+              fontSize={activeTask ? "lg" : "sm"}
               mb={4}
               minH={7}
             >
-              {activeTask ? (isOvertime ? `Overtime: ${activeTask.title}` : activeTask.title) : null}
+              {activeTask ? (isOvertime ? `Overtime: ${activeTask.title}` : activeTask.title) : "Pick a task to start"}
             </Text>
 
             {activeTask && !settings.showPieTimer && (

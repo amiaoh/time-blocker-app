@@ -23,7 +23,13 @@
     <meta name="description" content="Timeboxing app to help you focus and finish your day" />
     <title>Time Blocker</title>
 
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
     <style>
+      @keyframes task-complete { 0% { filter: brightness(1.5); } 100% { filter: brightness(1); } }
+      .task-card-completing { animation: task-complete 0.45s ease-out; }
       *, *::before, *::after { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
       html, body, #root {
         height: 100%;

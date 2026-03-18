@@ -24,8 +24,8 @@ const customConfig = defineConfig({
         },
       },
       fonts: {
-        body: { value: '-apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif' },
-        heading: { value: '-apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif' },
+        body: { value: '"Inter", -apple-system, BlinkMacSystemFont, system-ui, sans-serif' },
+        heading: { value: '"Inter", -apple-system, BlinkMacSystemFont, system-ui, sans-serif' },
       },
     },
   },

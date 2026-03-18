@@ -1,4 +1,4 @@
-import { OUTER_R, INNER_MARKER_R, LABEL_R, CLOCK_MARKS, TICK_COLOR, TICK_LABEL_COLOR, polarToXY } from './timerGeometry'
+import { OUTER_R, INNER_MARKER_R, CLOCK_MARKS, TICK_COLOR, TICK_LABEL_COLOR, polarToXY } from './timerGeometry'
 
 export function ClockMarks() {
   return (
@@ -7,7 +7,7 @@ export function ClockMarks() {
         const angleDeg = (mark / 60) * 360
         const outer = polarToXY(angleDeg, OUTER_R)
         const inner = polarToXY(angleDeg, INNER_MARKER_R + 4)
-        const label = polarToXY(angleDeg, LABEL_R + 40)
+        const label = polarToXY(angleDeg, OUTER_R + 10)
         return (
           <g key={mark}>
             <line

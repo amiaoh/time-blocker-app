@@ -13,13 +13,13 @@ export function AddTaskCard({ onClick }: AddTaskCardProps) {
       borderRadius="xl"
       borderWidth={2}
       borderStyle="dashed"
-      borderColor="whiteAlpha.800"
+      borderColor="whiteAlpha.200"
       py={5}
       h="auto"
       flexDirection="column"
-      color="whiteAlpha.800"
+      color="whiteAlpha.400"
       bg="transparent"
-      _hover={{ borderColor: 'gray.500', color: 'gray.400', bg: 'transparent' }}
+      _hover={{ borderColor: 'whiteAlpha.400', color: 'whiteAlpha.600', bg: 'transparent' }}
       _active={{ bg: 'whiteAlpha.100', opacity: 0.8 }}
       transition="border-color 0.15s, color 0.15s"
       aria-label="Add new task"
