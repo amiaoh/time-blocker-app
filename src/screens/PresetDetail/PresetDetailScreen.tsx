@@ -6,6 +6,7 @@ import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import { MAX_CONTAINER_WIDTH } from '@/constants'
 import type { PresetList } from '@/types'
 import { PresetTaskCard } from '@/components/presets/PresetTaskCard'
+import { PresetForm } from '@/components/presets/PresetForm'
 import { TaskForm } from '@/components/tasks/TaskForm'
 import { usePresetDetailScreen } from './usePresetDetailScreen'
 
@@ -13,9 +14,10 @@ interface PresetDetailScreenProps {
   preset: PresetList
   onBack: () => void
   onLoadSuccess: () => void
+  onRename: (updated: PresetList) => void
 }
 
-export function PresetDetailScreen({ preset, onBack, onLoadSuccess }: PresetDetailScreenProps) {
+export function PresetDetailScreen({ preset, onBack, onLoadSuccess, onRename }: PresetDetailScreenProps) {
   const {
     tasks,
     isTasksLoading,
@@ -37,7 +39,11 @@ export function PresetDetailScreen({ preset, onBack, onLoadSuccess }: PresetDeta
     handleDragStart,
     handleDragEnd,
     handleDragCancel,
-  } = usePresetDetailScreen(preset.id, onLoadSuccess)
+    isRenameOpen,
+    setIsRenameOpen,
+    handleRenameSubmit,
+    isRenamingPreset,
+  } = usePresetDetailScreen(preset.id, onLoadSuccess, onRename)
 
   return (
     <Box minH="100vh" bg="gray.950" pb={28}>
@@ -48,20 +54,27 @@ export function PresetDetailScreen({ preset, onBack, onLoadSuccess }: PresetDeta
             color="gray.400"
             _hover={{ color: 'white', bg: 'whiteAlpha.100' }}
             _active={{ bg: 'whiteAlpha.200', opacity: 0.8 }}
-            px={2}
-            py={1}
-            h="auto"
+            px={2} py={1} h="auto"
             onClick={onBack}
             aria-label="Back"
           >
             <ChevronLeft size={20} />
           </Button>
-          <Box flex={1} />
         </HStack>
 
         <Stack align="center" mb={8} gap={2}>
           <Text fontSize="4xl" lineHeight={1}>{preset.icon}</Text>
-          <Text fontSize="2xl" fontWeight="bold" color="white">{preset.name}</Text>
+          <Text
+            fontSize="2xl"
+            fontWeight="bold"
+            color="white"
+            textAlign="center"
+            cursor="pointer"
+            _hover={{ color: 'gray.300' }}
+            onClick={() => setIsRenameOpen(true)}
+          >
+            {preset.name}
+          </Text>
           <Text color="gray.500" fontSize="sm">
             {tasks.length === 0
               ? 'No tasks in this preset yet'
@@ -172,6 +185,14 @@ export function PresetDetailScreen({ preset, onBack, onLoadSuccess }: PresetDeta
         onSubmit={handleEditTaskSubmit}
         editingTask={editingTask ?? undefined}
         isLoading={isEditingTask}
+      />
+
+      <PresetForm
+        isOpen={isRenameOpen}
+        onClose={() => setIsRenameOpen(false)}
+        onSubmit={handleRenameSubmit}
+        editingPreset={preset}
+        isLoading={isRenamingPreset}
       />
     </Box>
   )

@@ -6,25 +6,31 @@ import {
   useDeletePresetTask,
   useDuplicatePresetTask,
   useUpdatePresetTask,
+  useUpdatePreset,
   useLoadPreset,
 } from '@/components/presets/usePresets'
 import { useDragOrder } from '@/components/ordering/useDragOrder'
 import { PointerSensor, TouchSensor, useSensor, useSensors } from '@dnd-kit/core'
 import { toaster } from '@/lib/toaster'
 import { TOAST_DURATION_MS } from '@/constants'
-import type { PresetTask, TaskFormValues } from '@/types'
+import type { PresetList, PresetTask, TaskFormValues } from '@/types'
 
 function errorMessage(err: unknown): string {
   return err instanceof Error ? err.message : String(err)
 }
 
-export function usePresetDetailScreen(presetId: string, onLoadSuccess: () => void) {
+export function usePresetDetailScreen(
+  presetId: string,
+  onLoadSuccess: () => void,
+  onRename: (updated: PresetList) => void,
+) {
   const sessionId = useSessionId()
   const { data: tasks = [], isLoading: isTasksLoading } = usePresetTasks(presetId)
   const addTask = useAddPresetTask(presetId)
   const updateTask = useUpdatePresetTask(presetId)
   const deleteTask = useDeletePresetTask(presetId)
   const duplicateTask = useDuplicatePresetTask(presetId)
+  const updatePreset = useUpdatePreset(sessionId)
   const loadPreset = useLoadPreset(sessionId)
 
   const sensors = useSensors(
@@ -47,6 +53,7 @@ export function usePresetDetailScreen(presetId: string, onLoadSuccess: () => voi
   const [deselectedIds, setDeselectedIds] = useState<Set<string>>(new Set())
   const [isAddTaskOpen, setIsAddTaskOpen] = useState(false)
   const [editingTask, setEditingTask] = useState<PresetTask | null>(null)
+  const [isRenameOpen, setIsRenameOpen] = useState(false)
 
   function isSelected(id: string): boolean {
     return !deselectedIds.has(id)
@@ -100,6 +107,20 @@ export function usePresetDetailScreen(presetId: string, onLoadSuccess: () => voi
     )
   }
 
+  function handleRenameSubmit({ name, icon }: { name: string; icon: string }) {
+    updatePreset.mutate(
+      { id: presetId, name, icon },
+      {
+        onSuccess: (updated) => {
+          setIsRenameOpen(false)
+          toaster.create({ title: 'Preset renamed', type: 'success', duration: TOAST_DURATION_MS })
+          onRename(updated)
+        },
+        onError: (err) => toaster.create({ title: 'Failed to rename preset', description: errorMessage(err), type: 'error' }),
+      },
+    )
+  }
+
   function handleLoad(position: 'top' | 'bottom') {
     const selectedTasks = tasks.filter((t) => !deselectedIds.has(t.id))
     if (selectedTasks.length === 0) {
@@ -143,5 +164,9 @@ export function usePresetDetailScreen(presetId: string, onLoadSuccess: () => voi
     handleDragStart,
     handleDragEnd,
     handleDragCancel,
+    isRenameOpen,
+    setIsRenameOpen,
+    handleRenameSubmit,
+    isRenamingPreset: updatePreset.isPending,
   }
 }

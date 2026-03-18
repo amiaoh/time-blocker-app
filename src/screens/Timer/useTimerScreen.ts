@@ -136,11 +136,11 @@ export function useTimerScreen() {
   function handleEditSubmit(values: TaskFormValues) {
     if (!editingTask) return
     const id = editingTask.id
-    setEditingTask(undefined)
     updateTask.mutate(
       { id, ...values },
       {
         onSuccess: () => {
+          setEditingTask(undefined)
           toaster.create({ title: 'Task updated', type: 'success', duration: TOAST_DURATION_MS })
           clearTaskRemaining(id)
         },

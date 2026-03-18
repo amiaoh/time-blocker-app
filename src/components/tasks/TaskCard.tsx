@@ -46,6 +46,7 @@ export function TaskCard({
 
   const isActive = timerState.activeTaskId === task.id
   const isDone = task.status === 'completed' || task.status === 'skipped'
+  const isCompleted = task.status === 'completed'
 
   const prevDoneRef = useRef(isDone)
   const [completing, setCompleting] = useState(false)
@@ -140,16 +141,18 @@ export function TaskCard({
             </Text>
           </GridItem>
 
-          {/* Row 2 left: duration */}
+          {/* Row 2 left: duration (hidden for completed — elapsed badge in actions row covers it) */}
           <GridItem display="flex" justifyContent="center">
-            <Text
-              fontSize="xs"
-              fontWeight="semibold"
-              color={isDone ? 'whiteAlpha.400' : 'white'}
-              fontVariantNumeric="tabular-nums"
-            >
-              {timeLabel}
-            </Text>
+            {!isCompleted && (
+              <Text
+                fontSize="xs"
+                fontWeight="semibold"
+                color={isDone ? 'whiteAlpha.400' : 'white'}
+                fontVariantNumeric="tabular-nums"
+              >
+                {timeLabel}
+              </Text>
+            )}
           </GridItem>
 
           {/* Row 2 right: actions */}

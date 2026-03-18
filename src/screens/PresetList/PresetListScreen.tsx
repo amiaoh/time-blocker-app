@@ -3,6 +3,7 @@ import { ChevronLeft } from 'lucide-react'
 import { MAX_CONTAINER_WIDTH } from '@/constants'
 import { PresetCard } from '@/components/presets/PresetCard'
 import { PresetForm } from '@/components/presets/PresetForm'
+import { ConfirmDialog } from '@/components/shared/ConfirmDialog'
 import { TodoistPresetCard } from '@/components/presets/TodoistPresetCard'
 import { usePresetListScreen } from './usePresetListScreen'
 import type { PresetList } from '@/types'
@@ -14,7 +15,18 @@ interface PresetListScreenProps {
 }
 
 export function PresetListScreen({ onBack, onOpenPreset, onOpenTodoist }: PresetListScreenProps) {
-  const { presets, isLoading, isFormOpen, setIsFormOpen, handleAddSubmit, isAddingPreset } = usePresetListScreen()
+  const {
+    presets,
+    isLoading,
+    isFormOpen,
+    setIsFormOpen,
+    handleAddSubmit,
+    isAddingPreset,
+    deletingPreset,
+    setDeletingPreset,
+    handleDeleteConfirm,
+    isDeletingPreset,
+  } = usePresetListScreen()
 
   return (
     <Box minH="100vh" bg="gray.950" pb={28}>
@@ -54,8 +66,8 @@ export function PresetListScreen({ onBack, onOpenPreset, onOpenTodoist }: Preset
               <PresetCard
                 key={preset.id}
                 preset={preset}
-                onEdit={() => onOpenPreset(preset)}
-                onLoad={() => onOpenPreset(preset)}
+                onOpen={() => onOpenPreset(preset)}
+                onDelete={() => setDeletingPreset(preset)}
               />
             ))}
           </SimpleGrid>
@@ -95,6 +107,15 @@ export function PresetListScreen({ onBack, onOpenPreset, onOpenTodoist }: Preset
         onClose={() => setIsFormOpen(false)}
         onSubmit={handleAddSubmit}
         isLoading={isAddingPreset}
+      />
+
+      <ConfirmDialog
+        isOpen={!!deletingPreset}
+        onClose={() => setDeletingPreset(null)}
+        onConfirm={handleDeleteConfirm}
+        title="Delete preset"
+        message={`Delete "${deletingPreset?.name}"? All tasks in this preset will be permanently removed.`}
+        isLoading={isDeletingPreset}
       />
     </Box>
   )
