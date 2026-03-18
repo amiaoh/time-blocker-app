@@ -15,7 +15,7 @@ export const PRIORITY_COLORS: { color: TaskColor; label: string }[] = [
 
 export interface Task {
   id: string
-  sessionId: string
+  userId: string
   title: string
   durationMin: number
   color: TaskColor
@@ -58,7 +58,7 @@ export interface ProjectionResult {
 
 export interface PresetList {
   id: string
-  sessionId: string
+  userId: string
   name: string
   icon: string
   position: number
@@ -77,7 +77,7 @@ export interface PresetTask {
 // Supabase DB row shapes (snake_case)
 export interface PresetListRow {
   id: string
-  session_id: string
+  user_id: string
   name: string
   icon: string
   position: number
@@ -98,7 +98,7 @@ export interface PresetTaskRow {
 // Supabase DB row shape (snake_case)
 export interface TaskRow {
   id: string
-  session_id: string
+  user_id: string
   title: string
   duration_min: number
   color: string

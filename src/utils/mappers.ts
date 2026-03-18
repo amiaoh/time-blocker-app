@@ -3,7 +3,7 @@ import type { Task, TaskRow, TaskColor, PresetList, PresetListRow, PresetTask, P
 export function rowToTask(row: TaskRow): Task {
   return {
     id: row.id,
-    sessionId: row.session_id,
+    userId: row.user_id,
     title: row.title,
     durationMin: row.duration_min,
     color: row.color as TaskColor,
@@ -21,7 +21,7 @@ export function rowToTask(row: TaskRow): Task {
 export function rowToPresetList(row: PresetListRow): PresetList {
   return {
     id: row.id,
-    sessionId: row.session_id,
+    userId: row.user_id,
     name: row.name,
     icon: row.icon,
     position: row.position,
@@ -44,7 +44,7 @@ export function taskToInsertRow(
   task: Omit<Task, 'id' | 'createdAt' | 'updatedAt'>,
 ): Omit<TaskRow, 'id' | 'created_at' | 'updated_at'> {
   return {
-    session_id: task.sessionId,
+    user_id: task.userId,
     title: task.title,
     duration_min: task.durationMin,
     color: task.color,

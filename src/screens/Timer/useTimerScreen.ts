@@ -6,7 +6,7 @@ import { requestNotificationPermission } from '@/utils/notifications'
 import { useDragOrder } from '@/components/ordering/useDragOrder'
 import { useProjection } from '@/components/projection/useProjection'
 import { useTasks, useAddTask, useUpdateTask, useDeleteTask, useClearCompleted, useClearAll } from '@/components/tasks/useTasks'
-import { useSessionId } from '@/hooks/useSessionId'
+import { useUserId } from '@/hooks/useUserId'
 import { useSettings } from '@/hooks/useSettings'
 import { toaster } from '@/lib/toaster'
 import type { Task, TaskFormValues } from '@/types'
@@ -20,13 +20,13 @@ function errorMessage(err: unknown): string {
 
 export function useTimerScreen() {
   const { settings, updateSettings } = useSettings()
-  const sessionId = useSessionId()
-  const { data: tasks = [], isLoading, error: loadError } = useTasks(sessionId)
-  const addTask = useAddTask(sessionId)
-  const updateTask = useUpdateTask(sessionId)
-  const deleteTask = useDeleteTask(sessionId)
-  const clearCompleted = useClearCompleted(sessionId)
-  const clearAll = useClearAll(sessionId)
+  const userId = useUserId()
+  const { data: tasks = [], isLoading, error: loadError } = useTasks(userId)
+  const addTask = useAddTask(userId)
+  const updateTask = useUpdateTask(userId)
+  const deleteTask = useDeleteTask(userId)
+  const clearCompleted = useClearCompleted(userId)
+  const clearAll = useClearAll(userId)
 
   const [isFormOpen, setIsFormOpen] = useState(false)
   const [editingTask, setEditingTask] = useState<Task | undefined>(undefined)

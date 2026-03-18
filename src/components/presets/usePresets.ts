@@ -5,8 +5,8 @@ import type { PresetListRow, PresetTask, PresetTaskRow, TaskColor } from '@/type
 
 const TODAY = new Date().toISOString().split('T')[0]
 
-function presetsQueryKey(sessionId: string) {
-  return ['presets', sessionId] as const
+function presetsQueryKey(userId: string) {
+  return ['presets', userId] as const
 }
 
 export function presetTasksQueryKey(presetId: string) {
@@ -15,14 +15,14 @@ export function presetTasksQueryKey(presetId: string) {
 
 // Returns a Map<title_lowercase, durationMin> across all presets for the session.
 // Used to auto-apply user-defined durations when importing from Todoist.
-export function useAllPresetTaskDurations(sessionId: string) {
+export function useAllPresetTaskDurations(userId: string) {
   return useQuery({
-    queryKey: ['all-preset-task-durations', sessionId],
+    queryKey: ['all-preset-task-durations', userId],
     queryFn: async () => {
       const { data: presets } = await supabase
         .from('preset_lists')
         .select('id')
-        .eq('session_id', sessionId)
+        .eq('user_id', userId)
       const presetIds = (presets as { id: string }[] | null)?.map((p) => p.id) ?? []
       if (presetIds.length === 0) return new Map<string, number>()
       const { data, error } = await supabase
@@ -39,14 +39,14 @@ export function useAllPresetTaskDurations(sessionId: string) {
   })
 }
 
-export function usePresets(sessionId: string) {
+export function usePresets(userId: string) {
   return useQuery({
-    queryKey: presetsQueryKey(sessionId),
+    queryKey: presetsQueryKey(userId),
     queryFn: async () => {
       const { data, error } = await supabase
         .from('preset_lists')
         .select('*')
-        .eq('session_id', sessionId)
+        .eq('user_id', userId)
         .order('position', { ascending: true })
       if (error) throw error
       return ((data ?? []) as PresetListRow[]).map(rowToPresetList)
@@ -69,30 +69,30 @@ export function usePresetTasks(presetId: string) {
   })
 }
 
-export function useAddPreset(sessionId: string) {
+export function useAddPreset(userId: string) {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: async ({ name, icon }: { name: string; icon: string }) => {
       const { data: existing } = await supabase
         .from('preset_lists')
         .select('position')
-        .eq('session_id', sessionId)
+        .eq('user_id', userId)
         .order('position', { ascending: false })
         .limit(1)
       const maxPosition = (existing as { position: number }[] | null)?.[0]?.position ?? 0
       const { data, error } = await supabase
         .from('preset_lists')
-        .insert({ session_id: sessionId, name, icon, position: maxPosition + 1000 })
+        .insert({ user_id: userId, name, icon, position: maxPosition + 1000 })
         .select()
         .single()
       if (error) throw error
       return rowToPresetList(data as PresetListRow)
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: presetsQueryKey(sessionId) }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: presetsQueryKey(userId) }),
   })
 }
 
-export function useUpdatePreset(sessionId: string) {
+export function useUpdatePreset(userId: string) {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: async ({ id, name, icon }: { id: string; name?: string; icon?: string }) => {
@@ -108,11 +108,11 @@ export function useUpdatePreset(sessionId: string) {
       if (error) throw error
       return rowToPresetList(data as PresetListRow)
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: presetsQueryKey(sessionId) }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: presetsQueryKey(userId) }),
   })
 }
 
-export function useDeletePreset(sessionId: string) {
+export function useDeletePreset(userId: string) {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: async (presetId: string) => {
@@ -120,10 +120,10 @@ export function useDeletePreset(sessionId: string) {
         .from('preset_lists')
         .delete()
         .eq('id', presetId)
-        .eq('session_id', sessionId)
+        .eq('user_id', userId)
       if (error) throw error
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: presetsQueryKey(sessionId) }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: presetsQueryKey(userId) }),
   })
 }
 
@@ -229,20 +229,20 @@ export function useDuplicatePresetTask(presetId: string) {
   })
 }
 
-export function useLoadPreset(sessionId: string) {
+export function useLoadPreset(userId: string) {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: async ({ tasks, position }: { tasks: PresetTask[]; position: 'top' | 'bottom' }) => {
       const { data: existing } = await supabase
         .from('tasks')
         .select('position')
-        .eq('session_id', sessionId)
+        .eq('user_id', userId)
         .eq('task_date', TODAY)
         .order('position', { ascending: position === 'top' })
         .limit(1)
       const refPosition = (existing as { position: number }[] | null)?.[0]?.position ?? 1000
       const rows = tasks.map((task, i) => ({
-        session_id: sessionId,
+        user_id: userId,
         title: task.title,
         duration_min: task.durationMin,
         color: task.color,
@@ -256,6 +256,6 @@ export function useLoadPreset(sessionId: string) {
       const { error } = await supabase.from('tasks').insert(rows)
       if (error) throw error
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['tasks', sessionId] }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['tasks', userId] }),
   })
 }

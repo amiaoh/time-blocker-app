@@ -15,6 +15,7 @@ import {
 } from "@/constants";
 
 import type { AppSettings } from "@/hooks/useSettings";
+import { useAuth } from "@/context/AuthContext";
 import { useState } from "react";
 
 interface SettingsDialogProps {
@@ -30,10 +31,10 @@ export function SettingsDialog({
   settings,
   onSave,
 }: SettingsDialogProps) {
+  const { signOut } = useAuth();
   const [maxDuration, setMaxDuration] = useState(settings.maxTaskDurationMin);
   const [showPieTimer, setShowPieTimer] = useState(settings.showPieTimer);
   const [use24HourTime, setUse24HourTime] = useState(settings.use24HourTime);
-  const [todoistToken, setTodoistToken] = useState(settings.todoistToken);
 
   function handleSave() {
     const clamped = Math.min(
@@ -47,7 +48,6 @@ export function SettingsDialog({
       maxTaskDurationMin: clamped,
       showPieTimer,
       use24HourTime,
-      todoistToken: todoistToken.trim(),
     });
     onClose();
   }
@@ -57,7 +57,6 @@ export function SettingsDialog({
       setMaxDuration(settings.maxTaskDurationMin);
       setShowPieTimer(settings.showPieTimer);
       setUse24HourTime(settings.use24HourTime);
-      setTodoistToken(settings.todoistToken);
     } else {
       onClose();
     }
@@ -128,36 +127,25 @@ export function SettingsDialog({
                   {MAX_TASK_DURATION_MIN} min)
                 </Field.HelperText>
               </Field.Root>
-              <Field.Root>
-                <Field.Label color="gray.300">Todoist API token</Field.Label>
-                <Input
-                  type="password"
-                  value={todoistToken}
-                  onChange={(e) => setTodoistToken(e.target.value)}
-                  placeholder="Paste your API token"
-                  bg="gray.800"
-                  borderColor="gray.600"
-                  color="white"
-                  _placeholder={{ color: "gray.500" }}
-                />
-                <Field.HelperText color="gray.500">
-                  From todoist.com → Settings → Integrations → Developer
-                </Field.HelperText>
-              </Field.Root>
             </Stack>
           </Dialog.Body>
-          <Dialog.Footer>
-            <Button variant="ghost" onClick={onClose} color="gray.400">
-              Cancel
+          <Dialog.Footer justifyContent="space-between">
+            <Button variant="ghost" color="red.400" _hover={{ color: "red.300" }} onClick={signOut}>
+              Sign out
             </Button>
-            <Button
-              onClick={handleSave}
-              bg="brand.600"
-              color="white"
-              _hover={{ bg: "brand.500" }}
-            >
-              Save
-            </Button>
+            <HStack>
+              <Button variant="ghost" onClick={onClose} color="gray.400">
+                Cancel
+              </Button>
+              <Button
+                onClick={handleSave}
+                bg="brand.600"
+                color="white"
+                _hover={{ bg: "brand.500" }}
+              >
+                Save
+              </Button>
+            </HStack>
           </Dialog.Footer>
         </Dialog.Content>
       </Dialog.Positioner>

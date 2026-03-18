@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useSessionId } from '@/hooks/useSessionId'
+import { useUserId } from '@/hooks/useUserId'
 import { usePresets, useAddPreset, useDeletePreset } from '@/components/presets/usePresets'
 import { toaster } from '@/lib/toaster'
 import { TOAST_DURATION_MS } from '@/constants'
@@ -10,10 +10,10 @@ function errorMessage(err: unknown): string {
 }
 
 export function usePresetListScreen() {
-  const sessionId = useSessionId()
-  const { data: presets = [], isLoading } = usePresets(sessionId)
-  const addPreset = useAddPreset(sessionId)
-  const deletePreset = useDeletePreset(sessionId)
+  const userId = useUserId()
+  const { data: presets = [], isLoading } = usePresets(userId)
+  const addPreset = useAddPreset(userId)
+  const deletePreset = useDeletePreset(userId)
 
   const [isFormOpen, setIsFormOpen] = useState(false)
   const [deletingPreset, setDeletingPreset] = useState<PresetList | null>(null)

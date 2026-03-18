@@ -3,13 +3,16 @@ import { ChakraProvider, Toaster } from '@chakra-ui/react'
 import { queryClient } from '@/lib/queryClient'
 import { toaster } from '@/lib/toaster'
 import { system } from '@/theme'
+import { AuthProvider } from '@/context/AuthContext'
 import { AppRouter } from '@/AppRouter'
 
 export function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <ChakraProvider value={system}>
-        <AppRouter />
+        <AuthProvider>
+          <AppRouter />
+        </AuthProvider>
         <Toaster toaster={toaster}>
           {(toast) => {
             const accent =
@@ -65,3 +68,4 @@ export function App() {
     </QueryClientProvider>
   )
 }
+

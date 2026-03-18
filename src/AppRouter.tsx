@@ -1,4 +1,7 @@
 import { useState } from 'react'
+import { Box, Spinner } from '@chakra-ui/react'
+import { useAuth } from '@/context/AuthContext'
+import { AuthScreen } from '@/screens/Auth/AuthScreen'
 import { TimerScreen } from '@/screens/Timer/TimerScreen'
 import { PresetListScreen } from '@/screens/PresetList/PresetListScreen'
 import { PresetDetailScreen } from '@/screens/PresetDetail/PresetDetailScreen'
@@ -14,7 +17,20 @@ type Screen =
   | { name: 'todoist-preset' }
 
 export function AppRouter() {
+  const { user } = useAuth()
   const [screen, setScreen] = useState<Screen>({ name: 'timer' })
+
+  if (user === undefined) {
+    return (
+      <Box minH="100vh" bg="gray.950" display="flex" alignItems="center" justifyContent="center">
+        <Spinner color="brand.400" size="lg" />
+      </Box>
+    )
+  }
+
+  if (user === null) {
+    return <AuthScreen />
+  }
 
   if (screen.name === 'overview') {
     return <OverviewScreen onBack={() => setScreen({ name: 'timer' })} />

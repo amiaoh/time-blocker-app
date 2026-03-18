@@ -1,4 +1,5 @@
-import { Box, Button, HStack, Spinner, Stack, Text } from '@chakra-ui/react'
+import { Box, Button, HStack, Input, Spinner, Stack, Text } from '@chakra-ui/react'
+import { useState } from 'react'
 import { ChevronLeft, RefreshCw } from 'lucide-react'
 import { TodoistIcon } from '@/components/shared/TodoistIcon'
 import { DndContext, DragOverlay, closestCenter } from '@dnd-kit/core'
@@ -16,10 +17,12 @@ interface TodoistPresetScreenProps {
 
 export function TodoistPresetScreen({ onBack, onLoadSuccess }: TodoistPresetScreenProps) {
   const {
-    token, orderedTasks, isTasksLoading, isFetching, error, refetch,
+    token, setApiKey, orderedTasks, isTasksLoading, isFetching, error, refetch,
     isSelected, toggleSelect, handleLoad, isLoading,
     activeId, handleDragStart, handleDragEnd, handleDragCancel,
   } = useTodoistPresetScreen(onLoadSuccess)
+
+  const [tokenInput, setTokenInput] = useState('')
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
@@ -59,10 +62,35 @@ export function TodoistPresetScreen({ onBack, onLoadSuccess }: TodoistPresetScre
         </Stack>
 
         {!token ? (
-          <Box bg="gray.800" borderRadius="xl" p={6} textAlign="center">
-            <Text color="gray.300" mb={1}>No Todoist token set</Text>
-            <Text color="gray.500" fontSize="sm">Add your API token in Settings to sync tasks.</Text>
-          </Box>
+          <Stack gap={3}>
+            <Text color="gray.400" fontSize="sm" textAlign="center">
+              Enter your Todoist API token to sync today's tasks.
+            </Text>
+            <Input
+              placeholder="Todoist API token"
+              value={tokenInput}
+              onChange={(e) => setTokenInput(e.target.value)}
+              bg="gray.800"
+              border="none"
+              color="white"
+              _placeholder={{ color: 'gray.600' }}
+              borderRadius="xl"
+              h={12}
+              px={4}
+            />
+            <Button
+              bg="black"
+              color="white"
+              borderRadius="full"
+              h={12}
+              _hover={{ bg: 'gray.900' }}
+              _active={{ bg: 'gray.800' }}
+              disabled={!tokenInput.trim()}
+              onClick={() => setApiKey(tokenInput.trim())}
+            >
+              Save token
+            </Button>
+          </Stack>
         ) : isTasksLoading ? (
           <Box textAlign="center" py={12}><Spinner color="brand.400" /></Box>
         ) : error ? (

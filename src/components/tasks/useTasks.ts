@@ -5,18 +5,18 @@ import type { Task, TaskColor, TaskRow, TaskUpdate } from '@/types'
 
 const TODAY = new Date().toISOString().split('T')[0]
 
-function tasksQueryKey(sessionId: string) {
-  return ['tasks', sessionId, TODAY] as const
+function tasksQueryKey(userId: string) {
+  return ['tasks', userId, TODAY] as const
 }
 
-export function useTasks(sessionId: string) {
+export function useTasks(userId: string) {
   return useQuery({
-    queryKey: tasksQueryKey(sessionId),
+    queryKey: tasksQueryKey(userId),
     queryFn: async () => {
       const { data, error } = await supabase
         .from('tasks')
         .select('*')
-        .eq('session_id', sessionId)
+        .eq('user_id', userId)
         .eq('task_date', TODAY)
         .order('position', { ascending: true })
 
@@ -26,13 +26,13 @@ export function useTasks(sessionId: string) {
   })
 }
 
-export function useAddTask(sessionId: string) {
+export function useAddTask(userId: string) {
   const queryClient = useQueryClient()
 
   return useMutation({
     mutationFn: async (values: { title: string; durationMin: number; color: TaskColor; position: number; icon?: string }) => {
       const row = taskToInsertRow({
-        sessionId,
+        userId,
         title: values.title,
         durationMin: values.durationMin,
         color: values.color,
@@ -46,16 +46,16 @@ export function useAddTask(sessionId: string) {
       return rowToTask(data as TaskRow)
     },
     onSuccess: (newTask) => {
-      queryClient.setQueryData<Task[]>(tasksQueryKey(sessionId), (old) => {
+      queryClient.setQueryData<Task[]>(tasksQueryKey(userId), (old) => {
         const existing = old ?? []
         return existing.some((t) => t.id === newTask.id) ? existing : [...existing, newTask]
       })
-      queryClient.invalidateQueries({ queryKey: tasksQueryKey(sessionId) })
+      queryClient.invalidateQueries({ queryKey: tasksQueryKey(userId) })
     },
   })
 }
 
-export function useUpdateTask(sessionId: string) {
+export function useUpdateTask(userId: string) {
   const queryClient = useQueryClient()
 
   return useMutation({
@@ -74,27 +74,27 @@ export function useUpdateTask(sessionId: string) {
         .from('tasks')
         .update(dbUpdates)
         .eq('id', id)
-        .eq('session_id', sessionId)
+        .eq('user_id', userId)
       if (error) throw error
     },
     onMutate: async (updates) => {
-      await queryClient.cancelQueries({ queryKey: tasksQueryKey(sessionId) })
-      const previous = queryClient.getQueryData<Task[]>(tasksQueryKey(sessionId))
-      queryClient.setQueryData<Task[]>(tasksQueryKey(sessionId), (old) =>
+      await queryClient.cancelQueries({ queryKey: tasksQueryKey(userId) })
+      const previous = queryClient.getQueryData<Task[]>(tasksQueryKey(userId))
+      queryClient.setQueryData<Task[]>(tasksQueryKey(userId), (old) =>
         (old ?? []).map((t) => (t.id === updates.id ? { ...t, ...updates } : t)).sort((a, b) => a.position - b.position),
       )
       return { previous }
     },
     onError: (_err, _vars, ctx) => {
       if (ctx?.previous) {
-        queryClient.setQueryData(tasksQueryKey(sessionId), ctx.previous)
+        queryClient.setQueryData(tasksQueryKey(userId), ctx.previous)
       }
     },
-    onSettled: () => queryClient.invalidateQueries({ queryKey: tasksQueryKey(sessionId) }),
+    onSettled: () => queryClient.invalidateQueries({ queryKey: tasksQueryKey(userId) }),
   })
 }
 
-export function useDeleteTask(sessionId: string) {
+export function useDeleteTask(userId: string) {
   const queryClient = useQueryClient()
 
   return useMutation({
@@ -103,26 +103,26 @@ export function useDeleteTask(sessionId: string) {
         .from('tasks')
         .delete()
         .eq('id', id)
-        .eq('session_id', sessionId)
+        .eq('user_id', userId)
       if (error) throw error
     },
     onMutate: async (id) => {
-      await queryClient.cancelQueries({ queryKey: tasksQueryKey(sessionId) })
-      const previous = queryClient.getQueryData<Task[]>(tasksQueryKey(sessionId))
-      queryClient.setQueryData<Task[]>(tasksQueryKey(sessionId), (old) =>
+      await queryClient.cancelQueries({ queryKey: tasksQueryKey(userId) })
+      const previous = queryClient.getQueryData<Task[]>(tasksQueryKey(userId))
+      queryClient.setQueryData<Task[]>(tasksQueryKey(userId), (old) =>
         (old ?? []).filter((t) => t.id !== id),
       )
       return { previous }
     },
     onError: (_err, _vars, ctx) => {
       if (ctx?.previous) {
-        queryClient.setQueryData(tasksQueryKey(sessionId), ctx.previous)
+        queryClient.setQueryData(tasksQueryKey(userId), ctx.previous)
       }
     },
   })
 }
 
-export function useClearCompleted(sessionId: string) {
+export function useClearCompleted(userId: string) {
   const queryClient = useQueryClient()
 
   return useMutation({
@@ -130,25 +130,25 @@ export function useClearCompleted(sessionId: string) {
       const { error } = await supabase
         .from('tasks')
         .delete()
-        .eq('session_id', sessionId)
+        .eq('user_id', userId)
         .in('status', ['completed', 'skipped'])
       if (error) throw error
     },
     onMutate: async () => {
-      await queryClient.cancelQueries({ queryKey: tasksQueryKey(sessionId) })
-      const previous = queryClient.getQueryData<Task[]>(tasksQueryKey(sessionId))
-      queryClient.setQueryData<Task[]>(tasksQueryKey(sessionId), (old) =>
+      await queryClient.cancelQueries({ queryKey: tasksQueryKey(userId) })
+      const previous = queryClient.getQueryData<Task[]>(tasksQueryKey(userId))
+      queryClient.setQueryData<Task[]>(tasksQueryKey(userId), (old) =>
         (old ?? []).filter((t) => t.status === 'pending'),
       )
       return { previous }
     },
     onError: (_err, _vars, ctx) => {
-      if (ctx?.previous) queryClient.setQueryData(tasksQueryKey(sessionId), ctx.previous)
+      if (ctx?.previous) queryClient.setQueryData(tasksQueryKey(userId), ctx.previous)
     },
   })
 }
 
-export function useClearAll(sessionId: string) {
+export function useClearAll(userId: string) {
   const queryClient = useQueryClient()
 
   return useMutation({
@@ -156,19 +156,19 @@ export function useClearAll(sessionId: string) {
       const { error } = await supabase
         .from('tasks')
         .delete()
-        .eq('session_id', sessionId)
+        .eq('user_id', userId)
         .eq('task_date', TODAY)
       if (error) throw error
     },
     onMutate: async () => {
-      await queryClient.cancelQueries({ queryKey: tasksQueryKey(sessionId) })
-      const previous = queryClient.getQueryData<Task[]>(tasksQueryKey(sessionId))
-      queryClient.setQueryData<Task[]>(tasksQueryKey(sessionId), [])
+      await queryClient.cancelQueries({ queryKey: tasksQueryKey(userId) })
+      const previous = queryClient.getQueryData<Task[]>(tasksQueryKey(userId))
+      queryClient.setQueryData<Task[]>(tasksQueryKey(userId), [])
       return { previous }
     },
     onError: (_err, _vars, ctx) => {
-      if (ctx?.previous) queryClient.setQueryData(tasksQueryKey(sessionId), ctx.previous)
+      if (ctx?.previous) queryClient.setQueryData(tasksQueryKey(userId), ctx.previous)
     },
-    onSettled: () => queryClient.invalidateQueries({ queryKey: tasksQueryKey(sessionId) }),
+    onSettled: () => queryClient.invalidateQueries({ queryKey: tasksQueryKey(userId) }),
   })
 }

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useSessionId } from '@/hooks/useSessionId'
+import { useUserId } from '@/hooks/useUserId'
 import {
   usePresetTasks,
   useAddPresetTask,
@@ -24,14 +24,14 @@ export function usePresetDetailScreen(
   onLoadSuccess: () => void,
   onRename: (updated: PresetList) => void,
 ) {
-  const sessionId = useSessionId()
+  const userId = useUserId()
   const { data: tasks = [], isLoading: isTasksLoading } = usePresetTasks(presetId)
   const addTask = useAddPresetTask(presetId)
   const updateTask = useUpdatePresetTask(presetId)
   const deleteTask = useDeletePresetTask(presetId)
   const duplicateTask = useDuplicatePresetTask(presetId)
-  const updatePreset = useUpdatePreset(sessionId)
-  const loadPreset = useLoadPreset(sessionId)
+  const updatePreset = useUpdatePreset(userId)
+  const loadPreset = useLoadPreset(userId)
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),

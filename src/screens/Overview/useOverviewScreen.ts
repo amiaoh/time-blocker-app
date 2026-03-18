@@ -1,9 +1,9 @@
-import { useSessionId } from '@/hooks/useSessionId'
+import { useUserId } from '@/hooks/useUserId'
 import { useTasks } from '@/components/tasks/useTasks'
 
 export function useOverviewScreen() {
-  const sessionId = useSessionId()
-  const { data: tasks = [], isLoading } = useTasks(sessionId)
+  const userId = useUserId()
+  const { data: tasks = [], isLoading } = useTasks(userId)
 
   const completedTasks = tasks.filter(t => t.status === 'completed')
   const remainingTasks = tasks.filter(t => t.status === 'pending' || t.status === 'active')

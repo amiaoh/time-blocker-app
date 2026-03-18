@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
-import { useSessionId } from '@/hooks/useSessionId'
-import { useSettings } from '@/hooks/useSettings'
+import { useUserId } from '@/hooks/useUserId'
+import { useTodoistApiKey } from '@/hooks/useTodoistApiKey'
 import { useTodoistTasks } from '@/hooks/useTodoistTasks'
 import { useLoadPreset, useAllPresetTaskDurations } from '@/components/presets/usePresets'
 import { useDragOrder } from '@/components/ordering/useDragOrder'
@@ -14,18 +14,17 @@ function errorMessage(err: unknown): string {
 }
 
 export function useTodoistPresetScreen(onLoadSuccess: () => void) {
-  const sessionId = useSessionId()
-  const { settings } = useSettings()
-  const token = settings.todoistToken || undefined
+  const userId = useUserId()
+  const { apiKey, setApiKey } = useTodoistApiKey()
+  const token = apiKey ?? undefined
 
   const { data: tasks, isLoading: isTasksLoading, error, refetch, isFetching } = useTodoistTasks(token)
-  const loadPreset = useLoadPreset(sessionId)
-  const { data: durationMap = new Map<string, number>() } = useAllPresetTaskDurations(sessionId)
+  const loadPreset = useLoadPreset(userId)
+  const { data: durationMap = new Map<string, number>() } = useAllPresetTaskDurations(userId)
 
   const [orderedTasks, setOrderedTasks] = useState<MappedTodoistTask[]>([])
   const [deselectedIds, setDeselectedIds] = useState<Set<string>>(new Set())
 
-  // Sync ordered tasks when fresh data arrives, applying preset duration overrides
   useEffect(() => {
     if (tasks === undefined) return
     setOrderedTasks(tasks.map((t) => {
@@ -84,6 +83,7 @@ export function useTodoistPresetScreen(onLoadSuccess: () => void) {
 
   return {
     token,
+    setApiKey,
     orderedTasks,
     isTasksLoading,
     isFetching,
