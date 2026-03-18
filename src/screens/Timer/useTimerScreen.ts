@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { PointerSensor, TouchSensor, useSensor, useSensors } from '@dnd-kit/core'
 import { useTimer } from '@/components/timer/useTimer'
 import { useTimerNotifications } from '@/components/timer/useTimerNotifications'
@@ -33,35 +33,22 @@ export function useTimerScreen() {
   const [deletingTask, setDeletingTask] = useState<Task | undefined>(undefined)
   const [hideCompleted, setHideCompleted] = useState(false)
 
-  // Refs to break the timer ↔ task circular dependency without stale closures
-  const tasksRef = useRef<Task[]>([])
-  const startRef = useRef<((task: Task) => void) | null>(null)
-  useLayoutEffect(() => { tasksRef.current = tasks }, [tasks])
-
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
     useSensor(TouchSensor, { activationConstraint: { delay: 200, tolerance: 10 } }),
   )
-
-  const autoStartNext = useCallback((completedId: string) => {
-    const next = tasksRef.current.find((t) => t.status === 'pending' && t.id !== completedId)
-    if (next && startRef.current) startRef.current(next)
-  }, [])
 
   const handleComplete = useCallback(
     (taskId: string, elapsedSeconds: number) => {
       updateTask.mutate(
         { id: taskId, status: 'completed', spentSeconds: elapsedSeconds },
         {
-          onSuccess: () => {
-            toaster.create({ title: 'Task completed! 🎉', type: 'success', duration: TOAST_DURATION_MS })
-            autoStartNext(taskId)
-          },
+          onSuccess: () => toaster.create({ title: 'Task completed! 🎉', type: 'success', duration: TOAST_DURATION_MS }),
           onError: (err) => toaster.create({ title: 'Failed to complete task', description: errorMessage(err), type: 'error' }),
         },
       )
     },
-    [updateTask, autoStartNext],
+    [updateTask],
   )
 
   const handleSkip = useCallback(
@@ -69,24 +56,18 @@ export function useTimerScreen() {
       updateTask.mutate(
         { id: taskId, status: 'skipped' },
         {
-          onSuccess: () => {
-            toaster.create({ title: 'Task skipped', type: 'info', duration: TOAST_DURATION_MS })
-            autoStartNext(taskId)
-          },
+          onSuccess: () => toaster.create({ title: 'Task skipped', type: 'info', duration: TOAST_DURATION_MS }),
           onError: (err) => toaster.create({ title: 'Failed to skip task', description: errorMessage(err), type: 'error' }),
         },
       )
     },
-    [updateTask, autoStartNext],
+    [updateTask],
   )
 
-  const { timerState, taskElapsed, taskRemaining, select, start, pause, resume, complete, skip, clearTaskTimer, adjustRemaining } = useTimer({
+  const { timerState, taskElapsed, taskRemaining, select, start, pause, resume, complete, skip, clearTaskTimer, clearTaskRemaining, adjustRemaining } = useTimer({
     onComplete: handleComplete,
     onSkip: handleSkip,
   })
-
-  // Must be set after useTimer so startRef always holds the latest start fn
-  useLayoutEffect(() => { startRef.current = start }, [start])
 
   // Auto-select the first pending task when tasks load and nothing is active
   useEffect(() => {
@@ -154,14 +135,33 @@ export function useTimerScreen() {
 
   function handleEditSubmit(values: TaskFormValues) {
     if (!editingTask) return
+    const id = editingTask.id
     setEditingTask(undefined)
     updateTask.mutate(
-      { id: editingTask.id, ...values },
+      { id, ...values },
       {
-        onSuccess: () => toaster.create({ title: 'Task updated', type: 'success', duration: TOAST_DURATION_MS }),
+        onSuccess: () => {
+          toaster.create({ title: 'Task updated', type: 'success', duration: TOAST_DURATION_MS })
+          clearTaskRemaining(id)
+        },
         onError: (err) => toaster.create({ title: 'Failed to update task', description: errorMessage(err), type: 'error' }),
       },
     )
+  }
+
+  function handleCompleteTask(task: Task) {
+    if (task.id === timerState.activeTaskId) {
+      complete()
+    } else {
+      const elapsedSeconds = taskElapsed.get(task.id) ?? 0
+      updateTask.mutate(
+        { id: task.id, status: 'completed', spentSeconds: elapsedSeconds },
+        {
+          onSuccess: () => toaster.create({ title: 'Task completed! 🎉', type: 'success', duration: TOAST_DURATION_MS }),
+          onError: (err) => toaster.create({ title: 'Failed to complete task', description: errorMessage(err), type: 'error' }),
+        },
+      )
+    }
   }
 
   function handleDeleteConfirm() {
@@ -277,8 +277,8 @@ export function useTimerScreen() {
     start,
     pause,
     resume,
-    complete,
     skip,
+    handleCompleteTask,
     handleTimerToggle,
     // Task handlers
     handleAddSubmit,

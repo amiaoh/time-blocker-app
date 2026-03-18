@@ -19,7 +19,7 @@ interface TaskListProps {
   onAddTask: () => void
   onClearCompleted: () => void
   onClearAll: () => void
-  onComplete: () => void
+  onComplete: (task: Task) => void
   onDelete: (task: Task) => void
   onReset: (task: Task) => void
   onMoveToTop: (task: Task) => void
@@ -73,7 +73,7 @@ export function TaskList({
             taskRemaining={taskRemaining}
             timeRange={taskTimeRanges.get(task.id)}
             use24HourTime={use24HourTime}
-            onComplete={onComplete}
+            onComplete={() => onComplete(task)}
             onDelete={onDelete}
             onReset={onReset}
             onMoveToTop={onMoveToTop}

@@ -21,6 +21,7 @@ interface UseTimerReturn {
   complete: () => void
   skip: () => void
   clearTaskTimer: (taskId: string) => void
+  clearTaskRemaining: (taskId: string) => void
   adjustRemaining: (deltaMin: number) => void
 }
 
@@ -150,6 +151,11 @@ export function useTimer({ onComplete, onSkip }: UseTimerCallbacks): UseTimerRet
     if (activeTaskId) onSkip(activeTaskId)
   }, [clearTick, onSkip])
 
+  const clearTaskRemaining = useCallback((taskId: string) => {
+    taskRemainingRef.current.delete(taskId)
+    setTaskRemaining(new Map(taskRemainingRef.current))
+  }, [])
+
   const clearTaskTimer = useCallback((taskId: string) => {
     const { activeTaskId } = stateRef.current
     if (chimedForTaskRef.current === taskId) chimedForTaskRef.current = null
@@ -172,5 +178,5 @@ export function useTimer({ onComplete, onSkip }: UseTimerCallbacks): UseTimerRet
 
   useEffect(() => () => clearTick(), [clearTick])
 
-  return { timerState, taskElapsed, taskRemaining, select, start, pause, resume, complete, skip, clearTaskTimer, adjustRemaining }
+  return { timerState, taskElapsed, taskRemaining, select, start, pause, resume, complete, skip, clearTaskTimer, clearTaskRemaining, adjustRemaining }
 }

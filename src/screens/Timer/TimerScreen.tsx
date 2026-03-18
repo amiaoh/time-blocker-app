@@ -41,7 +41,7 @@ export function TimerScreen({ onOpenPresets, onOpenOverview }: TimerScreenProps)
     timerState,
     taskElapsed,
     taskRemaining,
-    complete,
+    handleCompleteTask,
     handleTimerToggle,
     handleAddSubmit,
     handleEditSubmit,
@@ -167,7 +167,7 @@ export function TimerScreen({ onOpenPresets, onOpenOverview }: TimerScreenProps)
               onAddTask={() => setIsFormOpen(true)}
               onClearCompleted={handleClearCompleted}
               onClearAll={handleClearAll}
-              onComplete={complete}
+              onComplete={handleCompleteTask}
               onDelete={(task) => setDeletingTask(task)}
               onReset={handleReset}
               onMoveToTop={handleMoveToTop}
