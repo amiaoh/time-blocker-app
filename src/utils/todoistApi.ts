@@ -26,6 +26,7 @@ export interface MappedTodoistTask {
   color: TaskColor
   icon: string
   durationMin: number
+  durationFromPreset?: boolean
   priority: number
   position: number
 }
@@ -57,7 +58,7 @@ export async function fetchTodayTodoistTasks(token: string): Promise<MappedTodoi
       title: t.content,
       color: priorityToColor(t.priority),
       icon: emojiFromTaskName(t.content),
-      durationMin: 25,
+      durationMin: 15,
       priority: t.priority,
       position: (i + 1) * 1000,
     }))

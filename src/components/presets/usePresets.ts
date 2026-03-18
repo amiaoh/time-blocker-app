@@ -13,6 +13,32 @@ export function presetTasksQueryKey(presetId: string) {
   return ['preset-tasks', presetId] as const
 }
 
+// Returns a Map<title_lowercase, durationMin> across all presets for the session.
+// Used to auto-apply user-defined durations when importing from Todoist.
+export function useAllPresetTaskDurations(sessionId: string) {
+  return useQuery({
+    queryKey: ['all-preset-task-durations', sessionId],
+    queryFn: async () => {
+      const { data: presets } = await supabase
+        .from('preset_lists')
+        .select('id')
+        .eq('session_id', sessionId)
+      const presetIds = (presets as { id: string }[] | null)?.map((p) => p.id) ?? []
+      if (presetIds.length === 0) return new Map<string, number>()
+      const { data, error } = await supabase
+        .from('preset_tasks')
+        .select('title, duration_min')
+        .in('preset_id', presetIds)
+      if (error) throw error
+      const map = new Map<string, number>()
+      for (const row of (data ?? []) as { title: string; duration_min: number }[]) {
+        map.set(row.title.toLowerCase(), row.duration_min)
+      }
+      return map
+    },
+  })
+}
+
 export function usePresets(sessionId: string) {
   return useQuery({
     queryKey: presetsQueryKey(sessionId),

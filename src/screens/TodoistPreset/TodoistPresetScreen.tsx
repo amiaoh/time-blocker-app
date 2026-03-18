@@ -53,6 +53,9 @@ export function TodoistPresetScreen({ onBack, onLoadSuccess }: TodoistPresetScre
           <Text color="gray.500" fontSize="sm">
             {orderedTasks.length === 0 && !isTasksLoading ? '' : `${orderedTasks.length} task${orderedTasks.length === 1 ? '' : 's'} due today`}
           </Text>
+          <Text color="gray.600" fontSize="xs">
+            Durations matching your preset tasks are applied automatically
+          </Text>
         </Stack>
 
         {!token ? (

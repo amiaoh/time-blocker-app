@@ -1,4 +1,5 @@
 import { Box, Grid, GridItem, HStack, Text } from '@chakra-ui/react'
+import { BookmarkCheck } from 'lucide-react'
 import { CSS } from '@dnd-kit/utilities'
 import { useSortable } from '@dnd-kit/sortable'
 import type { MappedTodoistTask } from '@/utils/todoistApi'
@@ -49,8 +50,14 @@ export function TodoistTaskCard({ task, isSelected, onToggleSelect }: TodoistTas
           <GridItem minW={0}>
             <Text fontWeight="semibold" fontSize="md" color="white" lineClamp={2}>{task.title}</Text>
           </GridItem>
-          <GridItem display="flex" justifyContent="center">
-            <Text fontSize="xs" fontWeight="semibold" color="white" fontVariantNumeric="tabular-nums">
+          <GridItem display="flex" justifyContent="center" alignItems="center" gap={1}>
+            {task.durationFromPreset && <BookmarkCheck size={10} color="#A78BFA" />}
+            <Text
+              fontSize="xs"
+              fontWeight="semibold"
+              color={task.durationFromPreset ? '#A78BFA' : 'white'}
+              fontVariantNumeric="tabular-nums"
+            >
               {task.durationMin}m
             </Text>
           </GridItem>

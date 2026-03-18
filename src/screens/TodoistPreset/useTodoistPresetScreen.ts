@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useSessionId } from '@/hooks/useSessionId'
 import { useSettings } from '@/hooks/useSettings'
 import { useTodoistTasks } from '@/hooks/useTodoistTasks'
-import { useLoadPreset } from '@/components/presets/usePresets'
+import { useLoadPreset, useAllPresetTaskDurations } from '@/components/presets/usePresets'
 import { useDragOrder } from '@/components/ordering/useDragOrder'
 import { toaster } from '@/lib/toaster'
 import { TOAST_DURATION_MS } from '@/constants'
@@ -20,16 +20,22 @@ export function useTodoistPresetScreen(onLoadSuccess: () => void) {
 
   const { data: tasks, isLoading: isTasksLoading, error, refetch, isFetching } = useTodoistTasks(token)
   const loadPreset = useLoadPreset(sessionId)
+  const { data: durationMap = new Map<string, number>() } = useAllPresetTaskDurations(sessionId)
 
   const [orderedTasks, setOrderedTasks] = useState<MappedTodoistTask[]>([])
   const [deselectedIds, setDeselectedIds] = useState<Set<string>>(new Set())
 
-  // Sync ordered tasks when fresh data arrives (e.g. initial load or refresh)
+  // Sync ordered tasks when fresh data arrives, applying preset duration overrides
   useEffect(() => {
     if (tasks === undefined) return
-    setOrderedTasks(tasks)
+    setOrderedTasks(tasks.map((t) => {
+      const presetDuration = durationMap.get(t.title.toLowerCase())
+      return presetDuration !== undefined
+        ? { ...t, durationMin: presetDuration, durationFromPreset: true }
+        : t
+    }))
     setDeselectedIds(new Set())
-  }, [tasks])
+  }, [tasks, durationMap])
 
   const { activeId, handleDragStart, handleDragEnd, handleDragCancel } = useDragOrder({
     tasks: orderedTasks,

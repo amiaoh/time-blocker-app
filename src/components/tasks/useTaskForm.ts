@@ -10,7 +10,7 @@ const DEFAULT_COLOR: TaskColor = '#7C4B1A'
 function defaultValues(task?: EditableTask): TaskFormValues {
   return {
     title: task?.title ?? '',
-    durationMin: task?.durationMin ?? 25,
+    durationMin: task?.durationMin ?? 15,
     color: task?.color ?? DEFAULT_COLOR,
   }
 }
