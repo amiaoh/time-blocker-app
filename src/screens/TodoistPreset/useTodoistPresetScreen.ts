@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useUserId } from '@/hooks/useUserId'
 import { useTodoistApiKey } from '@/hooks/useTodoistApiKey'
 import { useTodoistTasks } from '@/hooks/useTodoistTasks'
-import { useLoadPreset, useAllPresetTaskDurations } from '@/components/presets/usePresets'
+import { useLoadPreset, useAllPresetTaskDurations, usePresets, useSaveTasksToPreset } from '@/components/presets/usePresets'
 import { useDragOrder } from '@/components/ordering/useDragOrder'
 import { toaster } from '@/lib/toaster'
 import { TOAST_DURATION_MS } from '@/constants'
@@ -20,10 +20,14 @@ export function useTodoistPresetScreen(onLoadSuccess: () => void) {
 
   const { data: tasks, isLoading: isTasksLoading, error, refetch, isFetching } = useTodoistTasks(token)
   const loadPreset = useLoadPreset(userId)
+  const saveTasksToPreset = useSaveTasksToPreset()
+  const { data: presets = [] } = usePresets(userId)
   const { data: durationMap = new Map<string, number>() } = useAllPresetTaskDurations(userId)
+
 
   const [orderedTasks, setOrderedTasks] = useState<MappedTodoistTask[]>([])
   const [deselectedIds, setDeselectedIds] = useState<Set<string>>(new Set())
+  const [copyingTask, setCopyingTask] = useState<MappedTodoistTask | null>(null)
 
   useEffect(() => {
     if (tasks === undefined) return
@@ -52,6 +56,20 @@ export function useTodoistPresetScreen(onLoadSuccess: () => void) {
       else next.add(id)
       return next
     })
+  }
+
+  function handleCopyToPreset(presetId: string) {
+    if (!copyingTask) return
+    saveTasksToPreset.mutate(
+      { presetId, tasks: [copyingTask] },
+      {
+        onSuccess: () => {
+          setCopyingTask(null)
+          toaster.create({ title: 'Task added to preset', type: 'success', duration: TOAST_DURATION_MS })
+        },
+        onError: (err) => toaster.create({ title: 'Failed to copy task', description: errorMessage(err), type: 'error' }),
+      },
+    )
   }
 
   function handleLoad(position: 'top' | 'bottom') {
@@ -93,6 +111,11 @@ export function useTodoistPresetScreen(onLoadSuccess: () => void) {
     toggleSelect,
     handleLoad,
     isLoading: loadPreset.isPending,
+    presets,
+    copyingTask,
+    setCopyingTask,
+    handleCopyToPreset,
+    isCopyingToPreset: saveTasksToPreset.isPending,
     activeId,
     handleDragStart,
     handleDragEnd,

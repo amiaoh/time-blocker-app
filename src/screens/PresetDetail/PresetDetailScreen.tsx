@@ -46,7 +46,7 @@ export function PresetDetailScreen({ preset, onBack, onLoadSuccess, onRename }: 
   } = usePresetDetailScreen(preset.id, onLoadSuccess, onRename)
 
   return (
-    <Box minH="100vh" bg="gray.950" pb={28}>
+    <Box minH="100vh" bg="gray.950" pb={!isTasksLoading && tasks.length > 0 ? 40 : 28}>
       <Box maxW={MAX_CONTAINER_WIDTH} mx="auto" px={4} pt={8}>
         <HStack mb={6} align="center">
           <Button
@@ -180,6 +180,7 @@ export function PresetDetailScreen({ preset, onBack, onLoadSuccess, onRename }: 
       />
 
       <TaskForm
+        key={editingTask?.id ?? 'none'}
         isOpen={!!editingTask}
         onClose={() => setEditingTask(null)}
         onSubmit={handleEditTaskSubmit}

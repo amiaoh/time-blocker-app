@@ -229,6 +229,34 @@ export function useDuplicatePresetTask(presetId: string) {
   })
 }
 
+export function useSaveTasksToPreset() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async ({ presetId, tasks }: { presetId: string; tasks: { title: string; durationMin: number; color: string; icon: string }[] }) => {
+      const { data: existing } = await supabase
+        .from('preset_tasks')
+        .select('position')
+        .eq('preset_id', presetId)
+        .order('position', { ascending: false })
+        .limit(1)
+      const maxPosition = (existing as { position: number }[] | null)?.[0]?.position ?? 0
+      const rows = tasks.map((task, i) => ({
+        preset_id: presetId,
+        title: task.title,
+        duration_min: task.durationMin,
+        color: task.color,
+        icon: task.icon,
+        position: maxPosition + (i + 1) * 1000,
+      }))
+      const { error } = await supabase.from('preset_tasks').insert(rows)
+      if (error) throw error
+    },
+    onSuccess: (_data, { presetId }) => {
+      queryClient.invalidateQueries({ queryKey: presetTasksQueryKey(presetId) })
+    },
+  })
+}
+
 export function useLoadPreset(userId: string) {
   const queryClient = useQueryClient()
   return useMutation({

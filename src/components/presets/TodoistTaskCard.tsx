@@ -1,5 +1,5 @@
 import { Box, Grid, GridItem, HStack, Text } from '@chakra-ui/react'
-import { BookmarkCheck } from 'lucide-react'
+import { BookmarkCheck, Copy } from 'lucide-react'
 import { CSS } from '@dnd-kit/utilities'
 import { useSortable } from '@dnd-kit/sortable'
 import type { MappedTodoistTask } from '@/utils/todoistApi'
@@ -10,9 +10,10 @@ interface TodoistTaskCardProps {
   task: MappedTodoistTask
   isSelected: boolean
   onToggleSelect: () => void
+  onCopyToPreset?: () => void
 }
 
-export function TodoistTaskCard({ task, isSelected, onToggleSelect }: TodoistTaskCardProps) {
+export function TodoistTaskCard({ task, isSelected, onToggleSelect, onCopyToPreset }: TodoistTaskCardProps) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: task.id })
 
   const style = {
@@ -62,12 +63,19 @@ export function TodoistTaskCard({ task, isSelected, onToggleSelect }: TodoistTas
             </Text>
           </GridItem>
           <GridItem minW={0}>
-            <ActionBtn
-              label={isSelected ? 'Selected ✓' : 'Select'}
-              onClick={onToggleSelect}
-              color={isSelected ? 'white' : 'whiteAlpha.500'}
-              hoverColor="white"
-            />
+            <HStack gap={1}>
+              <ActionBtn
+                label={isSelected ? 'Selected ✓' : 'Select'}
+                onClick={onToggleSelect}
+                color={isSelected ? 'white' : 'whiteAlpha.500'}
+                hoverColor="white"
+              />
+              {onCopyToPreset && (
+                <ActionBtn label="Copy to preset" onClick={onCopyToPreset} color="whiteAlpha.500" hoverColor="white">
+                  <Copy size={12} />
+                </ActionBtn>
+              )}
+            </HStack>
           </GridItem>
         </Grid>
       </HStack>

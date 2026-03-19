@@ -1,13 +1,12 @@
 import { Box, Button, HStack, Input, Spinner, Stack, Text } from '@chakra-ui/react'
 import { useState } from 'react'
 import { ChevronLeft, RefreshCw } from 'lucide-react'
-import { TodoistIcon } from '@/components/shared/TodoistIcon'
-import { DndContext, DragOverlay, closestCenter } from '@dnd-kit/core'
-import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
-import { useSensors, useSensor, PointerSensor, KeyboardSensor } from '@dnd-kit/core'
-import { sortableKeyboardCoordinates } from '@dnd-kit/sortable'
+import { DndContext, DragOverlay, KeyboardSensor, PointerSensor, closestCenter, useSensor, useSensors } from '@dnd-kit/core'
+import { SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import { MAX_CONTAINER_WIDTH } from '@/constants'
+import { TodoistIcon } from '@/components/shared/TodoistIcon'
 import { TodoistTaskCard } from '@/components/presets/TodoistTaskCard'
+import { CopyToPresetDrawer } from '@/components/presets/CopyToPresetDrawer'
 import { useTodoistPresetScreen } from './useTodoistPresetScreen'
 
 interface TodoistPresetScreenProps {
@@ -19,6 +18,7 @@ export function TodoistPresetScreen({ onBack, onLoadSuccess }: TodoistPresetScre
   const {
     token, setApiKey, orderedTasks, isTasksLoading, isFetching, error, refetch,
     isSelected, toggleSelect, handleLoad, isLoading,
+    presets, copyingTask, setCopyingTask, handleCopyToPreset, isCopyingToPreset,
     activeId, handleDragStart, handleDragEnd, handleDragCancel,
   } = useTodoistPresetScreen(onLoadSuccess)
 
@@ -118,6 +118,7 @@ export function TodoistPresetScreen({ onBack, onLoadSuccess }: TodoistPresetScre
                     task={task}
                     isSelected={isSelected(task.id)}
                     onToggleSelect={() => toggleSelect(task.id)}
+                    onCopyToPreset={presets.length > 0 ? () => setCopyingTask(task) : undefined}
                   />
                 ))}
               </Stack>
@@ -152,6 +153,14 @@ export function TodoistPresetScreen({ onBack, onLoadSuccess }: TodoistPresetScre
           </Box>
         </Box>
       )}
+
+      <CopyToPresetDrawer
+        isOpen={!!copyingTask}
+        onClose={() => setCopyingTask(null)}
+        presets={presets}
+        onSelect={handleCopyToPreset}
+        isLoading={isCopyingToPreset}
+      />
     </Box>
   )
 }
