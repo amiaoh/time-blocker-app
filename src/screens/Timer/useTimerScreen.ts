@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { PointerSensor, TouchSensor, useSensor, useSensors } from '@dnd-kit/core'
 import { useTimer } from '@/components/timer/useTimer'
 import { useTimerNotifications } from '@/components/timer/useTimerNotifications'
@@ -28,6 +28,9 @@ export function useTimerScreen() {
   const clearCompleted = useClearCompleted(userId)
   const clearAll = useClearAll(userId)
 
+  const completingTaskIdRef = useRef<string | null>(null)
+  const skippingTaskIdRef = useRef<string | null>(null)
+
   const [isFormOpen, setIsFormOpen] = useState(false)
   const [editingTask, setEditingTask] = useState<Task | undefined>(undefined)
   const [deletingTask, setDeletingTask] = useState<Task | undefined>(undefined)
@@ -40,11 +43,18 @@ export function useTimerScreen() {
 
   const handleComplete = useCallback(
     (taskId: string, elapsedSeconds: number) => {
+      completingTaskIdRef.current = taskId
       updateTask.mutate(
         { id: taskId, status: 'completed', spentSeconds: elapsedSeconds },
         {
-          onSuccess: () => toaster.create({ title: 'Task completed! 🎉', type: 'success', duration: TOAST_DURATION_MS }),
-          onError: (err) => toaster.create({ title: 'Failed to complete task', description: errorMessage(err), type: 'error' }),
+          onSuccess: () => {
+            completingTaskIdRef.current = null
+            toaster.create({ title: 'Task completed! 🎉', type: 'success', duration: TOAST_DURATION_MS })
+          },
+          onError: (err) => {
+            completingTaskIdRef.current = null
+            toaster.create({ title: 'Failed to complete task', description: errorMessage(err), type: 'error' })
+          },
         },
       )
     },
@@ -53,11 +63,18 @@ export function useTimerScreen() {
 
   const handleSkip = useCallback(
     (taskId: string) => {
+      skippingTaskIdRef.current = taskId
       updateTask.mutate(
         { id: taskId, status: 'skipped' },
         {
-          onSuccess: () => toaster.create({ title: 'Task skipped', type: 'info', duration: TOAST_DURATION_MS }),
-          onError: (err) => toaster.create({ title: 'Failed to skip task', description: errorMessage(err), type: 'error' }),
+          onSuccess: () => {
+            skippingTaskIdRef.current = null
+            toaster.create({ title: 'Task skipped', type: 'info', duration: TOAST_DURATION_MS })
+          },
+          onError: (err) => {
+            skippingTaskIdRef.current = null
+            toaster.create({ title: 'Failed to skip task', description: errorMessage(err), type: 'error' })
+          },
         },
       )
     },
@@ -69,10 +86,15 @@ export function useTimerScreen() {
     onSkip: handleSkip,
   })
 
-  // Auto-select the first pending task when tasks load and nothing is active
+  // Auto-select the first pending task when tasks load and nothing is active.
+  // Excludes tasks currently being completed/skipped to avoid re-selecting them
+  // before their status update lands (race condition: activeTaskId resets to null
+  // before the mutation resolves, so tasks still shows the task as pending).
   useEffect(() => {
     if (timerState.activeTaskId !== null) return
-    const firstPending = tasks.find((t) => t.status === 'pending')
+    const firstPending = tasks.find(
+      (t) => t.status === 'pending' && t.id !== completingTaskIdRef.current && t.id !== skippingTaskIdRef.current,
+    )
     if (firstPending) select(firstPending)
   }, [tasks, timerState.activeTaskId, select])
 
