@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useUserId } from '@/hooks/useUserId'
 import { useTodoistApiKey } from '@/hooks/useTodoistApiKey'
 import { useTodoistTasks } from '@/hooks/useTodoistTasks'
-import { useLoadPreset, useAllPresetTaskDurations, usePresets, useSaveTasksToPreset } from '@/components/presets/usePresets'
+import { useLoadPreset, useAllPresetTaskMeta, usePresets, useSaveTasksToPreset } from '@/components/presets/usePresets'
 import { useDragOrder } from '@/components/ordering/useDragOrder'
 import { toaster } from '@/lib/toaster'
 import { TOAST_DURATION_MS } from '@/constants'
@@ -22,7 +22,7 @@ export function useTodoistPresetScreen(onLoadSuccess: () => void) {
   const loadPreset = useLoadPreset(userId)
   const saveTasksToPreset = useSaveTasksToPreset()
   const { data: presets = [] } = usePresets(userId)
-  const { data: durationMap = new Map<string, number>() } = useAllPresetTaskDurations(userId)
+  const { data: presetMetaMap = new Map<string, { durationMin: number; icon: string }>() } = useAllPresetTaskMeta(userId)
 
 
   const [orderedTasks, setOrderedTasks] = useState<MappedTodoistTask[]>([])
@@ -32,13 +32,13 @@ export function useTodoistPresetScreen(onLoadSuccess: () => void) {
   useEffect(() => {
     if (tasks === undefined) return
     setOrderedTasks(tasks.map((t) => {
-      const presetDuration = durationMap.get(t.title.toLowerCase())
-      return presetDuration !== undefined
-        ? { ...t, durationMin: presetDuration, durationFromPreset: true }
+      const meta = presetMetaMap.get(t.title.toLowerCase())
+      return meta !== undefined
+        ? { ...t, durationMin: meta.durationMin, icon: meta.icon, durationFromPreset: true }
         : t
     }))
     setDeselectedIds(new Set())
-  }, [tasks, durationMap])
+  }, [tasks, presetMetaMap])
 
   const { activeId, handleDragStart, handleDragEnd, handleDragCancel } = useDragOrder({
     tasks: orderedTasks,
