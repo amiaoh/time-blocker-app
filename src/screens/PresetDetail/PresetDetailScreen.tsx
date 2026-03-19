@@ -23,6 +23,7 @@ export function PresetDetailScreen({ preset, onBack, onLoadSuccess, onRename }: 
     isTasksLoading,
     isSelected,
     toggleSelect,
+    handleChangeIcon,
     handleDelete,
     handleDuplicate,
     handleAddTask,
@@ -101,6 +102,7 @@ export function PresetDetailScreen({ preset, onBack, onLoadSuccess, onRename }: 
                     key={task.id}
                     task={task}
                     isSelected={isSelected(task.id)}
+                    onChangeIcon={(icon) => handleChangeIcon(task.id, icon)}
                     onDelete={() => handleDelete(task.id)}
                     onDuplicate={() => handleDuplicate(task)}
                     onToggleSelect={() => toggleSelect(task.id)}

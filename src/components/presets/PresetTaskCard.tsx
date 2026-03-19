@@ -4,6 +4,7 @@ import { useSortable } from '@dnd-kit/sortable'
 
 import type { PresetTask } from '@/types'
 import { DragHandle } from '@/components/ordering/DragHandle'
+import { EmojiPickerPopover } from '@/components/tasks/EmojiPickerPopover'
 import { PresetTaskCardActions } from './PresetTaskCardActions'
 import { formatSeconds } from '@/utils/formatTime'
 
@@ -14,9 +15,10 @@ interface PresetTaskCardProps {
   onDuplicate: () => void
   onToggleSelect: () => void
   onEdit: () => void
+  onChangeIcon: (icon: string) => void
 }
 
-export function PresetTaskCard({ task, isSelected, onDelete, onDuplicate, onToggleSelect, onEdit }: PresetTaskCardProps) {
+export function PresetTaskCard({ task, isSelected, onDelete, onDuplicate, onToggleSelect, onEdit, onChangeIcon }: PresetTaskCardProps) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: task.id })
 
   const style = {
@@ -53,7 +55,7 @@ export function PresetTaskCard({ task, isSelected, onDelete, onDuplicate, onTogg
         >
           {/* Row 1 left: emoji */}
           <GridItem display="flex" justifyContent="center">
-            <Text fontSize="xl" lineHeight={1.2}>{task.icon}</Text>
+            <EmojiPickerPopover currentIcon={task.icon} onSelect={onChangeIcon} />
           </GridItem>
 
           {/* Row 1 right: title */}

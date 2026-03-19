@@ -68,6 +68,13 @@ export function usePresetDetailScreen(
     })
   }
 
+  function handleChangeIcon(taskId: string, icon: string) {
+    updateTask.mutate(
+      { id: taskId, icon },
+      { onError: (err) => toaster.create({ title: 'Failed to update icon', description: errorMessage(err), type: 'error' }) },
+    )
+  }
+
   function handleDelete(taskId: string) {
     deleteTask.mutate(taskId, {
       onError: (err) => toaster.create({ title: 'Failed to delete task', description: errorMessage(err), type: 'error' }),
@@ -148,6 +155,7 @@ export function usePresetDetailScreen(
     isTasksLoading,
     isSelected,
     toggleSelect,
+    handleChangeIcon,
     handleDelete,
     handleDuplicate,
     handleAddTask,
