@@ -25,7 +25,7 @@ interface TimerScreenProps {
 
 export function TimerScreen({ onOpenPresets, onOpenOverview }: TimerScreenProps) {
   const {
-    tasks,
+    displayTasks,
     isLoading,
     loadError,
     activeTask,
@@ -156,7 +156,7 @@ export function TimerScreen({ onOpenPresets, onOpenOverview }: TimerScreenProps)
             onDragCancel={handleDragCancel}
           >
             <TaskList
-              tasks={tasks}
+              tasks={displayTasks}
               timerState={timerState}
               taskElapsed={taskElapsed}
               taskRemaining={taskRemaining}

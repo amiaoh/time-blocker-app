@@ -98,7 +98,7 @@ export function useTimerScreen() {
     if (firstPending) select(firstPending)
   }, [tasks, timerState.activeTaskId, select])
 
-  const { handleDragStart, handleDragEnd, handleDragCancel } = useDragOrder({
+  const { displayTasks, handleDragStart, handleDragEnd, handleDragCancel } = useDragOrder({
     tasks,
     onReorder: (reordered) => {
       reordered.forEach((task) => {
@@ -278,6 +278,7 @@ export function useTimerScreen() {
     updateSettings,
     // Data
     tasks,
+    displayTasks,
     isLoading,
     loadError,
     activeTask,
