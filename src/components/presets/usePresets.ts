@@ -40,6 +40,25 @@ export function useAllPresetTaskMeta(userId: string) {
   })
 }
 
+export function usePresetMembership(userId: string) {
+  return useQuery({
+    queryKey: ['preset-membership', userId],
+    queryFn: async () => {
+      const { data: presets } = await supabase.from('preset_lists').select('id').eq('user_id', userId)
+      const presetIds = (presets as { id: string }[] | null)?.map((p) => p.id) ?? []
+      if (presetIds.length === 0) return new Map<string, string[]>()
+      const { data, error } = await supabase.from('preset_tasks').select('title, preset_id').in('preset_id', presetIds)
+      if (error) throw error
+      const map = new Map<string, string[]>()
+      for (const row of (data ?? []) as { title: string; preset_id: string }[]) {
+        const key = row.title.toLowerCase()
+        map.set(key, [...(map.get(key) ?? []), row.preset_id])
+      }
+      return map
+    },
+  })
+}
+
 export function usePresets(userId: string) {
   return useQuery({
     queryKey: presetsQueryKey(userId),
@@ -147,7 +166,10 @@ export function useAddPresetTask(presetId: string) {
       if (error) throw error
       return rowToPresetTask(data as PresetTaskRow)
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: presetTasksQueryKey(presetId) }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: presetTasksQueryKey(presetId) })
+      queryClient.invalidateQueries({ queryKey: ['preset-membership'] })
+    },
   })
 }
 
@@ -199,7 +221,10 @@ export function useDeletePresetTask(presetId: string) {
     onError: (_err, _vars, context) => {
       if (context?.previous) queryClient.setQueryData(qk, context.previous)
     },
-    onSettled: () => queryClient.invalidateQueries({ queryKey: qk }),
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: qk })
+      queryClient.invalidateQueries({ queryKey: ['preset-membership'] })
+    },
   })
 }
 
@@ -226,7 +251,10 @@ export function useDuplicatePresetTask(presetId: string) {
     onError: (_err, _vars, context) => {
       if (context?.previous) queryClient.setQueryData(qk, context.previous)
     },
-    onSettled: () => queryClient.invalidateQueries({ queryKey: qk }),
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: qk })
+      queryClient.invalidateQueries({ queryKey: ['preset-membership'] })
+    },
   })
 }
 
@@ -254,6 +282,7 @@ export function useSaveTasksToPreset() {
     },
     onSuccess: (_data, { presetId }) => {
       queryClient.invalidateQueries({ queryKey: presetTasksQueryKey(presetId) })
+      queryClient.invalidateQueries({ queryKey: ['preset-membership'] })
     },
   })
 }

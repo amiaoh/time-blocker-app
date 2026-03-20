@@ -8,12 +8,15 @@ import {
   useUpdatePresetTask,
   useUpdatePreset,
   useLoadPreset,
+  usePresets,
+  usePresetMembership,
+  useSaveTasksToPreset,
 } from '@/components/presets/usePresets'
 import { useDragOrder } from '@/components/ordering/useDragOrder'
 import { PointerSensor, TouchSensor, useSensor, useSensors } from '@dnd-kit/core'
 import { toaster } from '@/lib/toaster'
 import { TOAST_DURATION_MS } from '@/constants'
-import type { PresetList, PresetTask, TaskFormValues } from '@/types'
+import type { PresetList, PresetTask, TaskFormValues, TaskColor } from '@/types'
 
 function errorMessage(err: unknown): string {
   return err instanceof Error ? err.message : String(err)
@@ -32,6 +35,9 @@ export function usePresetDetailScreen(
   const duplicateTask = useDuplicatePresetTask(presetId)
   const updatePreset = useUpdatePreset(userId)
   const loadPreset = useLoadPreset(userId)
+  const { data: presets = [] } = usePresets(userId)
+  const { data: membershipMap = new Map<string, string[]>() } = usePresetMembership(userId)
+  const saveTasksToPreset = useSaveTasksToPreset()
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
@@ -52,8 +58,8 @@ export function usePresetDetailScreen(
 
   const [deselectedIds, setDeselectedIds] = useState<Set<string>>(new Set())
   const [isAddTaskOpen, setIsAddTaskOpen] = useState(false)
-  const [editingTask, setEditingTask] = useState<PresetTask | null>(null)
   const [isRenameOpen, setIsRenameOpen] = useState(false)
+  const [copyingTask, setCopyingTask] = useState<PresetTask | null>(null)
 
   function isSelected(id: string): boolean {
     return !deselectedIds.has(id)
@@ -87,16 +93,27 @@ export function usePresetDetailScreen(
     })
   }
 
-  function handleEditTaskSubmit(values: TaskFormValues) {
-    if (!editingTask) return
-    updateTask.mutate(
-      { id: editingTask.id, title: values.title, durationMin: values.durationMin, color: values.color },
+  function handleEditTitle(taskId: string, title: string) {
+    updateTask.mutate({ id: taskId, title })
+  }
+
+  function handleEditDuration(taskId: string, durationMin: number) {
+    updateTask.mutate({ id: taskId, durationMin })
+  }
+
+  function handleCopyToPreset(targetPresetId: string) {
+    if (!copyingTask) return
+    saveTasksToPreset.mutate(
+      {
+        presetId: targetPresetId,
+        tasks: [{ title: copyingTask.title, durationMin: copyingTask.durationMin, color: copyingTask.color as TaskColor as string, icon: copyingTask.icon }],
+      },
       {
         onSuccess: () => {
-          setEditingTask(null)
-          toaster.create({ title: 'Task updated', type: 'success', duration: TOAST_DURATION_MS })
+          setCopyingTask(null)
+          toaster.create({ title: 'Task copied to preset', type: 'success', duration: TOAST_DURATION_MS })
         },
-        onError: (err) => toaster.create({ title: 'Failed to update task', description: errorMessage(err), type: 'error' }),
+        onError: (err) => toaster.create({ title: 'Failed to copy task', description: errorMessage(err), type: 'error' }),
       },
     )
   }
@@ -163,10 +180,14 @@ export function usePresetDetailScreen(
     isAddTaskOpen,
     setIsAddTaskOpen,
     isAddingTask: addTask.isPending,
-    editingTask,
-    setEditingTask,
-    handleEditTaskSubmit,
-    isEditingTask: updateTask.isPending,
+    handleEditTitle,
+    handleEditDuration,
+    presets,
+    membershipMap,
+    copyingTask,
+    setCopyingTask,
+    handleCopyToPreset,
+    isCopyingToPreset: saveTasksToPreset.isPending,
     isLoading: loadPreset.isPending,
     sensors,
     handleDragStart,

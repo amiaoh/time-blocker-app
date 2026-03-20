@@ -10,7 +10,6 @@ import { AppHeader } from "@/components/layout/AppHeader";
 import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
 import { SettingsDialog } from "@/components/shared/SettingsDialog";
 import { TaskForm } from "@/components/tasks/TaskForm";
-import { TaskEditSheet } from "@/components/tasks/TaskEditSheet";
 import { TaskList } from "@/components/tasks/TaskList";
 import { TimerAdjustControls } from "@/components/timer/TimerAdjustControls";
 import { TimerDisplay } from "@/components/timer/TimerDisplay";
@@ -31,11 +30,9 @@ export function TimerScreen({ onOpenPresets, onOpenOverview }: TimerScreenProps)
     activeTask,
     projection,
     isFormOpen,
-    editingTask,
     deletingTask,
     hideCompleted,
     setIsFormOpen,
-    setEditingTask,
     setDeletingTask,
     setHideCompleted,
     timerState,
@@ -44,7 +41,8 @@ export function TimerScreen({ onOpenPresets, onOpenOverview }: TimerScreenProps)
     handleCompleteTask,
     handleTimerToggle,
     handleAddSubmit,
-    handleEditSubmit,
+    handleEditTitle,
+    handleEditDuration,
     handleDeleteConfirm,
     handleReset,
     handleAdjustDuration,
@@ -58,7 +56,6 @@ export function TimerScreen({ onOpenPresets, onOpenOverview }: TimerScreenProps)
     handleDragEnd,
     handleDragCancel,
     isAddingTask,
-    isUpdatingTask,
     isDeletingTask,
     settings,
     updateSettings,
@@ -172,7 +169,8 @@ export function TimerScreen({ onOpenPresets, onOpenOverview }: TimerScreenProps)
               onReset={handleReset}
               onMoveToTop={handleMoveToTop}
               onChangeIcon={handleChangeIcon}
-              onEdit={(task) => setEditingTask(task)}
+              onEditTitle={(task, title) => handleEditTitle(task.id, title)}
+              onEditDuration={(task, durationMin) => handleEditDuration(task.id, durationMin)}
             />
           </DndContext>
         )}
@@ -183,15 +181,6 @@ export function TimerScreen({ onOpenPresets, onOpenOverview }: TimerScreenProps)
         onClose={() => setIsFormOpen(false)}
         onSubmit={handleAddSubmit}
         isLoading={isAddingTask}
-        maxDurationMin={settings.maxTaskDurationMin}
-      />
-
-      <TaskEditSheet
-        key={editingTask?.id}
-        task={editingTask}
-        onClose={() => setEditingTask(undefined)}
-        onSubmit={handleEditSubmit}
-        isLoading={isUpdatingTask}
         maxDurationMin={settings.maxTaskDurationMin}
       />
 

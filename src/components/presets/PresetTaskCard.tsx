@@ -1,10 +1,7 @@
-import { Box, Grid, GridItem, HStack, Text } from '@chakra-ui/react'
-import { CSS } from '@dnd-kit/utilities'
-import { useSortable } from '@dnd-kit/sortable'
-
 import type { PresetTask } from '@/types'
-import { DragHandle } from '@/components/ordering/DragHandle'
 import { EmojiPickerPopover } from '@/components/tasks/EmojiPickerPopover'
+import { InlineEdit } from '@/components/shared/InlineEdit'
+import { BaseTaskCard } from '@/components/shared/BaseTaskCard'
 import { PresetTaskCardActions } from './PresetTaskCardActions'
 import { formatSeconds } from '@/utils/formatTime'
 
@@ -14,81 +11,38 @@ interface PresetTaskCardProps {
   onDelete: () => void
   onDuplicate: () => void
   onToggleSelect: () => void
-  onEdit: () => void
   onChangeIcon: (icon: string) => void
+  onCopyToPreset: () => void
+  isCopiedToAnyPreset: boolean
+  onEditTitle: (title: string) => void
+  onEditDuration: (durationMin: number) => void
 }
 
-export function PresetTaskCard({ task, isSelected, onDelete, onDuplicate, onToggleSelect, onEdit, onChangeIcon }: PresetTaskCardProps) {
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: task.id })
-
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-    opacity: isDragging ? 0.4 : 1,
-  }
-
+export function PresetTaskCard({
+  task, isSelected, onDelete, onDuplicate, onToggleSelect,
+  onChangeIcon, onCopyToPreset, isCopiedToAnyPreset, onEditTitle, onEditDuration,
+}: PresetTaskCardProps) {
   return (
-    <Box
-      ref={setNodeRef}
-      style={style}
+    <BaseTaskCard
+      id={task.id}
       bg={task.color}
-      borderRadius="xl"
       opacity={isSelected ? 1 : 0.45}
-      transition="opacity 0.15s"
-    >
-      <HStack align="stretch" gap={0}>
-        <DragHandle {...attributes} {...listeners} />
-
-        {/* 2×2 grid: [emoji][title] / [duration][actions] */}
-        <Grid
-          templateColumns="auto 1fr"
-          templateRows="auto auto"
-          columnGap={1}
-          rowGap={0}
-          flex={1}
-          pb={3}
-          pr={4}
-          pl={0}
-          pt={3}
-          minW={0}
-          alignItems="center"
-        >
-          {/* Row 1 left: emoji */}
-          <GridItem display="flex" justifyContent="center">
-            <EmojiPickerPopover currentIcon={task.icon} onSelect={onChangeIcon} />
-          </GridItem>
-
-          {/* Row 1 right: title */}
-          <GridItem minW={0}>
-            <Text fontWeight="semibold" fontSize="md" color="white" lineClamp={2}>
-              {task.title}
-            </Text>
-          </GridItem>
-
-          {/* Row 2 left: duration */}
-          <GridItem display="flex" justifyContent="center">
-            <Text
-              fontSize="xs"
-              fontWeight="semibold"
-              color="white"
-              fontVariantNumeric="tabular-nums"
-            >
-              {formatSeconds(task.durationMin * 60)}
-            </Text>
-          </GridItem>
-
-          {/* Row 2 right: actions */}
-          <GridItem minW={0}>
-            <PresetTaskCardActions
-              isSelected={isSelected}
-              onDelete={onDelete}
-              onDuplicate={onDuplicate}
-              onToggleSelect={onToggleSelect}
-              onEdit={onEdit}
-            />
-          </GridItem>
-        </Grid>
-      </HStack>
-    </Box>
+      icon={<EmojiPickerPopover currentIcon={task.icon} onSelect={onChangeIcon} />}
+      title={
+        <InlineEdit displayValue={task.title} editValue={task.title} onSave={onEditTitle}
+          fontWeight="semibold" fontSize="md" color="white" lineClamp={2} />
+      }
+      duration={
+        <InlineEdit displayValue={formatSeconds(task.durationMin * 60)}
+          editValue={String(task.durationMin)} onSave={(v) => onEditDuration(Number(v))}
+          type="number" min={1} max={480} fontSize="xs" fontWeight="semibold"
+          color="white" fontVariantNumeric="tabular-nums" inputWidth="3.5rem" />
+      }
+      actions={
+        <PresetTaskCardActions isSelected={isSelected} onDelete={onDelete}
+          onDuplicate={onDuplicate} onToggleSelect={onToggleSelect}
+          onCopyToPreset={onCopyToPreset} isCopiedToAnyPreset={isCopiedToAnyPreset} />
+      }
+    />
   )
 }

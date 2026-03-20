@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useUserId } from '@/hooks/useUserId'
 import { useTodoistApiKey } from '@/hooks/useTodoistApiKey'
 import { useTodoistTasks } from '@/hooks/useTodoistTasks'
-import { useLoadPreset, useAllPresetTaskMeta, usePresets, useSaveTasksToPreset } from '@/components/presets/usePresets'
+import { useLoadPreset, useAllPresetTaskMeta, usePresets, useSaveTasksToPreset, usePresetMembership } from '@/components/presets/usePresets'
 import { useDragOrder } from '@/components/ordering/useDragOrder'
 import { toaster } from '@/lib/toaster'
 import { TOAST_DURATION_MS } from '@/constants'
@@ -23,7 +23,7 @@ export function useTodoistPresetScreen(onLoadSuccess: () => void) {
   const saveTasksToPreset = useSaveTasksToPreset()
   const { data: presets = [] } = usePresets(userId)
   const { data: presetMetaMap = new Map<string, { durationMin: number; icon: string }>() } = useAllPresetTaskMeta(userId)
-
+  const { data: membershipMap = new Map<string, string[]>() } = usePresetMembership(userId)
 
   const [orderedTasks, setOrderedTasks] = useState<MappedTodoistTask[]>([])
   const [deselectedIds, setDeselectedIds] = useState<Set<string>>(new Set())
@@ -56,6 +56,22 @@ export function useTodoistPresetScreen(onLoadSuccess: () => void) {
       else next.add(id)
       return next
     })
+  }
+
+  function handleDeleteTask(taskId: string) {
+    setOrderedTasks((prev) => prev.filter((t) => t.id !== taskId))
+  }
+
+  function handleEditTitle(taskId: string, title: string) {
+    setOrderedTasks((prev) => prev.map((t) => t.id === taskId ? { ...t, title } : t))
+  }
+
+  function handleEditDuration(taskId: string, durationMin: number) {
+    setOrderedTasks((prev) => prev.map((t) => t.id === taskId ? { ...t, durationMin } : t))
+  }
+
+  function handleChangeIcon(taskId: string, icon: string) {
+    setOrderedTasks((prev) => prev.map((t) => t.id === taskId ? { ...t, icon } : t))
   }
 
   function handleCopyToPreset(presetId: string) {
@@ -116,6 +132,11 @@ export function useTodoistPresetScreen(onLoadSuccess: () => void) {
     setCopyingTask,
     handleCopyToPreset,
     isCopyingToPreset: saveTasksToPreset.isPending,
+    membershipMap,
+    handleDeleteTask,
+    handleChangeIcon,
+    handleEditTitle,
+    handleEditDuration,
     activeId,
     handleDragStart,
     handleDragEnd,

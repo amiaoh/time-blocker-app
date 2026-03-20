@@ -32,7 +32,6 @@ export function useTimerScreen() {
   const skippingTaskIdRef = useRef<string | null>(null)
 
   const [isFormOpen, setIsFormOpen] = useState(false)
-  const [editingTask, setEditingTask] = useState<Task | undefined>(undefined)
   const [deletingTask, setDeletingTask] = useState<Task | undefined>(undefined)
   const [hideCompleted, setHideCompleted] = useState(false)
 
@@ -155,20 +154,14 @@ export function useTimerScreen() {
     )
   }
 
-  function handleEditSubmit(values: TaskFormValues) {
-    if (!editingTask) return
-    const id = editingTask.id
-    updateTask.mutate(
-      { id, ...values },
-      {
-        onSuccess: () => {
-          setEditingTask(undefined)
-          toaster.create({ title: 'Task updated', type: 'success', duration: TOAST_DURATION_MS })
-          clearTaskRemaining(id)
-        },
-        onError: (err) => toaster.create({ title: 'Failed to update task', description: errorMessage(err), type: 'error' }),
-      },
-    )
+  function handleEditTitle(taskId: string, title: string) {
+    updateTask.mutate({ id: taskId, title })
+  }
+
+  function handleEditDuration(taskId: string, durationMin: number) {
+    updateTask.mutate({ id: taskId, durationMin }, {
+      onSuccess: () => clearTaskRemaining(taskId),
+    })
   }
 
   function handleCompleteTask(task: Task) {
@@ -285,11 +278,9 @@ export function useTimerScreen() {
     projection,
     // UI state
     isFormOpen,
-    editingTask,
     deletingTask,
     hideCompleted,
     setIsFormOpen,
-    setEditingTask,
     setDeletingTask,
     setHideCompleted,
     // Timer
@@ -305,7 +296,8 @@ export function useTimerScreen() {
     handleTimerToggle,
     // Task handlers
     handleAddSubmit,
-    handleEditSubmit,
+    handleEditTitle,
+    handleEditDuration,
     handleDeleteConfirm,
     handleReset,
     handleAdjustDuration,

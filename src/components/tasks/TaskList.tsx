@@ -24,7 +24,8 @@ interface TaskListProps {
   onReset: (task: Task) => void
   onMoveToTop: (task: Task) => void
   onChangeIcon: (task: Task, icon: string) => void
-  onEdit: (task: Task) => void
+  onEditTitle: (task: Task, title: string) => void
+  onEditDuration: (task: Task, durationMin: number) => void
 }
 
 
@@ -45,7 +46,8 @@ export function TaskList({
   onReset,
   onMoveToTop,
   onChangeIcon,
-  onEdit,
+  onEditTitle,
+  onEditDuration,
 }: TaskListProps) {
   const pendingTasks = tasks.filter((t) => t.status === 'pending')
   const doneTasks = tasks.filter((t) => t.status === 'completed' || t.status === 'skipped')
@@ -78,7 +80,8 @@ export function TaskList({
             onReset={onReset}
             onMoveToTop={onMoveToTop}
             onChangeIcon={onChangeIcon}
-            onEdit={onEdit}
+            onEditTitle={(title) => onEditTitle(task, title)}
+            onEditDuration={(durationMin) => onEditDuration(task, durationMin)}
           />
         ))}
       </SortableContext>

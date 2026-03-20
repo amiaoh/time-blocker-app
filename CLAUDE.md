@@ -4,6 +4,7 @@
 React 19, TypeScript strict, Chakra UI v3, Supabase, TanStack Query v5, dnd-kit
 
 ## Component Design
+- **No absolute positioning** — use layout primitives (grid columns, spacers, empty elements) instead
 - **Max ~80 lines per component file** — split if larger
 - **One responsibility per file** — no local helper components that render JSX; extract them
 - Shared primitives → `src/components/shared/` (e.g. `ActionBtn`, `TextBtn`)

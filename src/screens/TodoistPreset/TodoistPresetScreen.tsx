@@ -20,6 +20,7 @@ export function TodoistPresetScreen({ onBack, onLoadSuccess }: TodoistPresetScre
     isSelected, toggleSelect, handleLoad, isLoading,
     presets, copyingTask, setCopyingTask, handleCopyToPreset, isCopyingToPreset,
     activeId, handleDragStart, handleDragEnd, handleDragCancel,
+    membershipMap, handleDeleteTask, handleChangeIcon, handleEditTitle, handleEditDuration,
   } = useTodoistPresetScreen(onLoadSuccess)
 
   const [tokenInput, setTokenInput] = useState('')
@@ -118,7 +119,12 @@ export function TodoistPresetScreen({ onBack, onLoadSuccess }: TodoistPresetScre
                     task={task}
                     isSelected={isSelected(task.id)}
                     onToggleSelect={() => toggleSelect(task.id)}
+                    onDelete={() => handleDeleteTask(task.id)}
+                    onChangeIcon={(icon) => handleChangeIcon(task.id, icon)}
+                    onEditTitle={(title) => handleEditTitle(task.id, title)}
+                    onEditDuration={(durationMin) => handleEditDuration(task.id, durationMin)}
                     onCopyToPreset={presets.length > 0 ? () => setCopyingTask(task) : undefined}
+                    isCopiedToAnyPreset={(membershipMap.get(task.title.toLowerCase())?.length ?? 0) > 0}
                   />
                 ))}
               </Stack>
@@ -160,6 +166,7 @@ export function TodoistPresetScreen({ onBack, onLoadSuccess }: TodoistPresetScre
         presets={presets}
         onSelect={handleCopyToPreset}
         isLoading={isCopyingToPreset}
+        existingPresetIds={copyingTask ? (membershipMap.get(copyingTask.title.toLowerCase()) ?? []) : []}
       />
     </Box>
   )
