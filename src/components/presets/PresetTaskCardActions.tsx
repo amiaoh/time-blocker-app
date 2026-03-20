@@ -17,7 +17,7 @@ export function PresetTaskCardActions({ isSelected, onDelete, onDuplicate, onTog
       <ActionBtn label="Edit" ariaLabel="Edit" onClick={onEdit} color="whiteAlpha.700" hoverColor="white"><Pencil size={14} /></ActionBtn>
       <ActionBtn label="Duplicate" onClick={onDuplicate} color="whiteAlpha.700" hoverColor="white" />
       <ActionBtn
-        label={isSelected ? 'Selected ✓' : 'Select'}
+        label={isSelected ? '✓' : 'Select'}
         onClick={onToggleSelect}
         color={isSelected ? 'white' : 'whiteAlpha.500'}
         hoverColor="white"
