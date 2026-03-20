@@ -40,7 +40,7 @@ export function TaskCardActions({
   const pendingOvertime = isPending && !isActive && (taskElapsed.get(task.id) ?? 0) > plannedSeconds
 
   return (
-    <HStack gap={2} align="center" overflow="hidden">
+    <HStack gap={2} align="center">
       {/* Col 1: delete — always */}
       <ActionBtn label="Delete" ariaLabel="Delete" onClick={onDelete} hoverColor="red.400"><Trash2 size={14} /></ActionBtn>
 
