@@ -1,9 +1,10 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '@/lib/supabase'
 import { rowToTask, taskToInsertRow } from '@/utils/mappers'
+import { localToday } from '@/utils/formatTime'
 import type { Task, TaskColor, TaskRow, TaskUpdate } from '@/types'
 
-const TODAY = new Date().toISOString().split('T')[0]
+const TODAY = localToday()
 
 function tasksQueryKey(userId: string) {
   return ['tasks', userId, TODAY] as const
