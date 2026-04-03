@@ -8,7 +8,7 @@ interface MenuBtnProps {
 
 export function MenuBtn({ onOpenSettings, onOpenOverview }: MenuBtnProps) {
   return (
-    <MenuRoot>
+    <MenuRoot onOpenChange={({ open }) => { if (!open) (document.activeElement as HTMLElement)?.blur() }}>
       <MenuTrigger asChild>
         <Button
           variant="ghost"
