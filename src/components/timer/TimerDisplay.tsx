@@ -38,8 +38,9 @@ export function TimerDisplay({ remainingSeconds, isRunning, isIdle, isOvertime, 
       {showPie && (
         <Box position="relative" display="inline-block" lineHeight={0}>
           <svg
-            width={SIZE}
-            height={SIZE}
+            width={SIZE + 20}
+            height={SIZE + 20}
+            viewBox={`-10 -10 ${SIZE + 20} ${SIZE + 20}`}
             style={{ userSelect: 'none' }}
             role="img"
             aria-label={isIdle ? 'Timer idle' : isOvertime ? `${formatSeconds(overtimeSeconds)} overtime` : `${formatSeconds(remainingSeconds)} remaining`}
@@ -55,8 +56,8 @@ export function TimerDisplay({ remainingSeconds, isRunning, isIdle, isOvertime, 
               aria-label={isRunning ? 'Pause timer' : 'Start timer'}
               style={{
                 position: 'absolute',
-                top: CY - PLAY_BTN_R,
-                left: CX - PLAY_BTN_R,
+                top: CY - PLAY_BTN_R + 10,
+                left: CX - PLAY_BTN_R + 10,
                 width: PLAY_BTN_R * 2,
                 height: PLAY_BTN_R * 2,
                 borderRadius: '50%',

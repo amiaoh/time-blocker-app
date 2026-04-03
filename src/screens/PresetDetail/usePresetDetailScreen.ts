@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useUserId } from '@/hooks/useUserId'
 import {
   usePresetTasks,
@@ -17,6 +17,9 @@ import { PointerSensor, TouchSensor, useSensor, useSensors } from '@dnd-kit/core
 import { toaster } from '@/lib/toaster'
 import { TOAST_DURATION_MS } from '@/constants'
 import type { PresetList, PresetTask, TaskFormValues, TaskColor } from '@/types'
+import { TASK_COLORS } from '@/types'
+
+const PRIORITY_ORDER = new Map(TASK_COLORS.map((c, i) => [c, i]))
 
 function errorMessage(err: unknown): string {
   return err instanceof Error ? err.message : String(err)
@@ -28,7 +31,15 @@ export function usePresetDetailScreen(
   onRename: (updated: PresetList) => void,
 ) {
   const userId = useUserId()
-  const { data: tasks = [], isLoading: isTasksLoading } = usePresetTasks(presetId)
+  const { data: rawTasks = [], isLoading: isTasksLoading } = usePresetTasks(presetId)
+  const tasks = useMemo(
+    () => [...rawTasks].sort((a, b) => {
+      const pa = PRIORITY_ORDER.get(a.color) ?? 99
+      const pb = PRIORITY_ORDER.get(b.color) ?? 99
+      return pa !== pb ? pa - pb : a.position - b.position
+    }),
+    [rawTasks],
+  )
   const addTask = useAddPresetTask(presetId)
   const updateTask = useUpdatePresetTask(presetId)
   const deleteTask = useDeletePresetTask(presetId)
