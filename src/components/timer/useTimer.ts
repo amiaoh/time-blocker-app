@@ -23,6 +23,7 @@ interface UseTimerReturn {
   clearTaskTimer: (taskId: string) => void
   clearTaskRemaining: (taskId: string) => void
   adjustRemaining: (deltaMin: number) => void
+  setRemainingSeconds: (seconds: number) => void
 }
 
 interface UseTimerCallbacks {
@@ -176,7 +177,11 @@ export function useTimer({ onComplete, onSkip }: UseTimerCallbacks): UseTimerRet
     }))
   }, [])
 
+  const setRemainingSeconds = useCallback((seconds: number) => {
+    setTimerState((prev) => ({ ...prev, remainingSeconds: Math.max(0, seconds) }))
+  }, [])
+
   useEffect(() => () => clearTick(), [clearTick])
 
-  return { timerState, taskElapsed, taskRemaining, select, start, pause, resume, complete, skip, clearTaskTimer, clearTaskRemaining, adjustRemaining }
+  return { timerState, taskElapsed, taskRemaining, select, start, pause, resume, complete, skip, clearTaskTimer, clearTaskRemaining, adjustRemaining, setRemainingSeconds }
 }

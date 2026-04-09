@@ -80,7 +80,7 @@ export function useTimerScreen() {
     [updateTask],
   )
 
-  const { timerState, taskElapsed, taskRemaining, select, start, pause, resume, complete, skip, clearTaskTimer, clearTaskRemaining, adjustRemaining } = useTimer({
+  const { timerState, taskElapsed, taskRemaining, select, start, pause, resume, complete, skip, clearTaskTimer, clearTaskRemaining, adjustRemaining, setRemainingSeconds } = useTimer({
     onComplete: handleComplete,
     onSkip: handleSkip,
   })
@@ -162,6 +162,9 @@ export function useTimerScreen() {
     updateTask.mutate({ id: taskId, durationMin }, {
       onSuccess: () => clearTaskRemaining(taskId),
     })
+    if (taskId === timerState.activeTaskId) {
+      setRemainingSeconds(durationMin * 60)
+    }
   }
 
   function handleCompleteTask(task: Task) {
