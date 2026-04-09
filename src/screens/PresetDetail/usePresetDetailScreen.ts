@@ -67,17 +67,17 @@ export function usePresetDetailScreen(
     },
   })
 
-  const [deselectedIds, setDeselectedIds] = useState<Set<string>>(new Set())
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
   const [isAddTaskOpen, setIsAddTaskOpen] = useState(false)
   const [isRenameOpen, setIsRenameOpen] = useState(false)
   const [copyingTask, setCopyingTask] = useState<PresetTask | null>(null)
 
   function isSelected(id: string): boolean {
-    return !deselectedIds.has(id)
+    return selectedIds.has(id)
   }
 
   function toggleSelect(id: string) {
-    setDeselectedIds((prev) => {
+    setSelectedIds((prev) => {
       const next = new Set(prev)
       if (next.has(id)) next.delete(id)
       else next.add(id)
@@ -157,7 +157,7 @@ export function usePresetDetailScreen(
   }
 
   function handleLoad(position: 'top' | 'bottom') {
-    const selectedTasks = tasks.filter((t) => !deselectedIds.has(t.id))
+    const selectedTasks = tasks.filter((t) => selectedIds.has(t.id))
     if (selectedTasks.length === 0) {
       toaster.create({ title: 'No tasks selected', type: 'info', duration: TOAST_DURATION_MS })
       return
